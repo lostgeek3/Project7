@@ -44,6 +44,7 @@ d = 3
 
 // Variable explicitly typed and initialized
 val e: String = "hello"
+
 e.startsWith(h) // True
 ```
 
@@ -309,4 +310,60 @@ println(user.copy("Max"))
 // Creates a copy of user with id: 3
 println(user.copy(id = 3)) 
 // User(name=Alex, id=3)
+```
+
+### Null
+
+```kotlin
+// Nullable type需要用?显式指定
+fun main() {
+    // neverNull has String type
+    var neverNull: String = "This can't be null"
+
+    // Throws a compiler error
+    neverNull = null
+
+    // nullable has nullable String type
+    var nullable: String? = "You can keep a null here"
+
+    // This is OK  
+    nullable = null
+
+    // By default, null values aren't accepted
+    var inferredNonNull = "The compiler assumes non-nullable"
+
+    // Throws a compiler error
+    inferredNonNull = null
+
+    // notNull doesn't accept null values
+    fun strLength(notNull: String): Int {                 
+        return notNull.length
+    }
+
+    println(strLength(neverNull)) // 18
+    println(strLength(nullable))  // Throws a compiler error
+}
+```
+
+```kotlin
+// 安全调用可能为null的值的成员
+fun lengthString(maybeString: String?): Int? = maybeString?.length
+
+fun main() { 
+    var nullString: String? = null
+    println(lengthString(nullString))
+    // null
+}
+```
+
+###### Elvis operator
+
+可能为null的变量 ?: 如果为null的返回值
+
+```kotlin
+fun main() {
+    var nullString: String? = null
+    println(nullString?.length ?: 0)
+    // 0
+}
 ```
