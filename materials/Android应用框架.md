@@ -6,7 +6,7 @@
 
 ### 创建项目
 
-[Android Developers](#https://developer.android.google.cn/?hl=zh-cn)
+[Android Developers](https://developer.android.google.cn/?hl=zh-cn)
 
 1. 在Android Developers官网中可以下载Android Studio、查看Kotlin文档和API文档等。
 2. Android Studio(API Level 34)安装完成后，选择新建Empty Activity项目，语言为Kotlin（新版本好像更推荐Kotlin，所以就不支持Java了，但是Kotlin里依然能够使用Java）。
