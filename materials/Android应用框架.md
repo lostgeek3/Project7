@@ -1,10 +1,10 @@
-#Android应用框架
+# Android应用框架
 
 [创建项目](#创建项目)
 
 [项目结构](#项目结构)
 
-###创建项目
+### 创建项目
 
 [Android Developers](#https://developer.android.google.cn/?hl=zh-cn)
 
@@ -14,7 +14,7 @@
 4. 构建完成后打开Device Manager，点击运行模拟器（应该会自带一个），手机模拟器启动后就可以运行项目了。
 5. Android Studio左侧文件目录可以切换查看的文件类型，可以在“项目”里查看全部文件，也可以在“Android”里查看主要文件。也可以只查看源文件/非源文件/测试文件等。
 
-###项目结构
+### 项目结构
 
 1. 在Empty Activity项目目录中，可以看到以下主要文件。
 
