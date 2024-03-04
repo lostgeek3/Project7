@@ -27,9 +27,11 @@
 |app/src/main/res/|包含了所有的资源文件，如布局（layout）、字符串（strings）、图像（drawables）等。drawable：存放应用使用的图片资源。mipmap：存放应用图标的地方，不同的文件夹（如mipmap-hdpi, mipmap-mdpi等）代表不同的分辨率，以适应不同的设备屏幕。values：colors.xml：定义了应用中使用的颜色值。strings.xml：定义了应用中使用的所有字符串资源，便于本地化和修改。styles.xml：定义了应用中使用的样式和主题。|
 |app/src/main/androidTest/|用于存放Instrumented测试代码。Instrumented测试是在真实设备或模拟器上执行的测试，它可以与应用程序的组件（如Activity、Service、Fragment等）进行交互。通常，这些测试用例会访问真实的Android框架和设备功能，以验证应用在实际设备上的行为是否符合预期。|
 |app/src/main/test/|用于存放本地单元测试代码。本地单元测试是在本地JVM上运行的测试，它主要用于验证应用程序中较小的、独立的代码单元（如方法、类）的行为是否符合预期，而不涉及Android框架和设备功能。|
-|app/src/build.gradle.kts|模块级别的Gradle构建文件，用于配置应用模块的构建参数，如应用的最小支持Android版本、依赖库等|
+|app/proguard-rules.pro|用于配置 ProGuard 工具在 Android 应用程序中的代码混淆（obfuscation）、优化（optimization）和压缩（minification）规则。ProGuard 是一个由官方提供的 Java 字节码优化器和混淆工具，用于减小应用程序的体积、提高安全性，并且可以提升应用程序的运行速度。|
+|app/build.gradle.kts|模块级别的Gradle构建文件，用于配置应用模块的构建参数，如应用的最小支持Android版本、依赖库等|
 |build.gradle.kts|项目级别的Gradle构建文件，用于配置整个项目的构建参数，比如包含的模块、Gradle插件版本等|
 |settings.gradle.kts|项目设置文件，包含项目名称等|
+|local.properties|存放sdk路径|
 |.gradle/|缓存、进程信息、输出日志等|
 |gradle/|构建、编译和打包工具|
 |.gitignore|用于指定在版本控制系统（如Git）中哪些文件或目录应该被忽略、不加入到版本库中的文本文件|
