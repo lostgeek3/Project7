@@ -13,7 +13,7 @@ const String logTag = '[class]TimeInfo: ';
 /// 用法：包含一个周期性事件的时间信息
 class TimeInfo {
   // 开始时间
-  DateTime _startTime;
+  DateTime _beginTime;
   // 结束时间
   DateTime _endTime;
   // 周期数
@@ -23,7 +23,7 @@ class TimeInfo {
   // 周期
   CyclePeriod _cyclePeriod = CyclePeriod.daily;
 
-  TimeInfo(this._startTime, this._endTime, {int cycle = 1, int currentCycle = 1, CyclePeriod cyclePeriod = CyclePeriod.daily}) {
+  TimeInfo(this._beginTime, this._endTime, {int cycle = 1, int currentCycle = 1, CyclePeriod cyclePeriod = CyclePeriod.daily}) {
     if (cycle <= 0) {
       logger.e('$logTag周期数必须为正数');
       _cycle = 1;
@@ -33,7 +33,7 @@ class TimeInfo {
       _currentCycle = 1;
     }
     _currentCycle = currentCycle;
-    cyclePeriod = cyclePeriod;
+    _cyclePeriod = cyclePeriod;
   }
 
   // 生成下一周期的时间信息
@@ -42,12 +42,12 @@ class TimeInfo {
       logger.w('$logTag当前周期数为最大值，停止生成下一周期');
       return null;
     }
-    return TimeInfo(_startTime, _endTime, cycle: _cycle, currentCycle: _currentCycle + 1, cyclePeriod: _cyclePeriod);
+    return TimeInfo(_beginTime, _endTime, cycle: _cycle, currentCycle: _currentCycle + 1, cyclePeriod: _cyclePeriod);
   }
 
   // set函数
-  set startTime(DateTime time) {
-    _startTime = time;
+  set beginTime(DateTime time) {
+    _beginTime = time;
   }
   set endTime(DateTime time) {
     _endTime = time;
@@ -71,8 +71,8 @@ class TimeInfo {
   }
 
   // get函数
-  DateTime get getStartTime {
-    return _startTime;
+  DateTime get getBeginTime {
+    return _beginTime;
   }
   DateTime get getEndTime {
     return _endTime;
