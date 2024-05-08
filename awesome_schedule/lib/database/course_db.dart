@@ -112,7 +112,7 @@ class CourseDB {
   }
 
   // 根据id获取一条数据
-  Future<Course?> getTimeInfoByID(int id) async {
+  Future<Course?> getCourseByID(int id) async {
     _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
 
     TimeInfoDB timeInfoDB = TimeInfoDB();

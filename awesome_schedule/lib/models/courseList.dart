@@ -27,6 +27,11 @@ class CourseList {
     _semester = semester;
   }
 
+  // 获取所有课程
+  List<Course> getAllCourse() {
+    return _courseSet;
+  }
+
   // 根据名称获取课程
   Course? getCourseByName(String name) {
     for (var it in _courseSet) {

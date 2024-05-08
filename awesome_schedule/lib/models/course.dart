@@ -30,15 +30,24 @@ class Course implements Event{
   String _teacher = '';
 
   // 课程任务
-  final _tasks = <Task>[];
+  List<Task> tasks = <Task>[];
   // 课程笔记
-  final _note = Note();
+  Note note = Note();
 
   Course(this._name, this._timeInfo, {String courseID = '', String location = '', String teacher = '', String description = ''}) {
     _courseID = courseID;
     _location = location;
     _teacher = teacher;
     _description = description;
+  }
+
+  // 打印信息
+  void printCourse() {
+    logger.i('${logTag}courseID: $_courseID, '
+    'name: $_name, '
+    'location: $_location, '
+    'description: $_description, '
+    'teacher: $_teacher');
   }
 
   // 给出下一周期课程
@@ -49,12 +58,15 @@ class Course implements Event{
       logger.w('$logTag当前周期数为最大值，停止生成下一周期');
       return null;
     }
-    return Course(_name, nextTimeInfo, courseID: _courseID, location: _location, description: _description);
+    Course course = Course(_name, nextTimeInfo, courseID: _courseID, location: _location, description: _description);
+    course.tasks = tasks;
+    course.note = note;
+    return course;
   }
 
   // 根据名称获取任务
   Task? getTaskByName(String name) {
-    for (var it in _tasks) {
+    for (var it in tasks) {
       if (it.getName == name) {
         return it;
       }
@@ -66,19 +78,19 @@ class Course implements Event{
   // 添加任务
   void addTask(Task task) {
     String name = task.getName;
-    for (var it in _tasks) {
+    for (var it in tasks) {
       if (it.getName == name) {
         logger.w('$logTag任务 $name 已存在，请选择覆盖');
         return;
       }
     }
-    _tasks.add(task);
+    tasks.add(task);
   }
 
   // 覆盖任务
   void updateTask(Task task) {
     String name = task.getName;
-    for (var it in _tasks) {
+    for (var it in tasks) {
       if (it.getName == name) {
         it = task;
         return;
@@ -89,9 +101,9 @@ class Course implements Event{
 
   // 根据名称删除任务
   void removeTaskByName(String name) {
-    for (var it in _tasks) {
+    for (var it in tasks) {
       if (it.getName == name) {
-        _tasks.remove(it);
+        tasks.remove(it);
       }
     }
     logger.w('$logTag任务 $name 不存在，无法删除');
@@ -135,8 +147,5 @@ class Course implements Event{
   }
   String get getDescription {
     return _description;
-  }
-  Note get getNote {
-    return _note;
   }
 }

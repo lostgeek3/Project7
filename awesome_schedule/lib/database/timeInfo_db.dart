@@ -69,7 +69,7 @@ class TimeInfoDB {
       _columuName[5]: timeInfo.getCyclePeriod.index
     };
     int index = await _database.insert(_tableName, timeInfoMap);
-    logger.i('$logTag添加TimeInfo: id = $index');
+    //logger.i('$logTag添加TimeInfo: id = $index');
 
     await _database.close();
     return index;
@@ -92,7 +92,7 @@ class TimeInfoDB {
         cyclePeriod: CyclePeriod.values[item[_columuName[5]]]
         ));
     }
-    logger.i('$logTag获取全部TimeInfo共${result.length}条');
+    //logger.i('$logTag获取全部TimeInfo共${result.length}条');
 
     await _database.close();
     return result;
@@ -118,11 +118,11 @@ class TimeInfoDB {
     }
     await _database.close();
     if (result.isEmpty) {
-      logger.w('${logTag}TimeInfo: id = $id不存在，无法获取');
+      //logger.w('${logTag}TimeInfo: id = $id不存在，无法获取');
       return null;
     }
     else {
-      logger.i('$logTag获取TimeInfo: id = $id');
+      //logger.i('$logTag获取TimeInfo: id = $id');
       return result[0];
     }
   }
@@ -139,10 +139,10 @@ class TimeInfoDB {
     await _database.close();
 
     if (index == 0) {
-      logger.w('${logTag}TimeInfo: id = $id不存在，无法删除');
+      //logger.w('${logTag}TimeInfo: id = $id不存在，无法删除');
     }
     else {
-      logger.i('$logTag删除TimeInfo: id = $id');
+      //logger.i('$logTag删除TimeInfo: id = $id');
     }
     return index;
   }
