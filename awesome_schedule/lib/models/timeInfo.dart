@@ -45,6 +45,15 @@ class TimeInfo {
     return TimeInfo(_beginTime, _endTime, cycle: _cycle, currentCycle: _currentCycle + 1, cyclePeriod: _cyclePeriod);
   }
 
+  // 打印信息
+  void printTimeInfo() {
+    logger.i('${logTag}beginTime: ${_beginTime.toString()}, '
+    'endTime: ${_endTime.toString()}, '
+    'cycle: $_cycle, '
+    'currentCycle: $_currentCycle, '
+    'cyclePeriod: ${_cyclePeriod.index}');
+  }
+
   // set函数
   set beginTime(DateTime time) {
     _beginTime = time;
