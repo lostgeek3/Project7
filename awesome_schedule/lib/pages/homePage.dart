@@ -2,6 +2,7 @@ export './homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled3/widgets/schedule.dart';
 import 'package:untitled3/widgets/scheduleColumnHeader.dart';
+import 'package:untitled3/widgets/userWidget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,7 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // 导航栏状态
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
 
   static const List<Widget> _widgetOptions = <Widget>[
     Text(
@@ -28,10 +29,7 @@ class _HomePageState extends State<HomePage> {
             child: Schedule(),
           ),
         ]),
-    Text(
-      '用户',
-      style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
-    ),
+    UserWidget()
   ];
 
   void _onItemTapped(int index) {

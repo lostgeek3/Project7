@@ -16,10 +16,16 @@ class Student {
   String _name = '';
   // 学生ID
   String _studentID = '';
+  // 邮箱
+  String _mail = '';
+  // 头像
+  String _avatar = '';
 
-  Student({String name = '', String studentID = ''}) {
+  Student({String name = '', String studentID = '', String mail = '', String avatar = ''}) {
     _name = name;
     _studentID = studentID;
+    _mail = mail;
+    _avatar = avatar;
   }
 
   // set函数
@@ -29,11 +35,24 @@ class Student {
   set studentID(String studentID) {
     _studentID = studentID;
   }
+  set mail(String mail) {
+    _mail = mail;
+  }
+  set avatar(String avatar) {
+    _avatar = avatar;
+  }
+
   // get函数
   get getName {
     return _name;
   }
   get getStudentID {
     return _studentID;
+  }
+  get getMail {
+    return _mail;
+  }
+  get getAvatar {
+    return _avatar;
   }
 }

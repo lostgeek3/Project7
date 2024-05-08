@@ -10,6 +10,7 @@ import 'package:untitled3/database/course_db.dart';
 import 'package:untitled3/database/timeInfo_db.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:untitled3/pages/homePage.dart';
+import 'package:untitled3/pages/logInPage.dart';
 
 void main() async {
   // 初始化数据库
@@ -30,9 +31,12 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomePage()
+    return MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomePage(),
+        '/logIn': (context) => const LogInPage()
+      }
     );
   }
 }
-
