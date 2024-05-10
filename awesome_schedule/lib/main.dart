@@ -15,14 +15,14 @@ import 'package:untitled3/pages/logInPage.dart';
 void main() async {
   // 初始化数据库
   WidgetsFlutterBinding.ensureInitialized();
-  TimeInfoDB timeInfoDB = TimeInfoDB();
-  await timeInfoDB.initDatabase();
-  CourseDB courseDB = CourseDB();
-  await courseDB.initDatabase();
-  CourseListRelationDB courseListRelationDB = CourseListRelationDB();
-  await courseListRelationDB.initDatabase();
-  CourseListDB courseListDB = CourseListDB();
-  await courseListDB.initDatabase();
+  // TimeInfoDB timeInfoDB = TimeInfoDB();
+  // await timeInfoDB.initDatabase();
+  // CourseDB courseDB = CourseDB();
+  // await courseDB.initDatabase();
+  // CourseListRelationDB courseListRelationDB = CourseListRelationDB();
+  // await courseListRelationDB.initDatabase();
+  // CourseListDB courseListDB = CourseListDB();
+  // await courseListDB.initDatabase();
   
   runApp(const MyApp());
 }

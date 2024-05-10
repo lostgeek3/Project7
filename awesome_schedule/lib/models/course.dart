@@ -20,8 +20,14 @@ class Course implements Event{
   String _courseID = '';
   // 课程名称
   String _name = '';
-  // 课程时间信息
-  TimeInfo _timeInfo;
+  /// 课程时间信息
+  /// 时间有一个数组表示
+  /// 每个元素表示一周中某天的连续时间
+  /// 假设课程时间为周一第一节课，周二第三节课
+  /// 则数组包含两个元素
+  /// 假设课程时间为周一第一节课，周二第一节课、第五节课
+  /// 则数组包含三个元素
+  List<CourseTimeInfo> _timeInfo;
   // 课程地点
   String _location = '';
   // 课程简介
@@ -51,18 +57,18 @@ class Course implements Event{
   }
 
   // 给出下一周期课程
-  @override
-  Course? getNext() {
-    TimeInfo? nextTimeInfo = _timeInfo.getNext();
-    if (nextTimeInfo == null) {
-      logger.w('$logTag当前周期数为最大值，停止生成下一周期');
-      return null;
-    }
-    Course course = Course(_name, nextTimeInfo, courseID: _courseID, location: _location, description: _description);
-    course.tasks = tasks;
-    course.note = note;
-    return course;
-  }
+  // @override
+  // Course? getNext() {
+  //   TimeInfo? nextTimeInfo = _timeInfo.getNext();
+  //   if (nextTimeInfo == null) {
+  //     logger.w('$logTag当前周期数为最大值，停止生成下一周期');
+  //     return null;
+  //   }
+  //   Course course = Course(_name, nextTimeInfo, courseID: _courseID, location: _location, description: _description);
+  //   course.tasks = tasks;
+  //   course.note = note;
+  //   return course;
+  // }
 
   // 根据名称获取任务
   Task? getTaskByName(String name) {
@@ -116,7 +122,7 @@ class Course implements Event{
   set courseID(String courseID) {
     _courseID = courseID;
   }
-  set timeInfo(TimeInfo timeInfo) {
+  set timeInfo(List<CourseTimeInfo> timeInfo) {
     _timeInfo = timeInfo;
   }
   set location(String location) {
@@ -136,7 +142,7 @@ class Course implements Event{
   String get getCourseID {
     return _courseID;
   }
-  TimeInfo get getTimeInfo {
+  List<CourseTimeInfo> get getTimeInfo {
     return _timeInfo;
   }
   String get getLocation {

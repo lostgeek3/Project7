@@ -34,15 +34,15 @@ class Task implements Event{
   }
 
   // 给出下一周期任务
-  @override
-  Task? getNext() {
-    TimeInfo? nextTimeInfo = _timeInfo.getNext();
-    if (nextTimeInfo == null) {
-      logger.w('$logTag当前周期数为最大值，停止生成下一周期');
-      return null;
-    }
-    return Task(_name, nextTimeInfo, location: _location, description: _description, taskType: _taskType);
-  }
+  // @override
+  // Task? getNext() {
+  //   TimeInfo? nextTimeInfo = _timeInfo.getNext();
+  //   if (nextTimeInfo == null) {
+  //     logger.w('$logTag当前周期数为最大值，停止生成下一周期');
+  //     return null;
+  //   }
+  //   return Task(_name, nextTimeInfo, location: _location, description: _description, taskType: _taskType);
+  // }
 
   // 设置完成
   void setFinished() {
