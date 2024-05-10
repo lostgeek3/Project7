@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:untitled3/models/timeInfo.dart';
+import 'package:awesome_schedule/models/timeInfo.dart';
 
 // 日志信息
 var logger = Logger(

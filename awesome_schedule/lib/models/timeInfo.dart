@@ -10,6 +10,55 @@ var logger = Logger(
 );
 const String logTag = '[class]TimeInfo: ';
 
+class TimeRange {
+  int startHour;
+  int startMinute;
+  int endHour;
+  int endMinute;
+
+  TimeRange(this.startHour, this.startMinute, this.endHour, this.endMinute);
+  set setStartHour(int startHour) {
+    if (startHour < 0 || startHour > 23) {
+      logger.e('$logTag开始小时数不合法');
+      return;
+    }
+    this.startHour = startHour;
+  }
+  set setStartMinute(int startMinute) {
+    if (startMinute < 0 || startMinute > 59) {
+      logger.e('$logTag开始分钟数不合法');
+      return;
+    }
+    this.startMinute = startMinute;
+  }
+  set setEndHour(int endHour) {
+    if (endHour < 0 || endHour > 23) {
+      logger.e('$logTag结束小时数不合法');
+      return;
+    }
+    this.endHour = endHour;
+  }
+  set setEndMinute(int endMinute) {
+    if (endMinute < 0 || endMinute > 59) {
+      logger.e('$logTag结束分钟数不合法');
+      return;
+    }
+    this.endMinute = endMinute;
+  }
+  int get getStartHour {
+    return startHour;
+  }
+  int get getStartMinute {
+    return startMinute;
+  }
+  int get getEndHour {
+    return endHour;
+  }
+  int get getEndMinute {
+    return endMinute;
+  }
+}
+
 /// 类：时间信息
 /// 用法：包含一个周期性事件的时间信息
 class TimeInfo {
@@ -127,6 +176,7 @@ class TimeInfo {
     return _cyclePeriod;
   }
 }
+
 
 /// 类：课程表的时间信息
 /// 用法：包含课程表的时间信息

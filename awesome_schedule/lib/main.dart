@@ -4,13 +4,13 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:math';
-import 'package:untitled3/database/courseListRelation_db.dart';
-import 'package:untitled3/database/courseList_db.dart';
-import 'package:untitled3/database/course_db.dart';
-import 'package:untitled3/database/timeInfo_db.dart';
+import 'package:awesome_schedule/database/courseListRelation_db.dart';
+import 'package:awesome_schedule/database/courseList_db.dart';
+import 'package:awesome_schedule/database/course_db.dart';
+import 'package:awesome_schedule/database/timeInfo_db.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:untitled3/pages/homePage.dart';
-import 'package:untitled3/pages/logInPage.dart';
+import 'package:awesome_schedule/pages/homePage.dart';
+import 'package:awesome_schedule/pages/logInPage.dart';
 
 void main() async {
   // 初始化数据库

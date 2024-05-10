@@ -1,7 +1,7 @@
 export 'course.dart';
 import 'package:logger/logger.dart';
-import 'package:untitled3/models/note.dart';
-import 'package:untitled3/models/task.dart';
+import 'package:awesome_schedule/models/note.dart';
+import 'package:awesome_schedule/models/task.dart';
 import 'timeInfo.dart';
 import 'event.dart';
 
