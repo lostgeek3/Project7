@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:untitled3/database/courseListRelation_db.dart';
-import 'package:untitled3/database/courseList_db.dart';
-import 'package:untitled3/database/course_db.dart';
-import 'package:untitled3/database/timeInfo_db.dart';
+import 'package:awesome_schedule/database/courseListRelation_db.dart';
+import 'package:awesome_schedule/database/courseList_db.dart';
+import 'package:awesome_schedule/database/courseTimeInfoRelation_db.dart';
+import 'package:awesome_schedule/database/course_db.dart';
+import 'package:awesome_schedule/database/database_util.dart';
+import 'package:awesome_schedule/database/timeInfo_db.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:untitled3/models/courseList.dart';
-import 'package:untitled3/models/task.dart';
-import 'package:untitled3/models/timeInfo.dart';
-import 'package:untitled3/models/event.dart';
-import 'package:untitled3/models/course.dart';
+import 'package:awesome_schedule/models/courseList.dart';
+import 'package:awesome_schedule/models/task.dart';
+import 'package:awesome_schedule/models/timeInfo.dart';
+import 'package:awesome_schedule/models/event.dart';
+import 'package:awesome_schedule/models/course.dart';
 
 void main() {
   test('清空数据库', () async {
@@ -17,8 +19,10 @@ void main() {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
 
-    TimeInfoDB timeInfoDB = TimeInfoDB();
-    await timeInfoDB.initDatabase();
+    CourseTimeInfoDB courseTimeInfoDB = CourseTimeInfoDB();
+    await courseTimeInfoDB.initDatabase();
+    CourseTimeInfoRelationDB courseTimeInfoRelationDB = CourseTimeInfoRelationDB();
+    await courseTimeInfoRelationDB.initDatabase();
     CourseDB courseDB = CourseDB();
     await courseDB.initDatabase();
     CourseListRelationDB courseListRelationDB = CourseListRelationDB();
@@ -26,84 +30,62 @@ void main() {
     CourseListDB courseListDB = CourseListDB();
     await courseListDB.initDatabase();
 
-    await timeInfoDB.clear();
+    await courseTimeInfoDB.clear();
+    await courseTimeInfoRelationDB.clear();
     await courseDB.clear();
     await courseListRelationDB.clear();
     await courseListDB.clear();
   });
 
-  test('TimeInfoDB测试', () async {
-    // 初始化数据库工厂
+  test('数据库测试', () async {
     WidgetsFlutterBinding.ensureInitialized();
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
 
-    TimeInfoDB timeInfoDB = TimeInfoDB();
-    await timeInfoDB.initDatabase();
-
-    await timeInfoDB.clear();
-    await timeInfoDB.addTimeInfo(TimeInfo(DateTime.now(), DateTime.now()));
-    await timeInfoDB.getAllTimeInfo();
-    await timeInfoDB.getTimeInfoByID(0);
-    await timeInfoDB.getTimeInfoByID(1);
-
-    await timeInfoDB.deleteTimeInfoByID(0);
-    await timeInfoDB.deleteTimeInfoByID(1);
-
-    await timeInfoDB.getAllTimeInfo();
-  });
-
-  test('CourseDB测试', () async {
-    WidgetsFlutterBinding.ensureInitialized();
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-
+    CourseTimeInfoDB courseTimeInfoDB = CourseTimeInfoDB();
+    await courseTimeInfoDB.initDatabase();
+    CourseTimeInfoRelationDB courseTimeInfoRelationDB = CourseTimeInfoRelationDB();
+    await courseTimeInfoRelationDB.initDatabase();
     CourseDB courseDB = CourseDB();
     await courseDB.initDatabase();
-
-    await courseDB.addCourse(Course('课程', TimeInfo(DateTime.now(), DateTime.now())));
-    await courseDB.getAllCourse();
-    await courseDB.getCourseByID(0);
-    await courseDB.getCourseByID(1);
-  });
-
-  test('CourseListRelationDB测试', () async {
-    WidgetsFlutterBinding.ensureInitialized();
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-
     CourseListRelationDB courseListRelationDB = CourseListRelationDB();
     await courseListRelationDB.initDatabase();
-
-    await courseListRelationDB.addCourseListRelation(CourseListRelation(1, 1));
-    await courseListRelationDB.addCourseListRelation(CourseListRelation(1, 2));
-    await courseListRelationDB.addCourseListRelation(CourseListRelation(2, 3));
-    await courseListRelationDB.addCourseListRelation(CourseListRelation(2, 4));
-    await courseListRelationDB.addCourseListRelation(CourseListRelation(2, 5));
-    await courseListRelationDB.getAllCourseListRelation();
-    await courseListRelationDB.getCourseListRelationByID(0);
-    await courseListRelationDB.getCourseListRelationByID(1);
-    await courseListRelationDB.getCourseListRelationByID(2);
-
-    await courseListRelationDB.deleteTimeInfoByID(2);
-    await courseListRelationDB.getAllCourseListRelation();
-  });
-
-  test('CourseListDB测试', () async {
-    WidgetsFlutterBinding.ensureInitialized();
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-
     CourseListDB courseListDB = CourseListDB();
     await courseListDB.initDatabase();
 
-    int index = await courseListDB.addCourseList(CourseList(semester: '学期'));
-    await courseListDB.addCourseToCourseListByID(index, Course('课程1', TimeInfo(DateTime.now(), DateTime.now())));
-    await courseListDB.addCourseToCourseListByID(index, Course('课程2', TimeInfo(DateTime.now(), DateTime.now())));
+    CourseList courseList = CourseList(semester: '第一学期');
+    courseList.weekNum = 16;
+    courseList.currentWeek = 1;
 
-    CourseList? courseList = await courseListDB.getCourseListByID(index);
-    if (courseList == null) return;
-    courseList.getAllCourse()[0].printCourse();
-    courseList.getAllCourse()[1].printCourse();
+    int index = await courseListDB.addCourseList(courseList);
+
+    var courseSet = [
+      Course('高等数学',
+          [CourseTimeInfo(8, 0, 9, 40,
+              endWeek: 16,
+              weekday: 1,
+              startSection: 1,
+              endSection: 2,
+              weeks: [1, 2, 3, 4])],
+          courseID: 'MATH001',
+          location: '教1-101',
+          teacher: '张三',
+          description: '这是一门数学课'),
+      Course('线性代数',
+          [CourseTimeInfo(14, 0, 15, 40,
+              endWeek: 16,
+              weekday: 3,
+              startSection: 7,
+              endSection: 8,
+              weeks: [1, 2, 3, 4])],
+          location: '教1-102',
+          teacher: '李四',
+          description: '这是一门代数课'),
+    ];
+
+    for (var course in courseSet) {
+      await courseListDB.addCourseToCourseListByID(index, course);
+    }
   });
+  
 }

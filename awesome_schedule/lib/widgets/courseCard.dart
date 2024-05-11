@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:untitled3/models/timeInfo.dart';
+import 'package:awesome_schedule/models/timeInfo.dart';
 import '../models/course.dart';
 
 export './CourseCard.dart';

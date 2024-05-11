@@ -79,6 +79,10 @@ class CourseList {
 
   // set函数
   set currentWeek(int currentWeek) {
+    if (currentWeek > _weekNum) {
+      logger.w('$logTag当前周数超过最大周数，无法增加');
+      return;
+    }
     _currentWeek = currentWeek;
   }
   set weekNum(int weekNum) {

@@ -10,6 +10,55 @@ var logger = Logger(
 );
 const String logTag = '[class]TimeInfo: ';
 
+class TimeRange {
+  int startHour;
+  int startMinute;
+  int endHour;
+  int endMinute;
+
+  TimeRange(this.startHour, this.startMinute, this.endHour, this.endMinute);
+  set setStartHour(int startHour) {
+    if (startHour < 0 || startHour > 23) {
+      logger.e('$logTag开始小时数不合法');
+      return;
+    }
+    this.startHour = startHour;
+  }
+  set setStartMinute(int startMinute) {
+    if (startMinute < 0 || startMinute > 59) {
+      logger.e('$logTag开始分钟数不合法');
+      return;
+    }
+    this.startMinute = startMinute;
+  }
+  set setEndHour(int endHour) {
+    if (endHour < 0 || endHour > 23) {
+      logger.e('$logTag结束小时数不合法');
+      return;
+    }
+    this.endHour = endHour;
+  }
+  set setEndMinute(int endMinute) {
+    if (endMinute < 0 || endMinute > 59) {
+      logger.e('$logTag结束分钟数不合法');
+      return;
+    }
+    this.endMinute = endMinute;
+  }
+  int get getStartHour {
+    return startHour;
+  }
+  int get getStartMinute {
+    return startMinute;
+  }
+  int get getEndHour {
+    return endHour;
+  }
+  int get getEndMinute {
+    return endMinute;
+  }
+}
+
 /// 类：时间信息
 /// 用法：包含一个周期性事件的时间信息
 class TimeInfo {
@@ -19,42 +68,15 @@ class TimeInfo {
   // 结束时间
   int _endHour = 0;
   int _endMinute = 0;
-  // 周期数
-  int _cycle = 1;
-  // 当前周期
-  int _currentCycle = 1;
-  // 周期
-  CyclePeriod _cyclePeriod = CyclePeriod.daily;
 
-  TimeInfo(this._startHour, this._startMinute, this._endHour, this._endMinute, {int cycle = 1, int currentCycle = 1, CyclePeriod cyclePeriod = CyclePeriod.daily}) {
-    if (cycle <= 0) {
-      logger.e('$logTag周期数必须为正数');
-      _cycle = 1;
-    }
-    _cycle = cycle;
-    if (currentCycle <= 0 || currentCycle > _cycle) {
-      _currentCycle = 1;
-    }
-    _currentCycle = currentCycle;
-    _cyclePeriod = cyclePeriod;
+  TimeInfo(this._startHour, this._startMinute, this._endHour, this._endMinute) {
+
   }
-
-  // 生成下一周期的时间信息
-  // TimeInfo? getNext() {
-  //   if (_currentCycle == _cycle) {
-  //     logger.w('$logTag当前周期数为最大值，停止生成下一周期');
-  //     return null;
-  //   }
-  //   return TimeInfo(_startHour, _startMinute, _endHour, _endMinute, cycle: _cycle, currentCycle: _currentCycle + 1, cyclePeriod: _cyclePeriod);
-  // }
 
   // 打印信息
   void printTimeInfo() {
     logger.i('${logTag}beginTime: $_startHour : $_startMinute, '
-    'endTime: $_endHour : $_endMinute, '
-    'cycle: $_cycle, '
-    'currentCycle: $_currentCycle, '
-    'cyclePeriod: ${_cyclePeriod.index}');
+    'endTime: $_endHour : $_endMinute');
   }
 
   // set函数
@@ -86,23 +108,6 @@ class TimeInfo {
     }
     _endMinute = endMinute;
   }
-  set cycle(int cycle) {
-    if (cycle <= 0) {
-      logger.e('$logTag周期数不合法');
-      return;
-    }
-    _cycle = cycle;
-  }
-  set currentCycle(int currentCycle) {
-    if (currentCycle <= 0 || currentCycle > _cycle) {
-      logger.e('$logTag当前周期数超出范围');
-      return;
-    }
-    _currentCycle = currentCycle;
-  }
-  set cyclePeriod(CyclePeriod cyclePeriod) {
-    _cyclePeriod = cyclePeriod;
-  }
 
   // get函数
   int get getStartHour {
@@ -117,16 +122,8 @@ class TimeInfo {
   int get getEndMinute {
     return _endMinute;
   }
-  int get getCycle {
-    return _cycle;
-  }
-  int get getCurrentCycle {
-    return _currentCycle;
-  }
-  CyclePeriod get getCyclePeriod {
-    return _cyclePeriod;
-  }
 }
+
 
 /// 类：课程表的时间信息
 /// 用法：包含课程表的时间信息
@@ -165,6 +162,15 @@ class CourseTimeInfo extends TimeInfo {
         weekList[week] = true;
       }
     }
+  }
+
+  // 获取weekList字符串
+  String getWeekListStr() {
+    String result = '';
+    for (int i = 0; i < weekday; i++) {
+      result += weekList[i] ? '1' : '0';
+    }
+    return result;
   }
 
   set setWeekday(int weekday) {
@@ -209,11 +215,26 @@ class CourseTimeInfo extends TimeInfo {
     return weekList;
   }
 
-
+  int get getEndWeek {
+    return endWeek;
+  }
 }
 
-
-
+// 解析weekList字符串
+List<int> readWeekListStr(String str) {
+  int length = str.length;
+  if (length == 0) {
+    logger.w('$logTag字符串不能为空');
+    return [];
+  }
+  List<int> weeks = [];
+  for (int i = 0; i < length; i++) {
+    if (str[i] == '1') {
+      weeks.add(1 + 1);
+    }
+  }
+  return weeks;
+}  
 
 /// 枚举：时间周期
 /// 用法：表示事件（课程、任务等）的周期类型

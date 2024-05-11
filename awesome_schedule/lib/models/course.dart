@@ -1,7 +1,7 @@
 export 'course.dart';
 import 'package:logger/logger.dart';
-import 'package:untitled3/models/note.dart';
-import 'package:untitled3/models/task.dart';
+import 'package:awesome_schedule/models/note.dart';
+import 'package:awesome_schedule/models/task.dart';
 import 'timeInfo.dart';
 import 'event.dart';
 
@@ -55,20 +55,6 @@ class Course implements Event{
     'description: $_description, '
     'teacher: $_teacher');
   }
-
-  // 给出下一周期课程
-  // @override
-  // Course? getNext() {
-  //   TimeInfo? nextTimeInfo = _timeInfo.getNext();
-  //   if (nextTimeInfo == null) {
-  //     logger.w('$logTag当前周期数为最大值，停止生成下一周期');
-  //     return null;
-  //   }
-  //   Course course = Course(_name, nextTimeInfo, courseID: _courseID, location: _location, description: _description);
-  //   course.tasks = tasks;
-  //   course.note = note;
-  //   return course;
-  // }
 
   // 根据名称获取任务
   Task? getTaskByName(String name) {
@@ -142,7 +128,7 @@ class Course implements Event{
   String get getCourseID {
     return _courseID;
   }
-  List<CourseTimeInfo> get getTimeInfo {
+  List<CourseTimeInfo> get getCourseTimeInfo {
     return _timeInfo;
   }
   String get getLocation {

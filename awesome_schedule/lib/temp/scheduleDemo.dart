@@ -1,6 +1,6 @@
-import 'package:untitled3/models/course.dart';
-import 'package:untitled3/models/courseList.dart';
-import 'package:untitled3/models/timeInfo.dart';
+import 'package:awesome_schedule/models/course.dart';
+import 'package:awesome_schedule/models/courseList.dart';
+import 'package:awesome_schedule/models/timeInfo.dart';
 
 
 var courseSet = [
