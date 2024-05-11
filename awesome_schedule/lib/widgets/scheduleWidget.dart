@@ -1,8 +1,5 @@
 import 'dart:math';
 
-import 'package:awesome_schedule/database/courseList_db.dart';
-import 'package:awesome_schedule/models/course.dart';
-import 'package:awesome_schedule/models/courseList.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
