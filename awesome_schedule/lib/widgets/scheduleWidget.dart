@@ -252,8 +252,20 @@ class ScheduleState extends State<Schedule> {
         );
       }
     }
+
+    // // 从数据库中获取
+    // CourseListDB courseListDB = CourseListDB();
+    // CourseList? courseList = await courseListDB.getCourseListByID(1);
+    // List<Course> courses = [];
+    // if (courseList == null) {
+    //   courses = courseSet;
+    // }
+    // else {
+    //   courses = courseList.getAllCourse();
+    // }
+
     for (var course in courseSet) {
-      for (var timeInfo in course.getTimeInfo) {
+      for (var timeInfo in course.getCourseTimeInfo) {
         if (timeInfo.getWeekList[currentWeek] == false) {
           continue;
         }

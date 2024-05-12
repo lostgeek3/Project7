@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../lib/models/timeInfo.dart';
 import '../lib/models/event.dart';
 import '../lib/models/course.dart';
-import 'package:untitled3/main.dart';
+import 'package:awesome_schedule/main.dart';
 
 void main() {
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
