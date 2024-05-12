@@ -1,11 +1,13 @@
 import 'dart:math';
 
 import 'package:awesome_schedule/models/timeInfo.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 
 import 'package:awesome_schedule/temp/scheduleDemo.dart';
-import 'package:awesome_schedule/pages/SettingPage.dart';
+import 'package:awesome_schedule/widgets/addCourseForm.dart';
 
 var logger = Logger(
   printer: PrettyPrinter(
@@ -63,9 +65,6 @@ class Schedule extends StatefulWidget {
     return ScheduleState();
   }
 }
-
-
-
 
 class ScheduleState extends State<Schedule> {
   // 一天的课程节数
@@ -308,83 +307,121 @@ class ScheduleState extends State<Schedule> {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-        aspectRatio: 1,
-      child: Stack(
+    return Stack(
         children: [
           Column(
             children: [
               Expanded(
                 flex: 2,
-                child: Container(),
+                child: Stack(
+                    children: [
+                      // 右上角一排按钮
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: Row(
+                          children: [
+                            /// 添加课程
+                            IconButton(
+                              icon: const Icon(Icons.add),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AddCourseDialog();
+                                  },
+                                );
+                              },
+                            ),
+                            /// 更多
+                            PopupMenuButton<int>(
+                              itemBuilder: (context) => [
+                                const PopupMenuItem(
+                                  value: 1,
+                                  child: Text("设置"),
+                                ),
+                              ],
+                              icon: const Icon(Icons.more_vert),
+                              onSelected: (value) {
+                                if (value == 1) {
+                                  /// 设置
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) {
+                                      bool localShowWeekend = showWeekend;
+                                      int localCurrentWeek = currentWeek;
+                                      return StatefulBuilder(
+                                        builder: (BuildContext context, StateSetter setState) {
+                                          return ListView(
+                                            children: [
+                                              /// 切换周数
+                                              ListTile(
+                                                title: const Text('周数'),
+                                                subtitle: Slider(
+                                                  value: localCurrentWeek.toDouble(),
+                                                  min: 1.0,
+                                                  max: weekNum.toDouble(),
+                                                  divisions: weekNum - 1,
+                                                  label: '第$localCurrentWeek周',
+                                                  onChanged: (double value) {
+                                                    setState(() {
+                                                      localCurrentWeek = value.round();
+                                                    });
+                                                    this.setState(() {
+                                                      currentWeek = value.round();
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                              /// 是否显示周末
+                                              SwitchListTile(
+                                                title: const Text('是否显示周六、周日'),
+                                                value: localShowWeekend,
+                                                onChanged: (bool value) {
+                                                  setState(() {
+                                                    localShowWeekend = value;
+                                                  });
+                                                  this.setState(() {
+                                                    showWeekend = value;
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),                      Positioned(
+                        top: 0,
+                        left: 18,
+                        child: Text(
+                          '${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}\n'
+                              '第$currentWeek周',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )])
               ),
+
               Expanded(
                 child: _initScheduleHeader(),
               ),
               Expanded(
-                flex: courseNum * 2,
+                flex: 24,
                 child: _initScheduleContent(),
               ),
             ],
           ),
-          Positioned(
-            top: 0,
-            right: 0,
-            child: PopupMenuButton<int>(
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 1,
-                  child: Text("设置"),
-                ),
-              ],
-              icon: const Icon(Icons.more_vert),
-              onSelected: (value) {
-                if (value == 1) {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      bool localShowWeekend = showWeekend;
-                      return StatefulBuilder(
-                        builder: (BuildContext context, StateSetter setState) {
-                          return ListView(
-                            children: [
-                              SwitchListTile(
-                                title: const Text('是否显示周六、周日'),
-                                value: localShowWeekend,
-                                onChanged: (bool value) {
-                                  setState(() {
-                                    localShowWeekend = value;
-                                  });
-                                  this.setState(() {
-                                    showWeekend = value;
-                                  });
-                                },
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  );
-                }
-              },
-            ),
-          ),
-          Positioned(
-            top: 0,
-            left: 18,
-            child: Text(
-              '${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}\n'
-                  '第$currentWeek周',
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          )
         ],
-      )
-    );
+      );
   }
 }
