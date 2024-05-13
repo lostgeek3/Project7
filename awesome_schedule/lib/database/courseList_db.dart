@@ -19,7 +19,7 @@ var logger = Logger(
 );
 const String logTag = '[Database]CourseListDB: ';
 // 是否显示日志
-bool showLog = false;
+bool showLog = true;
 
 class CourseListDB {
   // 数据库实例

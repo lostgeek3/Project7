@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:awesome_schedule/database/courseList_db.dart';
+import 'package:awesome_schedule/models/course.dart';
+import 'package:awesome_schedule/models/courseList.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
@@ -12,6 +15,7 @@ var logger = Logger(
     methodCount: 0,
   ),
 );
+const String logTag = '[Widget]ScheduleWidget: ';
 
 class ScheduleColumnHeader extends StatelessWidget {
   const ScheduleColumnHeader({super.key});
@@ -211,7 +215,7 @@ class ScheduleState extends State<Schedule> {
     );
   }
 
-  Widget _initScheduleContent() {
+  Widget _initScheduleContent(List<Course> courses) {
     List<Widget> scheduleContent = [];
 
     int columnNum = showWeekend ? 7 : 5;
@@ -254,18 +258,7 @@ class ScheduleState extends State<Schedule> {
       }
     }
 
-    // // 从数据库中获取
-    // CourseListDB courseListDB = CourseListDB();
-    // CourseList? courseList = await courseListDB.getCourseListByID(1);
-    // List<Course> courses = [];
-    // if (courseList == null) {
-    //   courses = courseSet;
-    // }
-    // else {
-    //   courses = courseList.getAllCourse();
-    // }
-
-    for (var course in courseSet) {
+    for (var course in courses) {
       for (var timeInfo in course.getCourseTimeInfo) {
         if (timeInfo.getWeekList[currentWeek] == false) {
           continue;
@@ -320,6 +313,9 @@ class ScheduleState extends State<Schedule> {
 
   @override
   Widget build(BuildContext context) {
+    // 数据库实例
+    CourseListDB courseListDB = CourseListDB();
+
     return AspectRatio(
         aspectRatio: 1,
       child: Stack(
@@ -335,7 +331,25 @@ class ScheduleState extends State<Schedule> {
               ),
               Expanded(
                 flex: courseNum * 2,
-                child: _initScheduleContent(),
+                child: FutureBuilder(
+                  future: courseListDB.getCourseListByID(1),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _initScheduleContent([]);
+                    } else if (snapshot.hasError) {
+                      logger.e('$logTag获取课程表失败，无法显示');
+                      return _initScheduleContent([]);
+                    } else {
+                      if (snapshot.data == null) {
+                        logger.w('$logTag课程表为空，请新建课程表');
+                        return _initScheduleContent([]);
+                      }
+                      else {
+                        logger.i('$logTag课程表获取成功');
+                        return _initScheduleContent(snapshot.data!.getAllCourse());
+                      }
+                    }
+                  }),
               ),
             ],
           ),
