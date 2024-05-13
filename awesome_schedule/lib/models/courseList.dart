@@ -103,3 +103,6 @@ class CourseList {
     return _semester;
   }
 }
+
+// 当前课程表实例（作缓存用）
+CourseList? currentCourseList = null;

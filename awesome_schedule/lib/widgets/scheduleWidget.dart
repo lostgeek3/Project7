@@ -215,7 +215,9 @@ class ScheduleState extends State<Schedule> {
     );
   }
 
-  Widget _initScheduleContent(List<Course> courses) {
+  List<Course> courses = currentCourseList == null ? courseSet : currentCourseList!.getAllCourse();
+
+  Widget _initScheduleContent() {
     List<Widget> scheduleContent = [];
 
     int columnNum = showWeekend ? 7 : 5;
@@ -309,12 +311,8 @@ class ScheduleState extends State<Schedule> {
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    // 数据库实例
-    CourseListDB courseListDB = CourseListDB();
 
     return AspectRatio(
         aspectRatio: 1,
@@ -331,25 +329,7 @@ class ScheduleState extends State<Schedule> {
               ),
               Expanded(
                 flex: courseNum * 2,
-                child: FutureBuilder(
-                  future: courseListDB.getCourseListByID(1),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return _initScheduleContent([]);
-                    } else if (snapshot.hasError) {
-                      logger.e('$logTag获取课程表失败，无法显示');
-                      return _initScheduleContent([]);
-                    } else {
-                      if (snapshot.data == null) {
-                        logger.w('$logTag课程表为空，请新建课程表');
-                        return _initScheduleContent([]);
-                      }
-                      else {
-                        logger.i('$logTag课程表获取成功');
-                        return _initScheduleContent(snapshot.data!.getAllCourse());
-                      }
-                    }
-                  }),
+                child: _initScheduleContent()
               ),
             ],
           ),
@@ -361,6 +341,10 @@ class ScheduleState extends State<Schedule> {
                 const PopupMenuItem(
                   value: 1,
                   child: Text("设置"),
+                ),
+                const PopupMenuItem(
+                  value: 2,
+                  child: Text("添加课程（测试用）"),
                 ),
               ],
               icon: const Icon(Icons.more_vert),
@@ -392,6 +376,19 @@ class ScheduleState extends State<Schedule> {
                       );
                     },
                   );
+                }
+                else if (value == 2) {
+                  currentCourseList!.addCourse(Course('高等数',
+                      [CourseTimeInfo(8, 0, 9, 40,
+                          endWeek: 16,
+                          weekday: 2,
+                          startSection: 1,
+                          endSection: 2,
+                          weeks: [1, 2, 3, 4])],
+                      courseID: 'MATH001',
+                      location: '教1-101',
+                      teacher: '张三',
+                      description: '这是一门数学课'));
                 }
               },
             ),

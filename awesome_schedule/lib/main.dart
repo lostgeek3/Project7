@@ -1,3 +1,5 @@
+import 'package:awesome_schedule/database/courseList_db.dart';
+import 'package:awesome_schedule/models/courseList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -14,6 +16,9 @@ void main() async {
   await initDatabase();
   await clearDatabase();
   await setSomeDataToDatabase();
+  // 获取课程表数据
+  CourseListDB courseListDB = CourseListDB();
+  currentCourseList = await courseListDB.getCourseListByID(1);
 
   runApp(const MyApp());
 }
