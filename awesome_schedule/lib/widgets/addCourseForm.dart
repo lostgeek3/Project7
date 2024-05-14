@@ -1,4 +1,8 @@
 import 'package:awesome_schedule/models/timeInfo.dart';
+import 'package:awesome_schedule/database/courseList_db.dart';
+import 'package:awesome_schedule/models/courseList.dart';
+import 'package:awesome_schedule/models/timeInfo.dart';
+import 'package:awesome_schedule/widgets/scheduleWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_schedule/temp/scheduleDemo.dart';

@@ -28,8 +28,7 @@ class _UserWidgetState extends State<UserWidget> {
         child: Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.0),
-            color: Colors.grey[200], // 背景色
+            borderRadius: BorderRadius.circular(10.0)
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min, // 主轴尺寸最小化，即垂直方向上尽可能小
@@ -55,18 +54,20 @@ class _UserWidgetState extends State<UserWidget> {
                     )
                   : const Icon(Icons.account_circle, size: 100), // 如果头像为空，则显示默认图标
               const SizedBox(height: 16.0), // 添加一些垂直间距
+
               Text(
                 username,
                 style: const TextStyle(
-                  fontSize: 18.0,
+                  fontSize: 36.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8.0), // 添加一些垂直间距
+
               Text(
                 mail,
                 style: TextStyle(
-                  fontSize: 16.0,
+                  fontSize: 24.0,
                   color: Colors.grey[600],
                 ),
               ),

@@ -218,7 +218,15 @@ class ScheduleState extends State<Schedule> {
     );
   }
 
-  List<Course> courses = currentCourseList == null ? courseSet : currentCourseList!.getAllCourse();
+  // List<Course> courses = currentCourseList == null ? courseSet : currentCourseList!.getAllCourse();
+
+  // // 添加课程到视图，并让组件主动重绘
+  // void addCourseToScheduleWidget(Course course) {
+  //   currentCourseList!.addCourse(course);
+  //   setState(() {
+  //     courses.add(course);
+  //   });
+  // }
 
   Widget _initScheduleContent() {
     List<Widget> scheduleContent = [];
