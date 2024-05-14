@@ -1,5 +1,8 @@
 import 'dart:math';
 
+import 'package:awesome_schedule/database/courseList_db.dart';
+import 'package:awesome_schedule/models/course.dart';
+import 'package:awesome_schedule/models/courseList.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +21,7 @@ var logger = Logger(
     methodCount: 0,
   ),
 );
+const String logTag = '[Widget]ScheduleWidget: ';
 
 class ScheduleColumnHeader extends StatelessWidget {
   const ScheduleColumnHeader({super.key});
@@ -214,6 +218,8 @@ class ScheduleState extends State<Schedule> {
     );
   }
 
+  late CourseNotifier courseNotifier;
+
   Widget _initScheduleContent() {
     List<Widget> scheduleContent = [];
 
@@ -257,9 +263,18 @@ class ScheduleState extends State<Schedule> {
       }
     }
 
-    var courseNotifier = Provider.of<CourseNotifier>(context);
-    var courseSet = courseNotifier.courses;
-    for (var course in courseSet) {
+    List<Course> courses = [];
+
+    if (courseNotifier.courses.isEmpty) {
+      if (currentCourseList != null) {
+        courses = currentCourseList!.getAllCourse();
+      }
+    }
+    else {
+      courses = courseNotifier.courses;
+    }
+
+    for (var course in courses) {
       for (var timeInfo in course.getCourseTimeInfo) {
         if (timeInfo.getWeekList[currentWeek] == false) {
           continue;
@@ -335,6 +350,8 @@ class ScheduleState extends State<Schedule> {
                                   ),
                                   onPressed: () {
                                     courseNotifier.removeCourse(course);
+                                    CourseListDB courseListDB = CourseListDB();
+                                    courseListDB.deleteCourseByCourseListID(currentCourseListID, course);
                                     Navigator.of(context).pop(); // 关闭确认删除对话框
                                     Navigator.of(context).pop(); // 关闭课程信息对话框
                                   },
@@ -406,10 +423,18 @@ class ScheduleState extends State<Schedule> {
     );
   }
 
-
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      courseNotifier.initFromCurrentCourseList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    courseNotifier = Provider.of<CourseNotifier>(context);
+
     return Stack(
         children: [
           Column(

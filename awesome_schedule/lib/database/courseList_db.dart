@@ -19,7 +19,7 @@ var logger = Logger(
 );
 const String logTag = '[Database]CourseListDB: ';
 // 是否显示日志
-bool showLog = false;
+bool showLog = true;
 
 class CourseListDB {
   // 数据库实例
@@ -77,6 +77,31 @@ class CourseListDB {
 
     await _database.close();
     return index;
+  }
+
+  // 获取一个课程表的id
+  Future<int> getCourseListID(CourseList courseList) async {
+    _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
+
+    List<Map<String, dynamic>> resultMap = await _database.query(
+      _tableName,
+      columns: [_columuName[1]],
+      where: '${_columuName[1]} = ?',
+      whereArgs: [courseList.getSemester],
+      limit: 1);
+    List<CourseList> result = [];
+
+    await _database.close();
+
+    if (result.isEmpty) {
+      if (showLog) logger.w('${logTag}CourseList: semester = ${courseList.getSemester()}不存在，无法获取');
+      return 0;
+    }
+    else {
+      int id = resultMap[0][_columuName[1]];
+      if (showLog) logger.i('$logTag获取CourseList: id = $id');
+      return id;
+    }
   }
 
   // 给一个课程表添加课程
@@ -204,6 +229,34 @@ class CourseListDB {
       if (showLog) logger.i('$logTag删除CourseList: id = $id');
     }
     return index;
+  }
+
+  // 根据id删除一个课程
+  Future<void> deleteCourseByCourseListID(int id, Course course) async {
+    CourseList? courseList = await getCourseListByID(id);
+
+    if (courseList == null) {
+      if (showLog) logger.w('${logTag}CourseList: id = $id不存在，无法继续删除课程');
+      return;
+    }
+
+    CourseListRelationDB courseListRelationDB = CourseListRelationDB();
+
+    CourseDB courseDB = CourseDB();
+
+    int index = await courseDB.deleteCourseByName(course.getName);
+    if (index == 0) {
+      if (showLog) logger.w('${logTag}CourseList: course_id = $id不存在，无法删除');
+      return;
+    }
+    int rindex = await courseListRelationDB.deleteCourseListRelationByRelation(CourseListRelation(id, index));
+
+    if (rindex == 0) {
+      if (showLog) logger.e('${logTag}CourseList: course_id = $index删除错误');
+    }
+    else {
+      if (showLog) logger.i('$logTag删除CourseList: course_id = $index删除成功');
+    }
   }
 
   // 清空数据库

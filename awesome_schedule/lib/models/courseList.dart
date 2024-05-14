@@ -103,3 +103,7 @@ class CourseList {
     return _semester;
   }
 }
+
+// 当前的课程表
+CourseList? currentCourseList = null;
+int currentCourseListID = 0;

@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'package:awesome_schedule/database/courseList_db.dart';
+import 'package:awesome_schedule/models/courseList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:awesome_schedule/database/database_util.dart';
 import 'dart:math';
 import 'package:awesome_schedule/pages/homePage.dart';
@@ -13,10 +13,13 @@ import 'package:provider/provider.dart';
 
 void main() async {
   // 初始化数据库
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await initDatabase();
-  // await clearDatabase();
-  // await setSomeDataToDatabase();
+  WidgetsFlutterBinding.ensureInitialized();
+  await initDatabase();
+  await clearDatabase();
+  await setSomeDataToDatabase();
+  CourseListDB courseListDB = CourseListDB();
+  currentCourseList = await courseListDB.getCourseListByID(1);
+  currentCourseListID = 1;
 
   runApp(
     MultiProvider(

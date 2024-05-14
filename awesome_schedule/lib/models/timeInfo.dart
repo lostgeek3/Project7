@@ -168,7 +168,7 @@ class CourseTimeInfo extends TimeInfo {
   // 获取weekList字符串
   String getWeekListStr() {
     String result = '';
-    for (int i = 0; i < weekday; i++) {
+    for (int i = 0; i <= endWeek; i++) {
       result += weekList[i] ? '1' : '0';
     }
     return result;
@@ -302,7 +302,7 @@ List<int> readWeekListStr(String str) {
   List<int> weeks = [];
   for (int i = 0; i < length; i++) {
     if (str[i] == '1') {
-      weeks.add(1 + 1);
+      weeks.add(i);
     }
   }
   return weeks;

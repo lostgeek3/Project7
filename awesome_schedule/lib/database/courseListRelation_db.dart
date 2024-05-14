@@ -120,7 +120,7 @@ class CourseListRelationDB {
   }
 
   // 根据课程表id删除一个课程表的所有数据
-  Future<int> deleteTimeInfoByID(int courseListID) async {
+  Future<int> deleteCourseListRelationByID(int courseListID) async {
     _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
 
     int index = await _database.delete(
@@ -135,6 +135,26 @@ class CourseListRelationDB {
     }
     else {
       if (showLog) logger.i('$logTag删除CourseListRelation: courseList_id = $courseListID');
+    }
+    return index;
+  }
+
+  // 根据课程表关联信息删除一条数据
+  Future<int> deleteCourseListRelationByRelation(CourseListRelation courseListRelation) async {
+    _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
+
+    int index = await _database.delete(
+      _tableName,
+      where: '${_columuName[1]} = ? AND ${_columuName[2]} = ?',
+      whereArgs: [courseListRelation.courseListID, courseListRelation.courseID]);
+    
+    await _database.close();
+
+    if (index == 0) {
+      if (showLog) logger.w('${logTag}CourseListRelation: courseList_id = ${courseListRelation.courseListID}, course_id = ${courseListRelation.courseID}不存在，无法删除');
+    }
+    else {
+      if (showLog) logger.i('$logTag删除CourseListRelation: courseList_id = ${courseListRelation.courseListID}, course_id = ${courseListRelation.courseID}');
     }
     return index;
   }
