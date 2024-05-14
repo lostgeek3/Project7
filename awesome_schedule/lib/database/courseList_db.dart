@@ -231,6 +231,34 @@ class CourseListDB {
     return index;
   }
 
+  // 根据id删除一个课程
+  Future<void> deleteCourseByCourseListID(int id, Course course) async {
+    CourseList? courseList = await getCourseListByID(id);
+
+    if (courseList == null) {
+      if (showLog) logger.w('${logTag}CourseList: id = $id不存在，无法继续删除课程');
+      return;
+    }
+
+    CourseListRelationDB courseListRelationDB = CourseListRelationDB();
+
+    CourseDB courseDB = CourseDB();
+
+    int index = await courseDB.deleteCourseByName(course.getName);
+    if (index == 0) {
+      if (showLog) logger.w('${logTag}CourseList: course_id = $id不存在，无法删除');
+      return;
+    }
+    int rindex = await courseListRelationDB.deleteCourseListRelationByRelation(CourseListRelation(id, index));
+
+    if (rindex == 0) {
+      if (showLog) logger.e('${logTag}CourseList: course_id = $index删除错误');
+    }
+    else {
+      if (showLog) logger.i('$logTag删除CourseList: course_id = $index删除成功');
+    }
+  }
+
   // 清空数据库
   Future<void> clear() async {
     _database = await openDatabase(

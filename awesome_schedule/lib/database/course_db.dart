@@ -206,6 +206,36 @@ class CourseDB {
     return index;
   }
 
+  // 根据课程名删除一条数据
+  Future<int> deleteCourseByName(String name) async {
+    _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
+
+    int index = await _database.delete(
+      _tableName,
+      where: '${_columuName[2]} = ?',
+      whereArgs: [name]);
+
+    await _database.close();
+
+    if (index == 0) {
+      if (showLog) logger.w('${logTag}Course: name = $name不存在，无法删除');
+    }
+    else {
+      if (showLog) logger.i('$logTag删除Course: name = $name');
+    }
+
+    // 删除关联表中对应的数据
+    CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
+
+    CourseTimeInfoRelationDB courseTimeInfoRelationDB = CourseTimeInfoRelationDB();
+
+    List<CourseTimeInfoRelation> relations = await courseTimeInfoRelationDB.getCourseTimeInfoRelationByID(index);
+    for (var relation in relations) {
+      await timeInfoDB.deleteCourseTimeInfoByID(relation.courseTimeInfoID);
+    }
+    return index;
+  }
+
   // 清空数据库
   Future<void> clear() async {
     _database = await openDatabase(

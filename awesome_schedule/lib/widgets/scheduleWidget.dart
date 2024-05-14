@@ -350,6 +350,8 @@ class ScheduleState extends State<Schedule> {
                                   ),
                                   onPressed: () {
                                     courseNotifier.removeCourse(course);
+                                    CourseListDB courseListDB = CourseListDB();
+                                    courseListDB.deleteCourseByCourseListID(currentCourseListID, course);
                                     Navigator.of(context).pop(); // 关闭确认删除对话框
                                     Navigator.of(context).pop(); // 关闭课程信息对话框
                                   },

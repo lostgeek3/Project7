@@ -1,11 +1,8 @@
-import 'package:awesome_schedule/models/timeInfo.dart';
-import 'package:awesome_schedule/database/courseList_db.dart';
 import 'package:awesome_schedule/models/courseList.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
-import 'package:awesome_schedule/widgets/scheduleWidget.dart';
+import 'package:awesome_schedule/database/courseList_db.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:awesome_schedule/temp/scheduleDemo.dart';
 import 'package:awesome_schedule/models/course.dart';
 import 'package:awesome_schedule/providers/CourseNotifier.dart';
 import 'package:provider/provider.dart';
@@ -148,7 +145,8 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
               ),
             ),
           ],
-        ),      ],
+        ),
+      ],
     );
   }
 
@@ -246,6 +244,16 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                 onPressed: () {
                   var courseFormProvider = context.read<CourseFormProvider>();
                   List<int> selectedWeeksIndices = courseFormProvider.selectedWeeks.asMap().entries.where((entry) => entry.value).map((entry) => entry.key + 1).toList();
+                  /// 周数不能为空
+                  if (selectedWeeksIndices.isEmpty) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return createAlertDialog(context, '请选择周数');
+                      },
+                    );
+                    return;
+                  }
                   if (courseFormProvider.selectedStartPeriod > courseFormProvider.selectedEndPeriod) {
                     showDialog(
                       context: context,

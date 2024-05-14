@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:awesome_schedule/database/courseList_db.dart';
 import 'package:awesome_schedule/models/courseList.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
