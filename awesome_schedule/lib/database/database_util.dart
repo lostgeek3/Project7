@@ -40,7 +40,7 @@ Future<void> clearDatabase() async {
 // 若课表数据库为空，则给予一些初始值
 Future<void> setSomeDataToDatabase() async {
   CourseList courseList = CourseList(semester: '第一学期');
-  courseList.weekNum = 16;
+  courseList.weekNum = 20;
   courseList.currentWeek = 1;
 
   CourseListDB courseListDB = CourseListDB();
@@ -49,7 +49,7 @@ Future<void> setSomeDataToDatabase() async {
   var courseSet = [
     Course('高等数学',
         [CourseTimeInfo(8, 0, 9, 40,
-            endWeek: 16,
+            endWeek: 20,
             weekday: 1,
             startSection: 1,
             endSection: 2,
@@ -60,7 +60,7 @@ Future<void> setSomeDataToDatabase() async {
         description: '这是一门数学课'),
     Course('线性代数',
         [CourseTimeInfo(14, 0, 15, 40,
-            endWeek: 16,
+            endWeek: 20,
             weekday: 3,
             startSection: 7,
             endSection: 8,
