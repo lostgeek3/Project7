@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:awesome_schedule/database/courseList_db.dart';
+import 'package:awesome_schedule/models/courseList.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
 import 'package:flutter/foundation.dart';
 import 'package:awesome_schedule/models/course.dart';
@@ -8,17 +10,17 @@ import 'package:awesome_schedule/models/course.dart';
 class CourseNotifier with ChangeNotifier {
   // ignore: prefer_final_fields
   List<Course> _courses = [
-    Course("高等数学",
-        [CourseTimeInfo(8, 0, 9, 40,
-            endWeek: 20,
-            weekday: 1,
-            startSection: 1,
-            endSection: 2,
-            weeks: [1, 3, 5, 7, 9, 11, 13, 15]),],
-        courseID: 'MATH001',
-        location: '教1-101',
-        teacher: '张三',
-        description: '这是一门数学课'),
+    // Course("高等数学",
+    //     [CourseTimeInfo(8, 0, 9, 40,
+    //         endWeek: 20,
+    //         weekday: 1,
+    //         startSection: 1,
+    //         endSection: 2,
+    //         weeks: [1, 3, 5, 7, 9, 11, 13, 15]),],
+    //     courseID: 'MATH001',
+    //     location: '教1-101',
+    //     teacher: '张三',
+    //     description: '这是一门数学课'),
   ];
 
   List<Course> get courses => _courses;
@@ -31,6 +33,13 @@ class CourseNotifier with ChangeNotifier {
   void removeCourse(Course course) {
     _courses.remove(course);
     notifyListeners();
+  }
+
+  void initFromCurrentCourseList() {
+    if (currentCourseList != null) {
+      _courses = currentCourseList!.getAllCourse();
+      notifyListeners();
+    }
   }
 }
 

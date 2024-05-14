@@ -79,6 +79,31 @@ class CourseListDB {
     return index;
   }
 
+  // 获取一个课程表的id
+  Future<int> getCourseListID(CourseList courseList) async {
+    _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
+
+    List<Map<String, dynamic>> resultMap = await _database.query(
+      _tableName,
+      columns: [_columuName[1]],
+      where: '${_columuName[1]} = ?',
+      whereArgs: [courseList.getSemester],
+      limit: 1);
+    List<CourseList> result = [];
+
+    await _database.close();
+
+    if (result.isEmpty) {
+      if (showLog) logger.w('${logTag}CourseList: semester = ${courseList.getSemester()}不存在，无法获取');
+      return 0;
+    }
+    else {
+      int id = resultMap[0][_columuName[1]];
+      if (showLog) logger.i('$logTag获取CourseList: id = $id');
+      return id;
+    }
+  }
+
   // 给一个课程表添加课程
   Future<int> addCourseToCourseListByID(int id, Course course) async {
     _database = await openDatabase(

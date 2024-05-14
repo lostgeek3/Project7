@@ -196,11 +196,14 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
     );
   }
 
+  late CourseNotifier courseNotifier;
+
   @override
   Widget build(BuildContext context) {
     /// 判断添加的课程是否与已有课程时间冲突
-    var courseNotifier = Provider.of<CourseNotifier>(context);
+    courseNotifier = Provider.of<CourseNotifier>(context);
     var courseSet = courseNotifier.courses;
+
     bool isTimeConflict(Course newCourse) {
       for (var course in courseSet) {
         for (var existingTimeInfo in course.getCourseTimeInfo) {
@@ -333,7 +336,9 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                     teacher: _teacherController.text,
                     description: _noteController.text);
                 if (!isTimeConflict(newCourse)) {
-                  Provider.of<CourseNotifier>(context, listen: false).addCourse(newCourse);
+                  courseNotifier.addCourse(newCourse);
+                  CourseListDB courseListDB = CourseListDB();
+                  courseListDB.addCourseToCourseListByID(currentCourseListID, newCourse);
                   Navigator.of(context).pop();
                 }
                 else {

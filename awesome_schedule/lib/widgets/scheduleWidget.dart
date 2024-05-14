@@ -218,15 +218,7 @@ class ScheduleState extends State<Schedule> {
     );
   }
 
-  // List<Course> courses = currentCourseList == null ? courseSet : currentCourseList!.getAllCourse();
-
-  // // 添加课程到视图，并让组件主动重绘
-  // void addCourseToScheduleWidget(Course course) {
-  //   currentCourseList!.addCourse(course);
-  //   setState(() {
-  //     courses.add(course);
-  //   });
-  // }
+  late CourseNotifier courseNotifier;
 
   Widget _initScheduleContent() {
     List<Widget> scheduleContent = [];
@@ -271,9 +263,18 @@ class ScheduleState extends State<Schedule> {
       }
     }
 
-    var courseNotifier = Provider.of<CourseNotifier>(context);
-    var courseSet = courseNotifier.courses;
-    for (var course in courseSet) {
+    List<Course> courses = [];
+
+    if (courseNotifier.courses.isEmpty) {
+      if (currentCourseList != null) {
+        courses = currentCourseList!.getAllCourse();
+      }
+    }
+    else {
+      courses = courseNotifier.courses;
+    }
+
+    for (var course in courses) {
       for (var timeInfo in course.getCourseTimeInfo) {
         if (timeInfo.getWeekList[currentWeek] == false) {
           continue;
@@ -421,7 +422,17 @@ class ScheduleState extends State<Schedule> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      courseNotifier.initFromCurrentCourseList();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    courseNotifier = Provider.of<CourseNotifier>(context);
+
     return Stack(
         children: [
           Column(

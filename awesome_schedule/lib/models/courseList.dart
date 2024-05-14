@@ -104,5 +104,6 @@ class CourseList {
   }
 }
 
-// 当前课程表实例（作缓存用）
+// 当前的课程表
 CourseList? currentCourseList = null;
+int currentCourseListID = 0;
