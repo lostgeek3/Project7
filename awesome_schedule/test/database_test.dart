@@ -1,3 +1,4 @@
+import 'package:awesome_schedule/utils/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:awesome_schedule/database/courseListRelation_db.dart';
@@ -54,7 +55,7 @@ void main() {
     await courseListDB.initDatabase();
 
     CourseList courseList = CourseList(semester: '第一学期');
-    courseList.weekNum = 16;
+    courseList.weekNum = defalutWeekNum;
     courseList.currentWeek = 1;
 
     int index = await courseListDB.addCourseList(courseList);
@@ -62,7 +63,7 @@ void main() {
     var courseSet = [
       Course('高等数学',
           [CourseTimeInfo(8, 0, 9, 40,
-              endWeek: 16,
+              endWeek: defalutWeekNum,
               weekday: 1,
               startSection: 1,
               endSection: 2,
@@ -73,7 +74,7 @@ void main() {
           description: '这是一门数学课'),
       Course('线性代数',
           [CourseTimeInfo(14, 0, 15, 40,
-              endWeek: 16,
+              endWeek: defalutWeekNum,
               weekday: 3,
               startSection: 7,
               endSection: 8,
@@ -86,6 +87,16 @@ void main() {
     for (var course in courseSet) {
       await courseListDB.addCourseToCourseListByID(index, course);
     }
+
+    CourseList? tmp = await courseListDB.getCourseListByID(1);
+    expect(tmp!.getSemester, courseList.getSemester);
+    expect(tmp.getWeekNum, courseList.getWeekNum);
+    expect(tmp.getCurrentWeek, courseList.getCurrentWeek);
+
+    List<Course> tmpSet = tmp.getAllCourse();
+    for (int i = 0; i < courseSet.length; i++) {
+      expect(tmpSet[i].getCourseID, courseSet[i].getCourseID);
+      expect(tmpSet[i].getDescription, courseSet[i].getDescription);
+    }
   });
-  
 }

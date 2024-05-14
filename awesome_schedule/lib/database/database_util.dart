@@ -5,6 +5,7 @@ import 'package:awesome_schedule/database/courseTimeInfoRelation_db.dart';
 import 'package:awesome_schedule/database/timeInfo_db.dart';
 import 'package:awesome_schedule/models/courseList.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
+import 'package:awesome_schedule/utils/common.dart';
 import '../models/course.dart';
 export './database_util.dart';
 
@@ -49,7 +50,7 @@ Future<void> setSomeDataToDatabase() async {
   var courseSet = [
     Course('高等数学',
         [CourseTimeInfo(8, 0, 9, 40,
-            endWeek: 16,
+            endWeek: defalutWeekNum,
             weekday: 1,
             startSection: 1,
             endSection: 2,
@@ -60,7 +61,7 @@ Future<void> setSomeDataToDatabase() async {
         description: '这是一门数学课'),
     Course('线性代数',
         [CourseTimeInfo(14, 0, 15, 40,
-            endWeek: 16,
+            endWeek: defalutWeekNum,
             weekday: 3,
             startSection: 7,
             endSection: 8,
