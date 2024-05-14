@@ -1,12 +1,16 @@
+import 'package:awesome_schedule/models/timeInfo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_schedule/temp/scheduleDemo.dart';
 import 'package:awesome_schedule/models/course.dart';
+import 'package:awesome_schedule/providers/CourseNotifier.dart';
+import 'package:provider/provider.dart';
 
 class AddCourseDialog extends StatefulWidget {
   @override
   _AddCourseDialogState createState() => _AddCourseDialogState();
 }
+
 
 class _AddCourseDialogState extends State<AddCourseDialog> {
   final TextEditingController _courseNameController = TextEditingController();
@@ -15,25 +19,19 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
   final TextEditingController _noteController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  // 课程的周数
-  List<bool> _selectedWeeks = List<bool>.filled(20, false);
-  // 周几
-  int _selectedDay = 1;
-  // 开始节数
-  int _selectedStartPeriod = 1;
-  // 结束节数
-  int _selectedEndPeriod = 1;
+  /// 选择周数
+  /// 5 * 4 的矩阵
   Widget buildWeekSelection() {
+
     return Column(
       children: List.generate(4, (rowIndex) => Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: List.generate(5, (colIndex) {
           int index = rowIndex * 5 + colIndex;
+          var courseFormProvider = context.watch<CourseFormProvider>();
           return GestureDetector(
             onTap: () {
-              setState(() {
-                _selectedWeeks[index] = !_selectedWeeks[index];
-              });
+              courseFormProvider.toggleWeekSelection(index);
             },
             child: Container(
               width: 40, // 设置元素的宽度
@@ -41,20 +39,23 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
               alignment: Alignment.center,
               margin: const EdgeInsets.all(4.0),
               decoration: BoxDecoration(
-                color: _selectedWeeks[index] ? Colors.blue : Colors.transparent,
+                color: courseFormProvider.selectedWeeks[index] ? Colors.blue : Colors.transparent,
                 border: Border.all(
-                  color: _selectedWeeks[index] ? Colors.blue : Colors.transparent,
+                  color: courseFormProvider.selectedWeeks[index] ? Colors.blue : Colors.transparent,
                   width: 2,
                 ),
               ),
-              child: Text('${index + 1}', style: TextStyle(color: _selectedWeeks[index] ? Colors.white : Colors.black)), // 只显示数字
+              child: Text('${index + 1}', style: TextStyle(color: courseFormProvider.selectedWeeks[index] ? Colors.white : Colors.black)), // 只显示数字
             ),
           );
         }),
       )),
     );
   }
+  /// 快捷选择按钮
   Row buildShortcutButtons() {
+    var courseFormProvider = context.read<CourseFormProvider>();
+    List<bool> _selectedWeeks = courseFormProvider.selectedWeeks;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -62,7 +63,9 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
           child: Text('全部'),
           onPressed: () {
             setState(() {
-              _selectedWeeks = List<bool>.filled(20, true);
+              for (int i = 0; i < 20; i++) {
+                _selectedWeeks[i] = true;
+              }
             });
           },
         ),
@@ -90,8 +93,11 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
     );
   }
 
+  /// 选择周几+节数
+  final List<String> weekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
   Widget buildTimeSelection() {
-    List<String> weekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+    var courseFormProvider = context.read<CourseFormProvider>();
+    int _selectedDay = courseFormProvider.selectedDay;
     return Column(
       children: [
         DropdownButton<int>(
@@ -102,7 +108,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
           )),
           onChanged: (int? newValue) {
             setState(() {
-              _selectedDay = newValue!;
+              courseFormProvider.selectedDay = newValue!;
             });
           },
         ),
@@ -116,7 +122,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                   useMagnifier: true,
                   onSelectedItemChanged: (int index) {
                     setState(() {
-                      _selectedStartPeriod = index + 1;
+                      courseFormProvider.selectedStartPeriod = index + 1;
                     });
                   },
                   children: List.generate(12, (index) => Text('第${index + 1}节')),
@@ -130,7 +136,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                   itemExtent: 32.0,
                   onSelectedItemChanged: (int index) {
                     setState(() {
-                      _selectedEndPeriod = index + 1;
+                      courseFormProvider.selectedEndPeriod = index + 1;
                     });
                   },
                   children: List.generate(12, (index) => Text('第${index + 1}节')),
@@ -170,8 +176,43 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
     );
   }
 
+  /// 创建错误弹窗
+  AlertDialog createAlertDialog(BuildContext context, String content) {
+    return AlertDialog(
+      title: const Text('错误'),
+      content: Text(content),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('确定'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    /// 判断添加的课程是否与已有课程时间冲突
+    var courseNotifier = Provider.of<CourseNotifier>(context);
+    var courseSet = courseNotifier.courses;
+    bool isTimeConflict(Course newCourse) {
+      for (var course in courseSet) {
+        for (var existingTimeInfo in course.getCourseTimeInfo) {
+          for (var newTimeInfo in newCourse.getCourseTimeInfo) {
+            if (newTimeInfo.getWeekList.asMap().entries.any((entry) => entry.value && existingTimeInfo.getWeekList[entry.key]) &&
+                newTimeInfo.weekday == existingTimeInfo.weekday &&
+                ((newTimeInfo.startSection >= existingTimeInfo.startSection && newTimeInfo.startSection <= existingTimeInfo.endSection) ||
+                    (newTimeInfo.endSection >= existingTimeInfo.startSection && newTimeInfo.endSection <= existingTimeInfo.endSection))) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
     return AlertDialog(
       title: const Text('添加课程'),
       content: SingleChildScrollView(
@@ -180,12 +221,12 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
           child: ListBody(
             children: [
               const SizedBox(height: 10),
-              const Text('必填'),
+              const Text('必填', style: TextStyle(fontSize: 20)),
               const SizedBox(height: 10),
               buildInputField(title: '课程名称', isRequired: true, controller: _courseNameController),
               const SizedBox(height: 10),
+
               const Text('选择周数'),
-              const SizedBox(height: 10),
               buildWeekSelection(),
               buildShortcutButtons(),
               const SizedBox(height: 10),
@@ -193,7 +234,58 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
               const SizedBox(height: 10),
               buildTimeSelection(),
               const SizedBox(height: 10),
-              const Text('选填'),
+
+              ElevatedButton(
+                onPressed: () {
+                  var courseFormProvider = context.read<CourseFormProvider>();
+                  List<int> selectedWeeksIndices = courseFormProvider.selectedWeeks.asMap().entries.where((entry) => entry.value).map((entry) => entry.key + 1).toList();
+                  if (courseFormProvider.selectedStartPeriod > courseFormProvider.selectedEndPeriod) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return createAlertDialog(context, '开始节数不能大于结束节数');
+                      },
+                    );
+                  }
+                  else {
+                    var newTimeSelection = CourseTimeInfo(
+                      0,
+                      0,
+                      0,
+                      0,
+                      endWeek: 20,
+                      weeks: selectedWeeksIndices,
+                      weekday: courseFormProvider.selectedDay,
+                      startSection: courseFormProvider.selectedStartPeriod,
+                      endSection: courseFormProvider.selectedEndPeriod,
+                    );
+                    courseFormProvider.addTimeSelection(newTimeSelection);
+                  }
+                },
+                child: const Text('添加时间'),
+              ),
+              const SizedBox(height: 10),
+              Column(
+                children: context.watch<CourseFormProvider>().timeSelections.map((timeSelection) {
+                  int index = context.watch<CourseFormProvider>().timeSelections.indexOf(timeSelection);
+                  return ListTile(
+                    title: (timeSelection.startSection == timeSelection.endSection)
+                        ? Text('${weekdays[timeSelection.weekday - 1]}, 第${timeSelection.startSection}节')
+                        : Text('${weekdays[timeSelection.weekday - 1]}, 第${timeSelection.startSection} - ${timeSelection.endSection}节'),
+                    subtitle: Text('${timeSelection.getWeekListStrFormat}'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () {
+                        var courseFormProvider = context.read<CourseFormProvider>();
+                        courseFormProvider.removeTimeSelection(timeSelection);
+                      },
+                    ),
+                  );
+                }).toList(),
+              ),
+
+              const SizedBox(height: 10),
+              const Text('选填', style: TextStyle(fontSize: 20)),
               const SizedBox(height: 10),
               buildInputField(title: '老师', isRequired: false, controller: _teacherController),
               const SizedBox(height: 10),
@@ -214,18 +306,42 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
             _teacherController.clear();
             _locationController.clear();
             _noteController.clear();
+            var courseFormProvider = context.read<CourseFormProvider>();
+            courseFormProvider.clear();
           },
           child: const Text('清空'),
         ),
         TextButton(
           child: const Text('添加'),
           onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              // 在这里添加添加课程的代码
-              var newCourse = Course(_courseNameController.text, [], location: _locationController.text, teacher: _teacherController.text, description: _noteController.text);
-              Navigator.of(context).pop();
+              if (_formKey.currentState!.validate()) {
+              /// 创建新课程
+              var courseFormProvider = context.read<CourseFormProvider>();
+              List<bool> _selectedWeeks = courseFormProvider.selectedWeeks;
+              int _selectedDay = courseFormProvider.selectedDay;
+              int _selectedStartPeriod = courseFormProvider.selectedStartPeriod;
+              int _selectedEndPeriod = courseFormProvider.selectedEndPeriod;
+                print(courseFormProvider.timeSelections[0].getWeekListStrFormat);
+                var newCourse = Course(
+                    _courseNameController.text,
+                    courseFormProvider.timeSelections,
+                    location: _locationController.text,
+                    teacher: _teacherController.text,
+                    description: _noteController.text);
+                if (!isTimeConflict(newCourse)) {
+                  Provider.of<CourseNotifier>(context, listen: false).addCourse(newCourse);
+                  Navigator.of(context).pop();
+                }
+                else {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return createAlertDialog(context, "课程时间冲突");
+                    },
+                  );
+                }
+              }
             }
-          },
         ),
       ],
     );

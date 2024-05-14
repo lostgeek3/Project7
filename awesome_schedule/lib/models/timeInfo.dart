@@ -1,4 +1,5 @@
 export 'timeInfo.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:logger/logger.dart';
 
@@ -218,6 +219,77 @@ class CourseTimeInfo extends TimeInfo {
   int get getEndWeek {
     return endWeek;
   }
+
+  /// 格式化输出周数
+  String get getWeekListStrFormat {
+    List<int> selectedWeeks = [];
+    for (int i = 1; i < weekList.length; i++) {
+      if (weekList[i]) {
+        selectedWeeks.add(i);
+      }
+    }
+
+    String output = '';
+
+    List<int> tmp = [];
+    int start = 0;
+    int end = -1;
+    int diff = 0;
+    for (int i = 0; i < selectedWeeks.length; i++) {
+      if (start > end) {
+        tmp.add(selectedWeeks[i]);
+        start = selectedWeeks[i];
+        end = selectedWeeks[i];
+      } else if (start == end) {
+        if (selectedWeeks[i] - end <= 2) {
+          diff = selectedWeeks[i] - end;
+          tmp.add(selectedWeeks[i]);
+          end = selectedWeeks[i];
+        } else {
+          output += '第${tmp[0]}周, ';
+          end = selectedWeeks[i];
+          start = selectedWeeks[i];
+          tmp.clear();
+          tmp.add(selectedWeeks[i]);
+        }
+      } else {
+        if (selectedWeeks[i] - end == diff) {
+          tmp.add(selectedWeeks[i]);
+          end = selectedWeeks[i];
+        } else {
+          if (diff == 1) {
+            output += '第${start} - ${end}周, ';
+          } else if (diff == 2) {
+            if (end % 2 == 0) {
+              output += '第${start} - ${end} 双周, ';
+            } else {
+              output += '第${start} - ${end} 单周, ';
+            }
+          }
+          tmp.clear();
+          tmp.add(selectedWeeks[i]);
+          start = selectedWeeks[i];
+          end = selectedWeeks[i];
+        }
+      }
+    }
+
+    if (!tmp.isEmpty) {
+      if (diff == 1) {
+        output += '第${start} - ${end}周';
+      } else if (diff == 2) {
+        if (end % 2 == 0) {
+          output += '第${start} - ${end}周 双周';
+        } else {
+          output += '第${start} - ${end}周 单周';
+        }
+      }
+    } else {
+      output = output.substring(0, output.length - 2);
+    }
+    return output;
+  }
+
 }
 
 // 解析weekList字符串

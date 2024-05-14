@@ -11,6 +11,10 @@ import 'package:logger/logger.dart';
 
 import 'package:awesome_schedule/temp/scheduleDemo.dart';
 import 'package:awesome_schedule/widgets/addCourseForm.dart';
+import 'package:provider/provider.dart';
+
+import '../models/course.dart';
+import '../providers/CourseNotifier.dart';
 
 var logger = Logger(
   printer: PrettyPrinter(
@@ -81,7 +85,7 @@ class ScheduleState extends State<Schedule> {
   }
 
   // 一学期的周数
-  int weekNum = 16;
+  int weekNum = 20;
   set setWeekNum(int num) {
     if (num < 1) {
       logger.w('Week number for a semester should be greater than 0.');
@@ -259,7 +263,9 @@ class ScheduleState extends State<Schedule> {
       }
     }
 
-    for (var course in courses) {
+    var courseNotifier = Provider.of<CourseNotifier>(context);
+    var courseSet = courseNotifier.courses;
+    for (var course in courseSet) {
       for (var timeInfo in course.getCourseTimeInfo) {
         if (timeInfo.getWeekList[currentWeek] == false) {
           continue;
@@ -271,32 +277,128 @@ class ScheduleState extends State<Schedule> {
         int endSection = timeInfo.getEndSection;
         int weekDay = timeInfo.getWeekday;
 
-        var courseBlock = Container(
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: blockColor,
-            border: Border.all(
-              color: Colors.black,
-              width: 1,
-            ),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Padding(
-                padding: const EdgeInsets.all(2),
-                child: Text(
-                  course.getName,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
+        /// 课程块
+        var courseBlock = InkWell(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('课程信息'),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: [
+                        ListTile(
+                          title: const Text('课程名称'),
+                          subtitle: Text(course.getName),
+                        ),
+                        ListTile(
+                          title: const Text('教师'),
+                          subtitle: Text(course.getTeacher),
+                        ),
+                        ListTile(
+                          title: const Text('地点'),
+                          subtitle: Text(course.getLocation),
+                        ),
+                        ListTile(
+                          title: const Text('简介'),
+                          subtitle: Text(course.getDescription),
+                        ),
+                        ListTile(
+                          title: const Text('时间'),
+                          subtitle: Text('第${timeInfo.getStartSection} - ${timeInfo.getEndSection}节'),
+                        ),
+                        ListTile(
+                          title: const Text('星期'),
+                          subtitle: Text('${timeInfo.getWeekday}'),
+                        ),
+                        ListTile(
+                          title: const Text('周数'),
+                          subtitle: Text(timeInfo.getWeekListStrFormat),
+                        ),
+                      ],
+                    )
                   ),
-                ),
-              )),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('确认删除'),
+                              content: const Text('你确定要删除这个课程吗？'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('取消'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  style: ButtonStyle(
+                                    foregroundColor: MaterialStateProperty.all(Colors.red),
+                                  ),
+                                  onPressed: () {
+                                    courseNotifier.removeCourse(course);
+                                    Navigator.of(context).pop(); // 关闭确认删除对话框
+                                    Navigator.of(context).pop(); // 关闭课程信息对话框
+                                  },
+                                  child: const Text('确定'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.all(Colors.red),
+                      ),
+                      child: const Text('删除'),
+                    ),
+                    TextButton(
+                      child: const Text('确定'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: blockColor,
+              border: Border.all(
+                color: Colors.black,
+                width: 1,
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: Text(
+                    course.getName,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                    ),
+                  ),
+                )),
+          ),
         );
-        scheduleContent[(startSection - 1) * (columnNum + 1) + weekDay] = courseBlock;
-        scheduleContent[(endSection - 1) * (columnNum + 1) + weekDay] = courseBlock;
+        for (int i = startSection; i <= endSection; i++) {
+          if (i > courseNum) {
+            break;
+          }
+          scheduleContent[(i - 1) * (columnNum + 1) + weekDay] = courseBlock;
+        }
+
       }
     }
 
@@ -330,6 +432,9 @@ class ScheduleState extends State<Schedule> {
                             IconButton(
                               icon: const Icon(Icons.add),
                               onPressed: () {
+                                /// 初始化添加课程表单状态
+                                var courseFormProvider = context.read<CourseFormProvider>();
+                                courseFormProvider.clear();
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -360,6 +465,24 @@ class ScheduleState extends State<Schedule> {
                                           return ListView(
                                             children: [
                                               /// 切换周数
+                                              // ListTile(
+                                              //   title: const Text('周数'),
+                                              //   subtitle: Slider(
+                                              //     value: localCurrentWeek.toDouble(),
+                                              //     min: 1.0,
+                                              //     max: weekNum.toDouble(),
+                                              //     divisions: weekNum - 1,
+                                              //     label: '第$localCurrentWeek周',
+                                              //     onChanged: (double value) {
+                                              //       setState(() {
+                                              //         localCurrentWeek = value.round();
+                                              //       });
+                                              //       this.setState(() {
+                                              //         currentWeek = value.round();
+                                              //       });
+                                              //     },
+                                              //   ),
+                                              // ),
                                               ListTile(
                                                 title: const Text('周数'),
                                                 subtitle: Slider(
@@ -372,6 +495,8 @@ class ScheduleState extends State<Schedule> {
                                                     setState(() {
                                                       localCurrentWeek = value.round();
                                                     });
+                                                  },
+                                                  onChangeEnd: (double value) {
                                                     this.setState(() {
                                                       currentWeek = value.round();
                                                     });

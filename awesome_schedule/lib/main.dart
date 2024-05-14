@@ -9,6 +9,9 @@ import 'package:awesome_schedule/database/database_util.dart';
 import 'dart:math';
 import 'package:awesome_schedule/pages/homePage.dart';
 import 'package:awesome_schedule/pages/logInPage.dart';
+import 'package:awesome_schedule/providers/CourseNotifier.dart';
+import 'package:riverpod/riverpod.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   // 初始化数据库
@@ -20,7 +23,15 @@ void main() async {
   CourseListDB courseListDB = CourseListDB();
   currentCourseList = await courseListDB.getCourseListByID(1);
 
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => CourseNotifier()),
+        ChangeNotifierProvider(create: (context) => CourseFormProvider())
+      ],
+      child: const MyApp(),
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {
