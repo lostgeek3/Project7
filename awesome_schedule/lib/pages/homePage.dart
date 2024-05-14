@@ -14,21 +14,13 @@ class _HomePageState extends State<HomePage> {
   // 导航栏状态
   int _selectedIndex = 1;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
+  static  final List<Widget> _widgetOptions = <Widget>[
+    const Text(
       '任务',
       style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
     ),
-    Column(children: [
-          // Expanded(
-          //   child: ScheduleColumnHeader(),
-          // ),
-          Expanded(
-            child: Schedule(),
-          ),
-        ]
-    ),
-    UserWidget()
+    const Schedule(),
+    const UserWidget()
   ];
 
   void _onItemTapped(int index) {
