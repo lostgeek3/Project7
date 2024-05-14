@@ -34,12 +34,16 @@ class CourseNotifier with ChangeNotifier {
   }
 }
 
+// 快捷选择周数
+enum WeekPattern { all, odd, even, none }
 /// 添加课程表单状态
 class CourseFormProvider extends ChangeNotifier {
   List<bool> _selectedWeeks = List<bool>.filled(20, false);
   int _selectedDay = 1;
   int _selectedStartPeriod = 1;
   int _selectedEndPeriod = 1;
+
+  WeekPattern _selectedWeekPattern = WeekPattern.none;
   List<CourseTimeInfo> _timeSelections = [];
 
   void clear() {
@@ -47,6 +51,7 @@ class CourseFormProvider extends ChangeNotifier {
     _selectedDay = 1;
     _selectedStartPeriod = 1;
     _selectedEndPeriod = 1;
+    selectedWeekPattern = WeekPattern.none;
     _timeSelections = [];
     notifyListeners();
   }
@@ -93,6 +98,12 @@ class CourseFormProvider extends ChangeNotifier {
   List<CourseTimeInfo> get timeSelections => _timeSelections;
   set timeSelections(List<CourseTimeInfo> value) {
     _timeSelections = value;
+    notifyListeners();
+  }
+
+  WeekPattern get selectedWeekPattern => _selectedWeekPattern;
+  set selectedWeekPattern(WeekPattern value) {
+    _selectedWeekPattern = value;
     notifyListeners();
   }
 }

@@ -22,77 +22,124 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
   /// 选择周数
   /// 5 * 4 的矩阵
   Widget buildWeekSelection() {
-
     return Column(
-      children: List.generate(4, (rowIndex) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(5, (colIndex) {
-          int index = rowIndex * 5 + colIndex;
-          var courseFormProvider = context.watch<CourseFormProvider>();
-          return GestureDetector(
-            onTap: () {
-              courseFormProvider.toggleWeekSelection(index);
-            },
-            child: Container(
-              width: 40, // 设置元素的宽度
-              height: 40, // 设置元素的高度
-              alignment: Alignment.center,
-              margin: const EdgeInsets.all(4.0),
-              decoration: BoxDecoration(
-                color: courseFormProvider.selectedWeeks[index] ? Colors.blue : Colors.transparent,
-                border: Border.all(
-                  color: courseFormProvider.selectedWeeks[index] ? Colors.blue : Colors.transparent,
-                  width: 2,
+      children: List.generate(4, (rowIndex) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: List.generate(5, (colIndex) {
+            int index = rowIndex * 5 + colIndex;
+            var courseFormProvider = context.watch<CourseFormProvider>();
+            return GestureDetector(
+              onTap: () {
+                /// 点击后切换选中状态
+                courseFormProvider.toggleWeekSelection(index);
+                /// 如果选中周数符合某种模式，则更新选中的周数模式
+                bool isAll = courseFormProvider.selectedWeeks.every((week) => week);
+                bool isOdd = courseFormProvider.selectedWeeks.asMap().entries.every((entry) => (entry.key % 2 == 0) == entry.value);
+                bool isEven = courseFormProvider.selectedWeeks.asMap().entries.every((entry) => (entry.key % 2 != 0) == entry.value);
+                if (isAll) {
+                  courseFormProvider.selectedWeekPattern = WeekPattern.all;
+                } else if (isOdd) {
+                  courseFormProvider.selectedWeekPattern = WeekPattern.odd;
+                } else if (isEven) {
+                  courseFormProvider.selectedWeekPattern = WeekPattern.even;
+                } else {
+                  courseFormProvider.selectedWeekPattern = WeekPattern.none;
+                }
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 120),
+                curve: Curves.easeInOut,
+                width: 40,
+                height: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: courseFormProvider.selectedWeeks[index]
+                      ? CupertinoTheme.of(context).primaryColor
+                      : Colors.transparent,
+                  boxShadow: courseFormProvider.selectedWeeks[index]
+                      ? [
+                    BoxShadow(
+                      color: CupertinoTheme.of(context).primaryColor.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                      : null,
+                ),
+                child: Text(
+                  '${index + 1}',
+                  style: TextStyle(
+                    color: courseFormProvider.selectedWeeks[index]
+                        ? CupertinoColors.white
+                        : CupertinoColors.black,
+                  ),
                 ),
               ),
-              child: Text('${index + 1}', style: TextStyle(color: courseFormProvider.selectedWeeks[index] ? Colors.white : Colors.black)), // 只显示数字
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       )),
     );
   }
   /// 快捷选择按钮
-  Row buildShortcutButtons() {
-    var courseFormProvider = context.read<CourseFormProvider>();
+  Widget buildShortcutButtons() {
+    var courseFormProvider = context.watch<CourseFormProvider>();
     List<bool> _selectedWeeks = courseFormProvider.selectedWeeks;
+    WeekPattern _selectedWeekPattern = courseFormProvider.selectedWeekPattern;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        ElevatedButton(
-          child: Text('全部'),
-          onPressed: () {
+        ToggleButtons(
+          isSelected: [
+            _selectedWeekPattern == WeekPattern.all,
+            _selectedWeekPattern == WeekPattern.odd,
+            _selectedWeekPattern == WeekPattern.even,
+          ],
+          onPressed: (int index) {
             setState(() {
-              for (int i = 0; i < 20; i++) {
-                _selectedWeeks[i] = true;
+              WeekPattern newPattern;
+              switch (index) {
+                case 0:
+                  newPattern = WeekPattern.all;
+                  break;
+                case 1:
+                  newPattern = WeekPattern.odd;
+                  break;
+                case 2:
+                  newPattern = WeekPattern.even;
+                  break;
+                default:
+                  newPattern = WeekPattern.none;
+              }
+              if (_selectedWeekPattern == newPattern) {
+                _selectedWeekPattern = WeekPattern.none;
+                courseFormProvider.selectedWeekPattern = WeekPattern.none;
+                for (int i = 0; i < 20; i++) {
+                  _selectedWeeks[i] = false;
+                }
+              } else {
+                _selectedWeekPattern = newPattern;
+                courseFormProvider.selectedWeekPattern = newPattern;
+                for (int i = 0; i < 20; i++) {
+                  _selectedWeeks[i] = (newPattern == WeekPattern.all) || ((i % 2 == 0) == (newPattern == WeekPattern.odd));
+                }
               }
             });
           },
-        ),
-        ElevatedButton(
-          child: Text('单周'),
-          onPressed: () {
-            setState(() {
-              for (int i = 0; i < 20; i++) {
-                _selectedWeeks[i] = (i % 2 == 0);
-              }
-            });
-          },
-        ),
-        ElevatedButton(
-          child: Text('双周'),
-          onPressed: () {
-            setState(() {
-              for (int i = 0; i < 20; i++) {
-                _selectedWeeks[i] = (i % 2 != 0);
-              }
-            });
-          },
+          children: const <Widget>[
+            Text('全部'),
+            Text('单周'),
+            Text('双周'),
+          ],
         ),
       ],
     );
   }
-
   /// 选择周几+节数
   final List<String> weekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
   Widget buildTimeSelection() {
@@ -100,13 +147,13 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
     int _selectedDay = courseFormProvider.selectedDay;
     return Column(
       children: [
-        DropdownButton<int>(
-          value: _selectedDay,
-          items: List.generate(7, (index) => DropdownMenuItem<int>(
-            value: index + 1,
-            child: Text(weekdays[index]),
-          )),
-          onChanged: (int? newValue) {
+        CupertinoSegmentedControl<int>(
+          children: { for (var index in List.generate(7, (index) => index + 1)) index : Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(weekdays[index - 1]),
+            ) },
+          groupValue: _selectedDay,
+          onValueChanged: (int? newValue) {
             setState(() {
               courseFormProvider.selectedDay = newValue!;
             });
@@ -228,6 +275,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
 
               const Text('选择周数'),
               buildWeekSelection(),
+              const SizedBox(height: 10),
               buildShortcutButtons(),
               const SizedBox(height: 10),
               const Text('选择时间'),
@@ -235,10 +283,21 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
               buildTimeSelection(),
               const SizedBox(height: 10),
 
+
               ElevatedButton(
                 onPressed: () {
                   var courseFormProvider = context.read<CourseFormProvider>();
                   List<int> selectedWeeksIndices = courseFormProvider.selectedWeeks.asMap().entries.where((entry) => entry.value).map((entry) => entry.key + 1).toList();
+                  /// 周数不能为空
+                  if (selectedWeeksIndices.isEmpty) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return createAlertDialog(context, '请选择周数');
+                      },
+                    );
+                    return;
+                  }
                   if (courseFormProvider.selectedStartPeriod > courseFormProvider.selectedEndPeriod) {
                     showDialog(
                       context: context,
@@ -287,6 +346,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
               const SizedBox(height: 10),
               const Text('选填', style: TextStyle(fontSize: 20)),
               const SizedBox(height: 10),
+
               buildInputField(title: '老师', isRequired: false, controller: _teacherController),
               const SizedBox(height: 10),
               buildInputField(title: '地点', isRequired: false, controller: _locationController),
