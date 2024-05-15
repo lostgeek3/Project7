@@ -15,6 +15,8 @@ var logger = Logger(
 const String logTag = '[Database]CourseTimeInfoRelationDB: ';
 // 是否显示日志
 bool showLog = false;
+// 是否打印数据库
+bool printDB = true;
 
 // 表示课程和课程时间信息之间的包含关系
 class CourseTimeInfoRelation {
@@ -77,6 +79,11 @@ class CourseTimeInfoRelationDB {
     if (showLog) logger.i('$logTag添加CourseTimeInfoRelation: id = $index');
 
     await _database.close();
+
+    if (printDB) {
+      await printDatabase();
+    }
+
     return index;
   }
 
@@ -126,7 +133,7 @@ class CourseTimeInfoRelationDB {
 
     int index = await _database.delete(
       _tableName,
-      where: 'courseList_id = ?',
+      where: 'course_id = ?',
       whereArgs: [courseID]);
     
     await _database.close();
@@ -137,6 +144,11 @@ class CourseTimeInfoRelationDB {
     else {
       if (showLog) logger.i('$logTag删除CourseTimeInfoRelation: course_id = $courseID');
     }
+
+    if (printDB) {
+      await printDatabase();
+    }
+    
     return index;
   }
 
@@ -162,6 +174,31 @@ class CourseTimeInfoRelationDB {
     else {
       return false;
     }
+  }
+
+  // 打印数据库
+  Future<void> printDatabase() async {
+    if (await isEmpty()) {
+      logger.i('$logTag数据库$_tableName为空');
+      return;
+    }
+    _database = await openDatabase(
+      join(await getDatabasesPath(), _databaseName),
+    );
+
+    logger.i('$logTag数据库$_tableName全部数据：');
+
+    List<Map<String, dynamic>> resultMap = await _database.query(_tableName);
+
+    for (var item in resultMap) {
+      String print = logTag;
+      for (int i = 0; i < _columuName.length; i++) {
+        print += '${_columuName[i]}:${item[_columuName[i]]}\t';
+      }
+      logger.i(print);
+    }
+
+    await _database.close();
   }
 
   static final CourseTimeInfoRelationDB _instance = CourseTimeInfoRelationDB._internal();

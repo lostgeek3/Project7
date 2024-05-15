@@ -19,7 +19,9 @@ var logger = Logger(
 );
 const String logTag = '[Database]CourseListDB: ';
 // 是否显示日志
-bool showLog = true;
+bool showLog = false;
+// 是否打印数据库
+bool printDB = true;
 
 class CourseListDB {
   // 数据库实例
@@ -76,6 +78,11 @@ class CourseListDB {
     if (showLog) logger.i('$logTag添加CourseList: id = $index');
 
     await _database.close();
+
+    if (printDB) {
+      await printDatabase();
+    }
+
     return index;
   }
 
@@ -143,8 +150,8 @@ class CourseListDB {
     List<CourseList> result = [];
     for (var item in resultMap) {
       CourseList courseList = CourseList(semester: item[_columuName[1]]);
+      courseList.weekNum = item[_columuName[3]];
       courseList.currentWeek = item[_columuName[2]];
-      courseList.currentWeek = item[_columuName[3]];
 
       List<CourseListRelation> relations = await courseListRelationDB.getCourseListRelationByID(item[_columuName[0]]);
       for (var item in relations) {
@@ -228,7 +235,12 @@ class CourseListDB {
     else {
       if (showLog) logger.i('$logTag删除CourseList: id = $id');
     }
-    return index;
+
+    if (printDB) {
+      await printDatabase();
+    }
+
+    return id;
   }
 
   // 根据id删除一个课程
@@ -244,18 +256,23 @@ class CourseListDB {
 
     CourseDB courseDB = CourseDB();
 
-    int index = await courseDB.deleteCourseByName(course.getName);
-    if (index == 0) {
-      if (showLog) logger.w('${logTag}CourseList: course_id = $id不存在，无法删除');
+    int course_id = await courseDB.getIDByName(course.getName);
+
+    if (course_id == 0) {
+      if (showLog) logger.w('${logTag}CourseList: course_id = $course_id不存在，无法删除');
       return;
     }
-    int rindex = await courseListRelationDB.deleteCourseListRelationByRelation(CourseListRelation(id, index));
+    else {
+      await courseDB.deleteCourseByID(course_id);
+    }
+
+    int rindex = await courseListRelationDB.deleteCourseListRelationByRelation(CourseListRelation(id, course_id));
 
     if (rindex == 0) {
-      if (showLog) logger.e('${logTag}CourseList: course_id = $index删除错误');
+      if (showLog) logger.e('${logTag}CourseList: course_id = $course_id删除错误');
     }
     else {
-      if (showLog) logger.i('$logTag删除CourseList: course_id = $index删除成功');
+      if (showLog) logger.i('$logTag删除CourseList: course_id = $course_id删除成功');
     }
   }
 
@@ -281,6 +298,31 @@ class CourseListDB {
     else {
       return false;
     }
+  }
+
+  // 打印数据库
+  Future<void> printDatabase() async {
+    if (await isEmpty()) {
+      logger.i('$logTag数据库$_tableName为空');
+      return;
+    }
+    _database = await openDatabase(
+      join(await getDatabasesPath(), _databaseName),
+    );
+
+    logger.i('$logTag数据库$_tableName全部数据：');
+
+    List<Map<String, dynamic>> resultMap = await _database.query(_tableName);
+
+    for (var item in resultMap) {
+      String print = logTag;
+      for (int i = 0; i < _columuName.length; i++) {
+        print += '${_columuName[i]}:${item[_columuName[i]]}\t';
+      }
+      logger.i(print);
+    }
+
+    await _database.close();
   }
 
   // 单例模式，确保全局只有一个数据库管理实例

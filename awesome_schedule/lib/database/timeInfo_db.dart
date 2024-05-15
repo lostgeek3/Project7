@@ -14,6 +14,8 @@ var logger = Logger(
 const String logTag = '[Database]TimeInfoDB: ';
 // 是否显示日志
 bool showLog = false;
+// 是否打印数据库
+bool printDB = true;
 
 class CourseTimeInfoDB {
   // 数据库实例
@@ -92,6 +94,11 @@ class CourseTimeInfoDB {
     if (showLog) logger.i('$logTag添加TimeInfo: id = $index');
 
     await _database.close();
+
+    if (printDB) {
+      await printDatabase();
+    }
+
     return index;
   }
 
@@ -172,7 +179,13 @@ class CourseTimeInfoDB {
     else {
       if (showLog) logger.i('$logTag删除CourseTimeInfo: id = $id');
     }
-    return index;
+
+    if (printDB) {
+      await printDatabase();
+    }
+    
+    if (index == 0) return index;
+    return id;
   }
 
   // 清空数据库
@@ -197,6 +210,31 @@ class CourseTimeInfoDB {
     else {
       return false;
     }
+  }
+
+  // 打印数据库
+  Future<void> printDatabase() async {
+    if (await isEmpty()) {
+      logger.i('$logTag数据库$_tableName为空');
+      return;
+    }
+    _database = await openDatabase(
+      join(await getDatabasesPath(), _databaseName),
+    );
+
+    logger.i('$logTag数据库$_tableName全部数据：');
+
+    List<Map<String, dynamic>> resultMap = await _database.query(_tableName);
+
+    for (var item in resultMap) {
+      String print = logTag;
+      for (int i = 0; i < _columuName.length; i++) {
+        print += '${_columuName[i]}:${item[_columuName[i]]}\t';
+      }
+      logger.i(print);
+    }
+
+    await _database.close();
   }
 
   static final CourseTimeInfoDB _instance = CourseTimeInfoDB._internal();
