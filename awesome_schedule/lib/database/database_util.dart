@@ -41,7 +41,7 @@ Future<void> clearDatabase() async {
 // 若课表数据库为空，则给予一些初始值
 Future<void> setSomeDataToDatabase() async {
   CourseList courseList = CourseList(semester: '第一学期');
-  courseList.weekNum = 16;
+  courseList.weekNum = 20;
   courseList.currentWeek = 1;
 
   CourseListDB courseListDB = CourseListDB();
