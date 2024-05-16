@@ -4,6 +4,8 @@ import 'package:awesome_schedule/database/courseList_db.dart';
 import 'package:awesome_schedule/models/course.dart';
 import 'package:awesome_schedule/models/courseList.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
+import 'package:awesome_schedule/utils/common.dart';
+import 'package:awesome_schedule/utils/sharedPreference.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -85,7 +87,7 @@ class ScheduleState extends State<Schedule> {
   }
 
   // 一学期的周数
-  int weekNum = 20;
+  int weekNum = defalutWeekNum;
   set setWeekNum(int num) {
     if (num < 1) {
       logger.w('Week number for a semester should be greater than 0.');
@@ -168,10 +170,11 @@ class ScheduleState extends State<Schedule> {
   }
 
   // 是否显示周末
-  bool showWeekend = false;
+  bool showWeekend = MySharedPreferences.showWeekend;
   // 设置是否显示周末
   set setShowWeekend(bool show) {
     showWeekend = show;
+    SharedPreferencesUtil.save<bool>('showWeekend', show);
   }
 
   // 月份缩写
@@ -534,6 +537,7 @@ class ScheduleState extends State<Schedule> {
                                                   });
                                                   this.setState(() {
                                                     showWeekend = value;
+                                                    SharedPreferencesUtil.save<bool>('showWeekend', value);
                                                   });
                                                 },
                                               ),

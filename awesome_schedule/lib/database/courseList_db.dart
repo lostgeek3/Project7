@@ -21,7 +21,7 @@ const String logTag = '[Database]CourseListDB: ';
 // 是否显示日志
 bool showLog = false;
 // 是否打印数据库
-bool printDB = true;
+bool printDB = false;
 
 class CourseListDB {
   // 数据库实例

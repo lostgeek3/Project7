@@ -15,7 +15,7 @@ const String logTag = '[Database]CourseListRelationDB: ';
 // 是否显示日志
 bool showLog = false;
 // 是否打印数据库
-bool printDB = true;
+bool printDB = false;
 
 // 表示课程表和课程之间的包含关系
 class CourseListRelation {
