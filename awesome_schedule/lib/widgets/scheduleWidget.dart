@@ -4,10 +4,13 @@ import 'package:awesome_schedule/database/courseList_db.dart';
 import 'package:awesome_schedule/models/course.dart';
 import 'package:awesome_schedule/models/courseList.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
+import 'package:awesome_schedule/widgets/CourseInfoDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:logger/logger.dart';
+import 'dart:math' as math;
 
 import 'package:awesome_schedule/temp/scheduleDemo.dart';
 import 'package:awesome_schedule/widgets/addCourseForm.dart';
@@ -22,6 +25,116 @@ var logger = Logger(
   ),
 );
 const String logTag = '[Widget]ScheduleWidget: ';
+
+/// 滑块形状
+class PolygonSliderThumb extends SliderComponentShape {
+  final double thumbRadius;
+  final double sliderValue;
+  const PolygonSliderThumb({
+    required this.thumbRadius,
+    required this.sliderValue,
+  });
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
+    return Size.fromRadius(thumbRadius);
+  }
+
+  @override
+  void paint(
+      PaintingContext context,
+      Offset center, {
+        required Animation<double> activationAnimation,
+        required Animation<double> enableAnimation,
+        required bool isDiscrete,
+        required TextPainter labelPainter,
+        required RenderBox parentBox,
+        required SliderThemeData sliderTheme,
+        required TextDirection textDirection,
+        required double value,
+        required double textScaleFactor,
+        required Size sizeWithOverflow,
+      }) {
+    final Canvas canvas = context.canvas;
+    int sides = 4;
+    double innerPolygonRadius = thumbRadius * 1.2;
+    double outerPolygonRadius = thumbRadius * 1.4;
+    double angle = (math.pi * 2) / sides;
+
+    final outerPathColor = Paint()
+      ..color = Colors.grey
+      ..style = PaintingStyle.fill;
+
+    var outerPath = Path();
+
+    Offset startPoint2 = Offset(
+      outerPolygonRadius * math.cos(0.0),
+      outerPolygonRadius * math.sin(0.0),
+    );
+
+    outerPath.moveTo(
+      startPoint2.dx + center.dx,
+      startPoint2.dy + center.dy,
+    );
+
+    for (int i = 1; i <= sides; i++) {
+      double x = outerPolygonRadius * math.cos(angle * i) + center.dx;
+      double y = outerPolygonRadius * math.sin(angle * i) + center.dy;
+      outerPath.lineTo(x, y);
+    }
+
+    outerPath.close();
+    canvas.drawPath(outerPath, outerPathColor);
+
+    final innerPathColor = Paint()
+      ..color = sliderTheme.thumbColor ?? Colors.black
+      ..style = PaintingStyle.fill;
+
+    var innerPath = Path();
+
+    Offset startPoint = Offset(
+      innerPolygonRadius * math.cos(0.0),
+      innerPolygonRadius * math.sin(0.0),
+    );
+
+    innerPath.moveTo(
+      startPoint.dx + center.dx,
+      startPoint.dy + center.dy,
+    );
+
+    for (int i = 1; i <= sides; i++) {
+      double x = innerPolygonRadius * math.cos(angle * i) + center.dx;
+      double y = innerPolygonRadius * math.sin(angle * i) + center.dy;
+      innerPath.lineTo(x, y);
+    }
+
+    innerPath.close();
+    canvas.drawPath(innerPath, innerPathColor);
+
+    TextSpan span = TextSpan(
+      style: TextStyle(
+        fontSize: thumbRadius,
+        fontWeight: FontWeight.w700,
+        color: Colors.white,
+      ),
+      text: sliderValue.round().toString(),
+    );
+
+    TextPainter tp = TextPainter(
+      text: span,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+
+    tp.layout();
+
+    Offset textCenter = Offset(
+      center.dx - (tp.width / 2),
+      center.dy - (tp.height / 2),
+    );
+
+    tp.paint(canvas, textCenter);
+  }
+}
 
 class ScheduleColumnHeader extends StatelessWidget {
   const ScheduleColumnHeader({super.key});
@@ -76,7 +189,7 @@ class Schedule extends StatefulWidget {
 
 class ScheduleState extends State<Schedule> {
   // 一天的课程节数
-  var courseNum = 13;
+  var courseNum = 14;
   set setCourseNum(int num) {
     if (num < 1) {
       logger.w('Course number for a day should be greater than 0.');
@@ -116,8 +229,6 @@ class ScheduleState extends State<Schedule> {
     TimeRange(10, 55, 11, 40),
     TimeRange(12, 0, 12, 45),
     TimeRange(12, 55, 13, 40),
-    TimeRange(12, 0, 12, 45),
-    TimeRange(12, 55, 13, 40),
     TimeRange(14, 0, 14, 45),
     TimeRange(14, 55, 15, 40),
     TimeRange(16, 0, 16, 45),
@@ -127,6 +238,13 @@ class ScheduleState extends State<Schedule> {
     TimeRange(20, 0, 20, 45),
     TimeRange(20, 55, 21, 40),
   ];
+
+  // 当前课程表
+  late CourseNotifier courseNotifier;
+
+  // 同屏显示的课程节数
+  int courseNumVisible = 8;
+
   // 设置所有课程的时间区间
   set setTimeRange(List<TimeRange> timeRanges) {
     int length = min(timeRanges.length, courseNum);
@@ -218,50 +336,47 @@ class ScheduleState extends State<Schedule> {
     );
   }
 
-  late CourseNotifier courseNotifier;
 
   Widget _initScheduleContent() {
     List<Widget> scheduleContent = [];
 
     int columnNum = showWeekend ? 7 : 5;
-    for (int i = 1; i <= courseNum; i++) {
-      scheduleContent.add(Container(
-        alignment: Alignment.center,
-        child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Padding(
-              padding: const EdgeInsets.all(2),
-              child: RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: '$i\n',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                      ),
-                    ),
-                    TextSpan(
-                      text: '${timeRanges[i - 1].startHour}:${(timeRanges[i - 1].startMinute == 0) ? '00' : timeRanges[i - 1].startMinute}\n${timeRanges[i - 1].endHour}:${(timeRanges[i - 1].endMinute == 0) ? '00' : timeRanges[i - 1].endMinute}',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )),
-      ));
-      for (int j = 0; j < columnNum; j++) {
-        scheduleContent.add(
-          Container(
-            alignment: Alignment.center,
-          ),
-        );
-      }
-    }
+    // for (int i = 1; i <= courseNum; i++) {
+    //   scheduleContent.add(Container(
+    //     alignment: Alignment.center,
+    //     child: FittedBox(
+    //         fit: BoxFit.scaleDown,
+    //         child: Padding(
+    //           padding: const EdgeInsets.all(2),
+    //           child: RichText(
+    //             textAlign: TextAlign.center,
+    //             text: TextSpan(
+    //               children: [
+    //                 TextSpan(
+    //                   text: '$i\n',
+    //                   style: const TextStyle(
+    //                     color: Colors.black,
+    //                     fontSize: 20,
+    //                   ),
+    //                 ),
+    //                 TextSpan(
+    //                   text: '${timeRanges[i - 1].startHour}:${(timeRanges[i - 1].startMinute == 0) ? '00' : timeRanges[i - 1].startMinute}\n${timeRanges[i - 1].endHour}:${(timeRanges[i - 1].endMinute == 0) ? '00' : timeRanges[i - 1].endMinute}',
+    //                   style: const TextStyle(
+    //                     color: Colors.black,
+    //                     fontSize: 10,
+    //                   ),
+    //                 ),
+    //               ],
+    //             ),
+    //           ),
+    //         )),
+    //   ));
+    //   for (int j = 0; j < columnNum; j++) {
+    //     scheduleContent.add(
+    //       Container(),
+    //     );
+    //   }
+    // }
 
     List<Course> courses = [];
 
@@ -274,154 +389,199 @@ class ScheduleState extends State<Schedule> {
       courses = courseNotifier.courses;
     }
 
-    for (var course in courses) {
-      for (var timeInfo in course.getCourseTimeInfo) {
-        if (timeInfo.getWeekList[currentWeek] == false) {
-          continue;
-        }
-        if (timeInfo.getStartSection > courseNum || timeInfo.getEndSection < 1) {
-          continue;
-        }
-        int startSection = timeInfo.getStartSection;
-        int endSection = timeInfo.getEndSection;
-        int weekDay = timeInfo.getWeekday;
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        double columnWidth = constraints.maxWidth / (columnNum + 1) - 5;
+        double rowHeight = constraints.maxHeight / courseNumVisible;
 
-        /// 课程块
-        var courseBlock = InkWell(
-          onTap: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text('课程信息'),
-                  content: SingleChildScrollView(
-                    child: ListBody(
-                      children: [
-                        ListTile(
-                          title: const Text('课程名称'),
-                          subtitle: Text(course.getName),
-                        ),
-                        ListTile(
-                          title: const Text('教师'),
-                          subtitle: Text(course.getTeacher),
-                        ),
-                        ListTile(
-                          title: const Text('地点'),
-                          subtitle: Text(course.getLocation),
-                        ),
-                        ListTile(
-                          title: const Text('简介'),
-                          subtitle: Text(course.getDescription),
-                        ),
-                        ListTile(
-                          title: const Text('时间'),
-                          subtitle: Text('第${timeInfo.getStartSection} - ${timeInfo.getEndSection}节'),
-                        ),
-                        ListTile(
-                          title: const Text('星期'),
-                          subtitle: Text('${timeInfo.getWeekday}'),
-                        ),
-                        ListTile(
-                          title: const Text('周数'),
-                          subtitle: Text(timeInfo.getWeekListStrFormat),
-                        ),
-                      ],
-                    )
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('确认删除'),
-                              content: const Text('你确定要删除这个课程吗？'),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('取消'),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                                TextButton(
-                                  style: ButtonStyle(
-                                    foregroundColor: MaterialStateProperty.all(Colors.red),
-                                  ),
-                                  onPressed: () {
-                                    courseNotifier.removeCourse(course);
-                                    CourseListDB courseListDB = CourseListDB();
-                                    courseListDB.deleteCourseByCourseListID(currentCourseListID, course);
-                                    Navigator.of(context).pop(); // 关闭确认删除对话框
-                                    Navigator.of(context).pop(); // 关闭课程信息对话框
-                                  },
-                                  child: const Text('确定'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      style: ButtonStyle(
-                        foregroundColor: MaterialStateProperty.all(Colors.red),
-                      ),
-                      child: const Text('删除'),
-                    ),
-                    TextButton(
-                      child: const Text('确定'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          child: Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: blockColor,
-              border: Border.all(
-                color: Colors.black,
-                width: 1,
-              ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: FittedBox(
+        var gridChildren = <Widget>[];
+
+        for (int i = 1; i <= courseNum; i++) {
+          gridChildren.add(
+            Container(
+              width: columnWidth,
+              height: rowHeight,
+              alignment: Alignment.center,
+              child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Padding(
                   padding: const EdgeInsets.all(2),
-                  child: Text(
-                    course.getName,
+                  child: RichText(
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '$i\n',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '${timeRanges[i - 1].startHour}:${(timeRanges[i - 1].startMinute == 0) ? '00' : timeRanges[i - 1].startMinute}\n${timeRanges[i - 1].endHour}:${(timeRanges[i - 1].endMinute == 0) ? '00' : timeRanges[i - 1].endMinute}',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                )),
-          ),
-        );
-        for (int i = startSection; i <= endSection; i++) {
-          if (i > courseNum) {
-            break;
-          }
-          scheduleContent[(i - 1) * (columnNum + 1) + weekDay] = courseBlock;
+                ),
+              ),
+            ).withGridPlacement(
+              rowStart: i - 1,
+              columnStart: 0,
+            ),
+          );
         }
 
-      }
-    }
+        for (var course in courses) {
+          for (var timeInfo in course.getCourseTimeInfo) {
+            if (timeInfo.getWeekList[currentWeek] == false) {
+              continue;
+            }
+            if (timeInfo.getStartSection > courseNum || timeInfo.getEndSection < 1) {
+              continue;
+            }
+            int startSection = timeInfo.getStartSection;
+            int endSection = timeInfo.getEndSection;
+            int weekDay = timeInfo.getWeekday;
 
-    return GridView.count(
-      padding: const EdgeInsets.all(5),
-      crossAxisCount: (showWeekend ? 8 : 6),
-      crossAxisSpacing: (showWeekend ? 5 : 7),
-      mainAxisSpacing: 5,
-      childAspectRatio: (showWeekend ? 0.6 : 0.8),
-      children: scheduleContent,
+            /// 课程块
+            var courseBlock = InkWell(
+              onTap: () {
+                var courseFormProvider = Provider.of<CourseFormProvider>(context, listen: false);
+                courseFormProvider.initFromCourseTimeInfo(timeInfo);
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return CourseInfoDialog(course: course, timeInfo: timeInfo, courseNotifier: courseNotifier);
+                  },
+                );
+              },
+              child: Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: blockColor,
+                  border: Border.all(
+                    color: Colors.black,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textSize = 15.0 + 12 - courseNumVisible;
+                      final textHeight = textSize * 1.2;
+
+                      /// 一个课程块信息最多显示的行数
+                      final maxNameLines = (constraints.maxHeight / textHeight / 2).floor();
+                      final maxLocationLines = (constraints.maxHeight / textHeight / 2).floor();
+
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            course.getName,
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: textSize,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: maxNameLines,
+                          ),
+                          if (course.getLocation.isNotEmpty)
+                            Text(
+                              "@${course.getLocation}",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: textSize,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: maxLocationLines,
+                            ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+
+              // child: Container(
+              //   alignment: Alignment.center,
+              //   decoration: BoxDecoration(
+              //     color: blockColor,
+              //     border: Border.all(
+              //       color: Colors.black,
+              //       width: 1,
+              //     ),
+              //     borderRadius: BorderRadius.circular(10),
+              //   ),
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(2),
+              //     child: Column(
+              //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //       crossAxisAlignment: CrossAxisAlignment.stretch,
+              //       children: [
+              //         Text(
+              //           "${course.getName}",
+              //           textAlign: TextAlign.left,
+              //           style: const TextStyle(
+              //             color: Colors.black,
+              //             fontSize: 15,
+              //           ),
+              //           overflow: TextOverflow.ellipsis, // 添加这行
+              //         ),
+              //         if (course.getLocation.isNotEmpty)
+              //           Text(
+              //             "@${course.getLocation}",
+              //             textAlign: TextAlign.left,
+              //             style: const TextStyle(
+              //               color: Colors.black,
+              //               fontSize: 15,
+              //             ),
+              //             overflow: TextOverflow.ellipsis,
+              //             maxLines: 2,
+              //           )
+              //       ],
+              //     ),
+              //   ),
+              // ),
+
+
+
+            );
+
+            gridChildren.add(
+              courseBlock.withGridPlacement(
+                rowStart: startSection - 1,
+                rowSpan: endSection - startSection + 1,
+                columnStart: weekDay,
+              ),
+            );
+          }
+        }
+
+        return SingleChildScrollView(
+          child: LayoutGrid(
+            columnGap: 5,
+            rowGap: 5,
+            columnSizes: List.filled(columnNum + 1, columnWidth.px),
+            rowSizes: List.filled(courseNum, (rowHeight - 5).px),
+            children: gridChildren,
+          ),
+        );
+      },
     );
   }
+
+
 
   @override
   void initState() {
@@ -433,7 +593,7 @@ class ScheduleState extends State<Schedule> {
 
   @override
   Widget build(BuildContext context) {
-    courseNotifier = Provider.of<CourseNotifier>(context);
+    courseNotifier = context.watch<CourseNotifier>();
 
     return Stack(
         children: [
@@ -481,48 +641,64 @@ class ScheduleState extends State<Schedule> {
                                     builder: (context) {
                                       bool localShowWeekend = showWeekend;
                                       int localCurrentWeek = currentWeek;
+                                      int localCourseNumVisible = courseNumVisible;
                                       return StatefulBuilder(
                                         builder: (BuildContext context, StateSetter setState) {
                                           return ListView(
                                             children: [
                                               /// 切换周数
-                                              // ListTile(
-                                              //   title: const Text('周数'),
-                                              //   subtitle: Slider(
-                                              //     value: localCurrentWeek.toDouble(),
-                                              //     min: 1.0,
-                                              //     max: weekNum.toDouble(),
-                                              //     divisions: weekNum - 1,
-                                              //     label: '第$localCurrentWeek周',
-                                              //     onChanged: (double value) {
-                                              //       setState(() {
-                                              //         localCurrentWeek = value.round();
-                                              //       });
-                                              //       this.setState(() {
-                                              //         currentWeek = value.round();
-                                              //       });
-                                              //     },
-                                              //   ),
-                                              // ),
                                               ListTile(
                                                 title: const Text('周数'),
-                                                subtitle: Slider(
-                                                  value: localCurrentWeek.toDouble(),
-                                                  min: 1.0,
-                                                  max: weekNum.toDouble(),
-                                                  divisions: weekNum - 1,
-                                                  label: '第$localCurrentWeek周',
-                                                  onChanged: (double value) {
-                                                    setState(() {
-                                                      localCurrentWeek = value.round();
-                                                    });
-                                                  },
-                                                  onChangeEnd: (double value) {
-                                                    this.setState(() {
-                                                      currentWeek = value.round();
-                                                    });
-                                                  },
-                                                ),
+                                                subtitle: SliderTheme(
+                                                  data: SliderTheme.of(context).copyWith(
+                                                    trackShape: const RoundedRectSliderTrackShape(),
+                                                    trackHeight: 12,
+                                                    thumbShape: PolygonSliderThumb(thumbRadius: 16, sliderValue: localCurrentWeek.toDouble())
+                                                  ),
+                                                  child: Slider(
+                                                    value: localCurrentWeek.toDouble(),
+                                                    min: 1.0,
+                                                    max: weekNum.toDouble(),
+                                                    divisions: weekNum - 1,
+                                                    onChanged: (double value) {
+                                                      setState(() {
+                                                        localCurrentWeek = value.round();
+                                                      });
+                                                    },
+                                                    onChangeEnd: (double value) {
+                                                      this.setState(() {
+                                                        currentWeek = value.round();
+                                                      });
+                                                    },
+                                                  ),
+                                                )
+                                              ),
+                                              /// 设置同屏显示的课程节数
+                                              ListTile(
+                                                  title: const Text('显示节数'),
+                                                  subtitle: SliderTheme(
+                                                    data: SliderTheme.of(context).copyWith(
+                                                        trackShape: const RoundedRectSliderTrackShape(),
+                                                        trackHeight: 12,
+                                                        thumbShape: PolygonSliderThumb(thumbRadius: 16, sliderValue: localCourseNumVisible.toDouble())
+                                                    ),
+                                                    child: Slider(
+                                                      value: localCourseNumVisible.toDouble(),
+                                                      min: 8.0,
+                                                      max: courseNum.toDouble(),
+                                                      divisions: courseNum - 8,
+                                                      onChanged: (double value) {
+                                                        setState(() {
+                                                          localCourseNumVisible = value.round();
+                                                        });
+                                                      },
+                                                      onChangeEnd: (double value) {
+                                                        this.setState(() {
+                                                          courseNumVisible = value.round();
+                                                        });
+                                                      },
+                                                    ),
+                                                  )
                                               ),
                                               /// 是否显示周末
                                               SwitchListTile(
@@ -548,7 +724,8 @@ class ScheduleState extends State<Schedule> {
                             ),
                           ],
                         ),
-                      ),                      Positioned(
+                      ),
+                      Positioned(
                         top: 0,
                         left: 18,
                         child: Text(

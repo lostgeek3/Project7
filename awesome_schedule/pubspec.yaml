@@ -42,6 +42,7 @@ dependencies:
   webview_flutter: ^2.0.13
   riverpod: ^2.5.1
   provider: ^6.1.1
+  flutter_layout_grid: ^2.0.0
 
 dev_dependencies:
   flutter_test:

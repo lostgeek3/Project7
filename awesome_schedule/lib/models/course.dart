@@ -102,22 +102,22 @@ class Course implements Event{
   }
 
   // set函数
-  set name(String name) {
+  set setName(String name) {
     _name = name;
   }
-  set courseID(String courseID) {
+  set setCourseID(String courseID) {
     _courseID = courseID;
   }
-  set timeInfo(List<CourseTimeInfo> timeInfo) {
+  set setTimeInfo(List<CourseTimeInfo> timeInfo) {
     _timeInfo = timeInfo;
   }
-  set location(String location) {
+  set setLocation(String location) {
     _location = location;
   }
-  set teacher(String teacher) {
+  set setTeacher(String teacher) {
     _teacher = teacher;
   }
-  set description(String description) {
+  set setDescription(String description) {
     _description = description;
   }
 

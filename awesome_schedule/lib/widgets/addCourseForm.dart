@@ -36,18 +36,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                 /// 点击后切换选中状态
                 courseFormProvider.toggleWeekSelection(index);
                 /// 如果选中周数符合某种模式，则更新选中的周数模式
-                bool isAll = courseFormProvider.selectedWeeks.every((week) => week);
-                bool isOdd = courseFormProvider.selectedWeeks.asMap().entries.every((entry) => (entry.key % 2 == 0) == entry.value);
-                bool isEven = courseFormProvider.selectedWeeks.asMap().entries.every((entry) => (entry.key % 2 != 0) == entry.value);
-                if (isAll) {
-                  courseFormProvider.selectedWeekPattern = WeekPattern.all;
-                } else if (isOdd) {
-                  courseFormProvider.selectedWeekPattern = WeekPattern.odd;
-                } else if (isEven) {
-                  courseFormProvider.selectedWeekPattern = WeekPattern.even;
-                } else {
-                  courseFormProvider.selectedWeekPattern = WeekPattern.none;
-                }
+                courseFormProvider.updateWeekPattern();
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 120),
@@ -364,7 +353,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
       actions: <Widget>[
         TextButton(
           style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all(Colors.red),
+            foregroundColor: WidgetStateProperty.all(Colors.red),
           ),
           onPressed: () {
             _courseNameController.clear();
@@ -380,12 +369,12 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
           child: const Text('添加'),
           onPressed: () {
               if (_formKey.currentState!.validate()) {
-              /// 创建新课程
-              var courseFormProvider = context.read<CourseFormProvider>();
-              List<bool> _selectedWeeks = courseFormProvider.selectedWeeks;
-              int _selectedDay = courseFormProvider.selectedDay;
-              int _selectedStartPeriod = courseFormProvider.selectedStartPeriod;
-              int _selectedEndPeriod = courseFormProvider.selectedEndPeriod;
+                /// 创建新课程
+                var courseFormProvider = context.read<CourseFormProvider>();
+                List<bool> _selectedWeeks = courseFormProvider.selectedWeeks;
+                int _selectedDay = courseFormProvider.selectedDay;
+                int _selectedStartPeriod = courseFormProvider.selectedStartPeriod;
+                int _selectedEndPeriod = courseFormProvider.selectedEndPeriod;
                 print(courseFormProvider.timeSelections[0].getWeekListStrFormat);
                 var newCourse = Course(
                     _courseNameController.text,

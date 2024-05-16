@@ -24,6 +24,10 @@ class CourseNotifier with ChangeNotifier {
 
   List<Course> get courses => _courses;
 
+  void refresh() {
+    notifyListeners();
+  }
+
   void addCourse(Course course) {
     _courses.add(course);
     notifyListeners();
@@ -54,6 +58,7 @@ class CourseFormProvider extends ChangeNotifier {
   WeekPattern _selectedWeekPattern = WeekPattern.none;
   List<CourseTimeInfo> _timeSelections = [];
 
+  // 初始化状态
   void clear() {
     _selectedWeeks = List<bool>.filled(20, false);
     _selectedDay = 1;
@@ -64,16 +69,45 @@ class CourseFormProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // 从课程时间信息初始化状态
+  void initFromCourseTimeInfo(CourseTimeInfo timeInfo) {
+    selectedDay = timeInfo.weekday;
+    selectedStartPeriod = timeInfo.startSection;
+    selectedEndPeriod = timeInfo.endSection;
+    selectedWeeks = timeInfo.getWeekList.sublist(1);
+    updateWeekPattern();
+  }
+
+  // 更新周数模式
+  void updateWeekPattern() {
+    bool isAll = selectedWeeks.every((element) => element);
+    bool isOdd = selectedWeeks.asMap().entries.every((entry) => (entry.key % 2 == 0) == entry.value);
+    bool isEven = selectedWeeks.asMap().entries.every((entry) => (entry.key % 2 != 0) == entry.value);
+    if (isAll) {
+      selectedWeekPattern = WeekPattern.all;
+    } else if (isOdd) {
+      selectedWeekPattern = WeekPattern.odd;
+    } else if (isEven) {
+      selectedWeekPattern = WeekPattern.even;
+    } else {
+      selectedWeekPattern = WeekPattern.none;
+    }
+    notifyListeners();
+  }
+
+  // 切换某周的选中状态
   void toggleWeekSelection(int index) {
     selectedWeeks[index] = !selectedWeeks[index];
     notifyListeners(); // 通知听众状态已改变
   }
 
+  // 添加时间段
   void addTimeSelection(CourseTimeInfo timeSelection) {
     timeSelections.add(timeSelection);
     notifyListeners(); // 通知监听器数据已更改
   }
 
+  // 删除时间段
   void removeTimeSelection(CourseTimeInfo timeSelection) {
     timeSelections.remove(timeSelection);
     notifyListeners();
