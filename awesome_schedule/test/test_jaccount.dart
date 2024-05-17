@@ -134,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
     await getInfo();
   }
 
-  Future<void> getInfo() async {
+  Future<CourseList?> getInfo() async {
     try {
       var dio = Dio();
       var params = {
@@ -144,8 +144,6 @@ class _MyHomePageState extends State<MyHomePage> {
         'https://api.sjtu.edu.cn/v1/me/lessons/2023-2024-2',
         queryParameters: params,
       );
-
-      parseCourseList(response.data);
 
       // 显示获取到的信息
       showDialog(
@@ -165,6 +163,9 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
       );
+
+      return parseCourseList(response.data);  // 返回CourseList信息
+
     } on DioError catch (e) {
       if (e.response != null) {
         // 请求失败，并且服务器返回了错误信息
@@ -175,6 +176,8 @@ class _MyHomePageState extends State<MyHomePage> {
         print('Error: ${e.message}');
       }
     }
+
+
   }
 }
 
