@@ -174,7 +174,6 @@ class ScheduleState extends State<Schedule> {
   // 设置是否显示周末
   set setShowWeekend(bool show) {
     showWeekend = show;
-    SharedPreferencesUtil.save<bool>('showWeekend', show);
   }
 
   // 月份缩写
@@ -537,7 +536,7 @@ class ScheduleState extends State<Schedule> {
                                                   });
                                                   this.setState(() {
                                                     showWeekend = value;
-                                                    SharedPreferencesUtil.save<bool>('showWeekend', value);
+                                                    MySharedPreferences.saveShowWeekend(value);
                                                   });
                                                 },
                                               ),

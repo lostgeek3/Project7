@@ -45,6 +45,9 @@ Future<void> setSomeDataToDatabase() async {
   courseList.currentWeek = 1;
 
   CourseListDB courseListDB = CourseListDB();
+  if (!await courseListDB.isEmpty()) {
+    return;
+  }
   int index = await courseListDB.addCourseList(courseList);
 
   var courseSet = [

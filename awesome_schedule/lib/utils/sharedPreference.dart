@@ -75,11 +75,16 @@ class MySharedPreferences {
     bool? showWeekendTmp = await SharedPreferencesUtil.read<bool>('showWeekend');
     if (showWeekendTmp == null) {
       // 应用尚未保存首选项时需要初始化设置默认值
-      await SharedPreferencesUtil.save('showWeekend', true);
+      await SharedPreferencesUtil.save<bool>('showWeekend', true);
     }
     else {
       showWeekend = showWeekendTmp;
     }
+  }
+
+  static Future<void> saveShowWeekend(bool flag) async {
+    showWeekend = flag;
+    await SharedPreferencesUtil.save<bool>('showWeekend', flag);
   }
 
   static final MySharedPreferences _instance = MySharedPreferences._privateConstructor();

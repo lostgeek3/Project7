@@ -16,7 +16,8 @@ void main() async {
   // 初始化数据库
   WidgetsFlutterBinding.ensureInitialized();
   await initDatabase();
-  await clearDatabase();
+  // 清空数据库，注释下面这行就可以持久化
+  //await clearDatabase();
   await setSomeDataToDatabase();
   CourseListDB courseListDB = CourseListDB();
   currentCourseList = await courseListDB.getCourseListByID(1);
