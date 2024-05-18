@@ -439,7 +439,7 @@ class ScheduleState extends State<Schedule> {
         }
 
         for (var course in courses) {
-          for (var timeInfo in course.getCourseTimeInfo) {
+          for (var timeInfo in course.getTimeInfo) {
             if (timeInfo.getWeekList[currentWeek] == false) {
               continue;
             }

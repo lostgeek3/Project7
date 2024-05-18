@@ -243,8 +243,8 @@ class CourseListDB {
     return id;
   }
 
-  // 根据id删除一个课程
-  Future<void> deleteCourseByCourseListID(int id, Course course) async {
+  // 根据课程表id和该课程删除一个课程
+  Future<void> deleteCourseByCourse(int id, Course course) async {
     CourseList? courseList = await getCourseListByID(id);
 
     if (courseList == null) {
@@ -273,6 +273,31 @@ class CourseListDB {
     }
     else {
       if (showLog) logger.i('$logTag删除CourseList: course_id = $course_id删除成功');
+    }
+  }
+
+  // 根据课程表id和该课程ID删除一个课程
+  Future<void> deleteCourseByCourseID(int id, int courseID) async {
+    CourseList? courseList = await getCourseListByID(id);
+
+    if (courseList == null) {
+      if (showLog) logger.w('${logTag}CourseList: id = $id不存在，无法继续删除课程');
+      return;
+    }
+
+    CourseListRelationDB courseListRelationDB = CourseListRelationDB();
+
+    CourseDB courseDB = CourseDB();
+
+    await courseDB.deleteCourseByID(courseID);
+
+    int rindex = await courseListRelationDB.deleteCourseListRelationByRelation(CourseListRelation(id, courseID));
+
+    if (rindex == 0) {
+      if (showLog) logger.e('${logTag}CourseList: course_id = $courseID删除错误');
+    }
+    else {
+      if (showLog) logger.i('$logTag删除CourseList: course_id = $courseID删除成功');
     }
   }
 

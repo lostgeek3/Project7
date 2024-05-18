@@ -240,8 +240,8 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
 
     bool isTimeConflict(Course newCourse) {
       for (var course in courseSet) {
-        for (var existingTimeInfo in course.getCourseTimeInfo) {
-          for (var newTimeInfo in newCourse.getCourseTimeInfo) {
+        for (var existingTimeInfo in course.getTimeInfo) {
+          for (var newTimeInfo in newCourse.getTimeInfo) {
             if (newTimeInfo.getWeekList.asMap().entries.any((entry) => entry.value && existingTimeInfo.getWeekList[entry.key]) &&
                 newTimeInfo.weekday == existingTimeInfo.weekday &&
                 ((newTimeInfo.startSection >= existingTimeInfo.startSection && newTimeInfo.startSection <= existingTimeInfo.endSection) ||
@@ -353,7 +353,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
       actions: <Widget>[
         TextButton(
           style: ButtonStyle(
-            foregroundColor: WidgetStateProperty.all(Colors.red),
+            foregroundColor: MaterialStateProperty.all(Colors.red),
           ),
           onPressed: () {
             _courseNameController.clear();
@@ -384,8 +384,6 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                     description: _noteController.text);
                 if (!isTimeConflict(newCourse)) {
                   courseNotifier.addCourse(newCourse);
-                  CourseListDB courseListDB = CourseListDB();
-                  courseListDB.addCourseToCourseListByID(currentCourseListID, newCourse);
                   Navigator.of(context).pop();
                 }
                 else {

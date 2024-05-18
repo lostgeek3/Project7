@@ -128,7 +128,7 @@ class Course implements Event{
   String get getCourseID {
     return _courseID;
   }
-  List<CourseTimeInfo> get getCourseTimeInfo {
+  List<CourseTimeInfo> get getTimeInfo {
     return _timeInfo;
   }
   String get getLocation {

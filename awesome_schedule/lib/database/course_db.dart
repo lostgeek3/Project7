@@ -83,7 +83,7 @@ class CourseDB {
 
     CourseTimeInfoRelationDB courseTimeInfoRelationDB = CourseTimeInfoRelationDB();
 
-    List<CourseTimeInfo> courseTimeInfo = course.getCourseTimeInfo;
+    List<CourseTimeInfo> courseTimeInfo = course.getTimeInfo;
     
     for (var item in courseTimeInfo) {
       int courseTimeInfoID = await timeInfoDB.addCourseTimeInfo(item);
