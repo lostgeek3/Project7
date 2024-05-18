@@ -36,26 +36,27 @@ class _HomePageState extends State<HomePage> {
       child: SafeArea(
         bottom: false,
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           body: Center(
             child: _widgetOptions.elementAt(_selectedIndex),
           ),
           bottomNavigationBar: BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: Icon(Icons.task),
-                label: 'Task',
+                icon: Icon(Icons.task_alt),
+                label: '待办事项',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Schedule',
+                icon: Icon(Icons.calendar_month),
+                label: '课程表',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person),
-                label: 'Profile',
+                label: '我的',
               ),
             ],
             currentIndex: _selectedIndex,
-            selectedItemColor: Colors.blue,
+            selectedItemColor: Theme.of(context).colorScheme.primary,
             onTap: _onItemTapped,
           ),
         )
