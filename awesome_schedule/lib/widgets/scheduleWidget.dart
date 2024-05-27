@@ -621,7 +621,7 @@ class ScheduleState extends State<Schedule> {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return AddCourseDialog();
+                                    return AddCourseDialog(courseNotifier: courseNotifier,);
                                   },
                                 );
                               },
