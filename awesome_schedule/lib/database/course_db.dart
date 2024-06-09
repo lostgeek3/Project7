@@ -1,5 +1,7 @@
 export './course_db.dart';
 import 'dart:async';
+import 'package:awesome_schedule/database/task_db.dart';
+import 'package:awesome_schedule/models/task.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
@@ -79,13 +81,17 @@ class CourseDB {
 
     int index = await _database.insert(_tableName, courseMap);
 
-    // 储存时间信息，并获取其id，储存课程与时间关联表信息
+    // 储存时间信息
     CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
-
     List<CourseTimeInfo> courseTimeInfo = course.getTimeInfo;
-    
     for (var item in courseTimeInfo) {
-      int courseTimeInfoID = await timeInfoDB.addCourseTimeInfo(item, index);
+      int courseTimeInfoId = await timeInfoDB.addCourseTimeInfo(item, index);
+    }
+
+    // 储存任务信息
+    TaskDB taskDB = TaskDB();
+    for (var task in course.tasks) {
+      int taskId = await taskDB.addTask(task, index);
     }
 
     if (showLog) logger.i('$logTag添加Course: id = $index');
@@ -105,6 +111,7 @@ class CourseDB {
       join(await getDatabasesPath(), _databaseName),
     );
     CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
+    TaskDB taskDB = TaskDB();
 
     List<Map<String, dynamic>> resultMap = await _database.query(_tableName);
     List<Course> result = [];
@@ -118,9 +125,11 @@ class CourseDB {
         location: item[_columuName[3]],
         description: item[_columuName[4]],
         teacher: item[_columuName[5]]
-        );
-        course.id = item[_columuName[0]];
-        course.courseListId = item[_columuName[6]];
+      );
+      course.id = item[_columuName[0]];
+      course.courseListId = item[_columuName[6]];
+      // 获取任务信息
+      course.tasks = await taskDB.getTasksByCourseId(course.id);
       result.add(course);
     }
     if (showLog) logger.i('$logTag获取全部Course共${result.length}条');
@@ -135,6 +144,7 @@ class CourseDB {
       join(await getDatabasesPath(), _databaseName),
     );
     CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
+    TaskDB taskDB = TaskDB();
 
     List<Map<String, dynamic>> resultMap = await _database.query(
       _tableName,
@@ -151,9 +161,11 @@ class CourseDB {
         location: item[_columuName[3]],
         description: item[_columuName[4]],
         teacher: item[_columuName[5]]
-        );
-        course.id = item[_columuName[0]];
-        course.courseListId = item[_columuName[6]];
+      );
+      course.id = item[_columuName[0]];
+      course.courseListId = item[_columuName[6]];
+      // 获取任务信息
+      course.tasks = await taskDB.getTasksByCourseId(course.id);
       result.add(course);
     }
     if (showLog) logger.i('$logTag获取Courses共${result.length}条');
@@ -167,6 +179,7 @@ class CourseDB {
     _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
 
     CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
+    TaskDB taskDB = TaskDB();
 
     List<Map<String, dynamic>> resultMap = await _database.query(
       _tableName,
@@ -184,9 +197,11 @@ class CourseDB {
         location: item[_columuName[3]],
         description: item[_columuName[4]],
         teacher: item[_columuName[5]]
-        );
-        course.id = item[_columuName[0]];
-        course.courseListId = item[_columuName[6]];
+      );
+      course.id = item[_columuName[0]];
+      course.courseListId = item[_columuName[6]];
+      // 获取任务信息
+      course.tasks = await taskDB.getTasksByCourseId(course.id);
       result.add(course);
     }
     
@@ -205,10 +220,8 @@ class CourseDB {
   Future<void> deleteCoursesByCourseListId(int courseListId) async {
     // 先获取相关课程
     List<Course> courses = await getCoursesByCourseListId(courseListId);
-    CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
+    TaskDB taskDB = TaskDB();
     for (var item in courses) {
-      // 删除时间信息和课程
-      timeInfoDB.deleteCourseTimeInfosByCourseId(item.id);
       deleteCourseByID(item.id);
     }
   }
@@ -235,6 +248,9 @@ class CourseDB {
     // 删除时间表中对应的数据
     CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
     timeInfoDB.deleteCourseTimeInfosByCourseId(id);
+    // 删除任务
+    TaskDB taskDB = TaskDB();
+    taskDB.deleteTasksByCourseId(id);
 
     if (printDB) {
       await printDatabase();

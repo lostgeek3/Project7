@@ -310,7 +310,7 @@ List<int> readWeekListStr(String str) {
     }
   }
   return weeks;
-}  
+}
 
 /// 枚举：时间周期
 /// 用法：表示事件（课程、任务等）的周期类型

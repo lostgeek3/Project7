@@ -42,7 +42,7 @@ class Course implements Event{
   // 课程任务
   List<Task> tasks = <Task>[];
   // 课程笔记
-  Note note = Note();
+  List<Note> notes = <Note>[];
 
   Course(this._name, this._timeInfo, {String courseID = '', String location = '', String teacher = '', String description = ''}) {
     _courseID = courseID;
