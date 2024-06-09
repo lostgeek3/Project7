@@ -14,6 +14,8 @@ const String logTag = '[class]Task: ';
 /// 类：任务（实现自事件类）
 /// 用法：任务事件的对象
 class Task implements Event{
+  @override
+  late int id;
   // 任务名称
   String _name = '';
   // 任务时间信息

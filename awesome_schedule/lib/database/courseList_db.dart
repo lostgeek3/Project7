@@ -4,9 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:awesome_schedule/database/courseListRelation_db.dart';
 import 'package:awesome_schedule/database/course_db.dart';
-import 'package:awesome_schedule/database/timeInfo_db.dart';
 import 'package:awesome_schedule/models/courseList.dart';
 import '../models/course.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
@@ -21,7 +19,7 @@ const String logTag = '[Database]CourseListDB: ';
 // 是否显示日志
 bool showLog = false;
 // 是否打印数据库
-bool printDB = false;
+bool printDB = true;
 
 class CourseListDB {
   // 数据库实例
@@ -105,7 +103,7 @@ class CourseListDB {
       return 0;
     }
     else {
-      int id = resultMap[0][_columuName[1]];
+      int id = resultMap[0][_columuName[0]];
       if (showLog) logger.i('$logTag获取CourseList: id = $id');
       return id;
     }
@@ -126,12 +124,7 @@ class CourseListDB {
 
     CourseDB courseDB = CourseDB();
 
-    int index = await courseDB.addCourse(course);
-
-    // 在关系表里添加对应关系
-    CourseListRelationDB courseListRelationDB = CourseListRelationDB();
-
-    await courseListRelationDB.addCourseListRelation(CourseListRelation(id, index));
+    int index = await courseDB.addCourse(course, id);
 
     await _database.close();
     return index;
@@ -142,7 +135,6 @@ class CourseListDB {
     _database = await openDatabase(
       join(await getDatabasesPath(), _databaseName),
     );
-    CourseListRelationDB courseListRelationDB = CourseListRelationDB();
 
     CourseDB courseDB = CourseDB();
 
@@ -152,11 +144,10 @@ class CourseListDB {
       CourseList courseList = CourseList(semester: item[_columuName[1]]);
       courseList.weekNum = item[_columuName[3]];
       courseList.currentWeek = item[_columuName[2]];
-
-      List<CourseListRelation> relations = await courseListRelationDB.getCourseListRelationByID(item[_columuName[0]]);
-      for (var item in relations) {
-        Course? course = await courseDB.getCourseByID(item.courseID);
-        if (course == null) continue;
+      courseList.id = item[_columuName[0]];
+      List<Course> courses = await courseDB.getCoursesByCourseListId(item[_columuName[0]]);
+      
+      for (var course in courses) {
         courseList.addCourse(course);
       }
 
@@ -178,11 +169,16 @@ class CourseListDB {
       where: 'id = ?',
       whereArgs: [id]);
     List<CourseList> result = [];
-
+    CourseDB courseDB = CourseDB();
     for (var item in resultMap) {
       CourseList courseList = CourseList(semester: item[_columuName[1]]);
       courseList.weekNum = item[_columuName[3]];
       courseList.currentWeek = item[_columuName[2]];
+      courseList.id = item[_columuName[0]];
+      List<Course> courses = await courseDB.getCoursesByCourseListId(item[_columuName[0]]);
+      for (var course in courses) {
+        courseList.addCourse(course);
+      }
       result.add(courseList);
     }
     await _database.close();
@@ -194,25 +190,30 @@ class CourseListDB {
       if (showLog) logger.i('$logTag获取CourseList: id = $id');
     }
 
-    // 继续获取课程表包含的课程
-    CourseListRelationDB courseListRelationDB = CourseListRelationDB();
-
-    List<CourseListRelation> relations = await courseListRelationDB.getCourseListRelationByID(id);
-    CourseDB courseDB = CourseDB();
-
-    for (var item in relations) {
-      Course? course = await courseDB.getCourseByID(item.courseID);
-      if (course == null) continue;
-      result[0].addCourse(course);
-    }
-
     return result[0];
   }
 
+  // 根据课程表id和课程名删除课程，返回值为课程id
+  Future<int> deleteCourseByNameAndCourseListId(String name, int courseListId) async {
+    CourseDB courseDB = CourseDB();
+    return await courseDB.deleteCourseByNameAndCourseListId(name, courseListId);
+  }
+
   // 根据id删除一条数据
-  Future<int> deleteCourseListByID(int id) async {
+  Future<void> deleteCourseListByID(int id) async {
     _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
 
+    // 先获取课程表
+    CourseList? courseList = await getCourseListByID(id);
+    if (courseList == null) {
+      if (showLog) logger.w('${logTag}CourseList: id = $id不存在，无法删除');
+      return;
+    }
+
+    // 删除课程
+    CourseDB courseDB = CourseDB();
+    courseDB.deleteCoursesByCourseListId(id);
+    // 删除课程表
     int index = await _database.delete(
       _tableName,
       where: 'id = ?',
@@ -220,84 +221,10 @@ class CourseListDB {
 
     await _database.close();
 
-    CourseListRelationDB courseListRelationDB = CourseListRelationDB();
-
-    CourseDB courseDB = CourseDB();
-
-    List<CourseListRelation> relations = await courseListRelationDB.getCourseListRelationByID(index);
-    for (var relation in relations) {
-      await courseDB.deleteCourseByID(relation.courseID);
-    }
-
-    if (index == 0) {
-      if (showLog) logger.w('${logTag}CourseList: id = $id不存在，无法删除');
-    }
-    else {
-      if (showLog) logger.i('$logTag删除CourseList: id = $id');
-    }
+    if (showLog) logger.i('$logTag删除CourseList: id = $id');
 
     if (printDB) {
       await printDatabase();
-    }
-
-    return id;
-  }
-
-  // 根据课程表id和该课程删除一个课程
-  Future<void> deleteCourseByCourse(int id, Course course) async {
-    CourseList? courseList = await getCourseListByID(id);
-
-    if (courseList == null) {
-      if (showLog) logger.w('${logTag}CourseList: id = $id不存在，无法继续删除课程');
-      return;
-    }
-
-    CourseListRelationDB courseListRelationDB = CourseListRelationDB();
-
-    CourseDB courseDB = CourseDB();
-
-    int course_id = await courseDB.getIDByName(course.getName);
-
-    if (course_id == 0) {
-      if (showLog) logger.w('${logTag}CourseList: course_id = $course_id不存在，无法删除');
-      return;
-    }
-    else {
-      await courseDB.deleteCourseByID(course_id);
-    }
-
-    int rindex = await courseListRelationDB.deleteCourseListRelationByRelation(CourseListRelation(id, course_id));
-
-    if (rindex == 0) {
-      if (showLog) logger.e('${logTag}CourseList: course_id = $course_id删除错误');
-    }
-    else {
-      if (showLog) logger.i('$logTag删除CourseList: course_id = $course_id删除成功');
-    }
-  }
-
-  // 根据课程表id和该课程ID删除一个课程
-  Future<void> deleteCourseByCourseID(int id, int courseID) async {
-    CourseList? courseList = await getCourseListByID(id);
-
-    if (courseList == null) {
-      if (showLog) logger.w('${logTag}CourseList: id = $id不存在，无法继续删除课程');
-      return;
-    }
-
-    CourseListRelationDB courseListRelationDB = CourseListRelationDB();
-
-    CourseDB courseDB = CourseDB();
-
-    await courseDB.deleteCourseByID(courseID);
-
-    int rindex = await courseListRelationDB.deleteCourseListRelationByRelation(CourseListRelation(id, courseID));
-
-    if (rindex == 0) {
-      if (showLog) logger.e('${logTag}CourseList: course_id = $courseID删除错误');
-    }
-    else {
-      if (showLog) logger.i('$logTag删除CourseList: course_id = $courseID删除成功');
     }
   }
 

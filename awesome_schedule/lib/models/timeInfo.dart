@@ -63,6 +63,7 @@ class TimeRange {
 /// 类：时间信息
 /// 用法：包含一个周期性事件的时间信息
 class TimeInfo {
+  late int id;
   // 开始时间
   int _startHour = 0;
   int _startMinute = 0;
@@ -129,6 +130,9 @@ class TimeInfo {
 /// 类：课程表的时间信息
 /// 用法：包含课程表的时间信息
 class CourseTimeInfo extends TimeInfo {
+  late int id;
+  // 课程Id
+  late int courseId;
   // 结束周
   final int endWeek;
 

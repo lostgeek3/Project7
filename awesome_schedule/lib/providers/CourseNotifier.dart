@@ -25,26 +25,26 @@ class CourseNotifier with ChangeNotifier {
   List<Course> get courses => _courses;
 
   void refresh(String oldName, Course newCourse) async {
-    notifyListeners();
     CourseDB courseDB = CourseDB();
-    int courseID = await courseDB.getIDByName(oldName);
+    int courseID = await courseDB.getIDByName(oldName, currentCourseListID);
     CourseListDB courseListDB = CourseListDB();
-    await courseListDB.deleteCourseByCourseID(currentCourseListID, courseID);
+    await courseListDB.deleteCourseByNameAndCourseListId(oldName, currentCourseListID);
     await courseListDB.addCourseToCourseListByID(currentCourseListID, newCourse);
+    notifyListeners();
   }
 
   void addCourse(Course course) async {
     _courses.add(course);
-    notifyListeners();
     CourseListDB courseListDB = CourseListDB();
     await courseListDB.addCourseToCourseListByID(currentCourseListID, course);
+    notifyListeners();
   }
 
   void removeCourse(Course course) async {
     _courses.remove(course);
-    notifyListeners();
     CourseListDB courseListDB = CourseListDB();
-    await courseListDB.deleteCourseByCourse(currentCourseListID, course);
+    await courseListDB.deleteCourseByNameAndCourseListId(course.getName, currentCourseListID);
+    notifyListeners();
   }
 
   void initFromCurrentCourseList() {

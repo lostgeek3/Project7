@@ -16,6 +16,10 @@ const String logTag = '[class]Course: ';
 /// 类：课程（实现自事件类）
 /// 用法：课程事件的对象
 class Course implements Event{
+  @override
+  late int id;
+  // 课程表ID
+  late int courseListId;
   // 课程ID
   String _courseID = '';
   // 课程名称

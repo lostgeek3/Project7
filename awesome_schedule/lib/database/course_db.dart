@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:awesome_schedule/database/courseTimeInfoRelation_db.dart';
 import 'package:awesome_schedule/database/timeInfo_db.dart';
 import '../models/course.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
@@ -19,7 +18,7 @@ const String logTag = '[Database]CourseDB: ';
 // 是否显示日志
 bool showLog = false;
 // 是否打印数据库
-bool printDB = false;
+bool printDB = true;
 
 class CourseDB {
   // 数据库实例
@@ -34,15 +33,16 @@ class CourseDB {
   late String _sql;
 
   Future<void> initDatabase() async {
-    _columuName = ['id', 'courseID', 'name', 'location', 'description', 'teacher'];
+    _columuName = ['id', 'courseID', 'name', 'location', 'description', 'teacher', 'courseListId'];
 
     _sql = 'CREATE TABLE IF NOT EXISTS $_tableName ('
     '${_columuName[0]} INTEGER PRIMARY KEY AUTOINCREMENT,'
-    '${_columuName[1]} INTEGER NOT NULL,'
+    '${_columuName[1]} TEXT NOT NULL,'
     '${_columuName[2]} TEXT NOT NULL,'
     '${_columuName[3]} TEXT NOT NULL,'
     '${_columuName[4]} TEXT NOT NULL,'
-    '${_columuName[5]} TEXT NOT NULL)';
+    '${_columuName[5]} TEXT NOT NULL,'
+    '${_columuName[6]} INTEGER)';
 
     try {
       // 数据库文件路径
@@ -62,8 +62,8 @@ class CourseDB {
     }
   }
 
-  // 添加一个课程
-  Future<int> addCourse(Course course) async {
+  // 给课程表添加一个课程
+  Future<int> addCourse(Course course, int courseListId) async {
     _database = await openDatabase(
       join(await getDatabasesPath(), _databaseName),
     );
@@ -73,7 +73,8 @@ class CourseDB {
       _columuName[2]: course.getName,
       _columuName[3]: course.getLocation,
       _columuName[4]: course.getDescription,
-      _columuName[5]: course.getTeacher
+      _columuName[5]: course.getTeacher,
+      _columuName[6]: courseListId
     };
 
     int index = await _database.insert(_tableName, courseMap);
@@ -81,13 +82,10 @@ class CourseDB {
     // 储存时间信息，并获取其id，储存课程与时间关联表信息
     CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
 
-    CourseTimeInfoRelationDB courseTimeInfoRelationDB = CourseTimeInfoRelationDB();
-
     List<CourseTimeInfo> courseTimeInfo = course.getTimeInfo;
     
     for (var item in courseTimeInfo) {
-      int courseTimeInfoID = await timeInfoDB.addCourseTimeInfo(item);
-      courseTimeInfoRelationDB.addCourseTimeInfoRelation(CourseTimeInfoRelation(index, courseTimeInfoID));
+      int courseTimeInfoID = await timeInfoDB.addCourseTimeInfo(item, index);
     }
 
     if (showLog) logger.i('$logTag添加Course: id = $index');
@@ -108,31 +106,57 @@ class CourseDB {
     );
     CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
 
-    CourseTimeInfoRelationDB courseTimeInfoRelationDB = CourseTimeInfoRelationDB();
-
     List<Map<String, dynamic>> resultMap = await _database.query(_tableName);
     List<Course> result = [];
     for (var item in resultMap) {
-      // 根据课程id获取关联表信息
-      List<CourseTimeInfoRelation> courseTimeInfoRelations = await courseTimeInfoRelationDB.getCourseTimeInfoRelationByID(item[_columuName[0]]);
-      List<CourseTimeInfo> courseTimeInfos = [];
-
-      for (var relation in courseTimeInfoRelations) {
-        CourseTimeInfo? courseTimeInfo = await timeInfoDB.getCourseTimeInfoByID(relation.courseTimeInfoID);
-        if (courseTimeInfo == null)  continue;
-        courseTimeInfos.add(courseTimeInfo);
-      }
-
-      result.add(Course(
+      // 根据课程id获取时间信息
+      List<CourseTimeInfo> courseTimeInfos = await timeInfoDB.getCourseTimeInfosByCourseId(item[_columuName[0]]);
+      Course course = Course(
         item[_columuName[2]],
         courseTimeInfos,
         courseID: item[_columuName[1]],
         location: item[_columuName[3]],
         description: item[_columuName[4]],
         teacher: item[_columuName[5]]
-        ));
+        );
+        course.id = item[_columuName[0]];
+        course.courseListId = item[_columuName[6]];
+      result.add(course);
     }
     if (showLog) logger.i('$logTag获取全部Course共${result.length}条');
+
+    await _database.close();
+    return result;
+  }
+
+  // 根据课程表id获取数据
+  Future<List<Course>> getCoursesByCourseListId(int courseListId) async {
+    _database = await openDatabase(
+      join(await getDatabasesPath(), _databaseName),
+    );
+    CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
+
+    List<Map<String, dynamic>> resultMap = await _database.query(
+      _tableName,
+      where: 'courseListId = ?',
+      whereArgs: [courseListId]);
+    List<Course> result = [];
+    for (var item in resultMap) {
+      // 根据课程id获取时间信息
+      List<CourseTimeInfo> courseTimeInfos = await timeInfoDB.getCourseTimeInfosByCourseId(item[_columuName[0]]);
+      Course course = Course(
+        item[_columuName[2]],
+        courseTimeInfos,
+        courseID: item[_columuName[1]],
+        location: item[_columuName[3]],
+        description: item[_columuName[4]],
+        teacher: item[_columuName[5]]
+        );
+        course.id = item[_columuName[0]];
+        course.courseListId = item[_columuName[6]];
+      result.add(course);
+    }
+    if (showLog) logger.i('$logTag获取Courses共${result.length}条');
 
     await _database.close();
     return result;
@@ -144,8 +168,6 @@ class CourseDB {
 
     CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
 
-    CourseTimeInfoRelationDB courseTimeInfoRelationDB = CourseTimeInfoRelationDB();
-
     List<Map<String, dynamic>> resultMap = await _database.query(
       _tableName,
       where: 'id = ?',
@@ -153,24 +175,19 @@ class CourseDB {
     List<Course> result = [];
 
     for (var item in resultMap) {
-      // 根据课程id获取关联表信息
-      List<CourseTimeInfoRelation> courseTimeInfoRelations = await courseTimeInfoRelationDB.getCourseTimeInfoRelationByID(item[_columuName[0]]);
-      List<CourseTimeInfo> courseTimeInfos = [];
-
-      for (var relation in courseTimeInfoRelations) {
-        CourseTimeInfo? courseTimeInfo = await timeInfoDB.getCourseTimeInfoByID(relation.courseTimeInfoID);
-        if (courseTimeInfo == null)  continue;
-        courseTimeInfos.add(courseTimeInfo);
-      }
-
-      result.add(Course(
+      // 根据课程id获取时间信息
+      List<CourseTimeInfo> courseTimeInfos = await timeInfoDB.getCourseTimeInfosByCourseId(item[_columuName[6]]);
+      Course course = Course(
         item[_columuName[2]],
         courseTimeInfos,
         courseID: item[_columuName[1]],
         location: item[_columuName[3]],
         description: item[_columuName[4]],
         teacher: item[_columuName[5]]
-        ));
+        );
+        course.id = item[_columuName[0]];
+        course.courseListId = item[_columuName[6]];
+      result.add(course);
     }
     
     await _database.close();
@@ -181,6 +198,18 @@ class CourseDB {
     else {
       if (showLog) logger.i('$logTag获取Course: id = $id');
       return result[0];
+    }
+  }
+
+  // 根据课程表id删除
+  Future<void> deleteCoursesByCourseListId(int courseListId) async {
+    // 先获取相关课程
+    List<Course> courses = await getCoursesByCourseListId(courseListId);
+    CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
+    for (var item in courses) {
+      // 删除时间信息和课程
+      timeInfoDB.deleteCourseTimeInfosByCourseId(item.id);
+      deleteCourseByID(item.id);
     }
   }
 
@@ -203,16 +232,9 @@ class CourseDB {
       if (showLog) logger.i('$logTag删除Course: id = $id');
     }
 
-    // 删除关联表中对应的数据
+    // 删除时间表中对应的数据
     CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
-
-    CourseTimeInfoRelationDB courseTimeInfoRelationDB = CourseTimeInfoRelationDB();
-
-    List<CourseTimeInfoRelation> relations = await courseTimeInfoRelationDB.getCourseTimeInfoRelationByID(id);
-    for (var relation in relations) {
-      await timeInfoDB.deleteCourseTimeInfoByID(relation.courseTimeInfoID);
-    }
-    courseTimeInfoRelationDB.deleteTimeInfoRelationByID(id);
+    timeInfoDB.deleteCourseTimeInfosByCourseId(id);
 
     if (printDB) {
       await printDatabase();
@@ -221,14 +243,14 @@ class CourseDB {
     return id;
   }
 
-  // 根据课程名获取id
-  Future<int> getIDByName(String name) async {
+  // 根据课程名和课程表id获取id
+  Future<int> getIDByName(String name, int courseListId) async {
     _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
 
     List<Map<String, dynamic>> resultMap = await _database.query(
       _tableName,
-      where: '${_columuName[2]} = ?',
-      whereArgs: [name],
+      where: '${_columuName[2]} = ? AND ${_columuName[6]} = ?',
+      whereArgs: [name, courseListId],
       limit: 1);
 
     await _database.close();
@@ -244,9 +266,9 @@ class CourseDB {
     }
   }
 
-  // 根据课程名删除一条数据
-  Future<int> deleteCourseByName(String name) async {
-    int id = await getIDByName(name);
+  // 根据课程名和课程表id删除一条数据
+  Future<int> deleteCourseByNameAndCourseListId(String name, int courseListId) async {
+    int id = await getIDByName(name, courseListId);
 
     await deleteCourseByID(id);
 

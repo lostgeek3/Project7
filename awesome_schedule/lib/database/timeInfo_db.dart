@@ -15,7 +15,7 @@ const String logTag = '[Database]TimeInfoDB: ';
 // 是否显示日志
 bool showLog = false;
 // 是否打印数据库
-bool printDB = false;
+bool printDB = true;
 
 class CourseTimeInfoDB {
   // 数据库实例
@@ -41,7 +41,8 @@ class CourseTimeInfoDB {
       'weekListStr',
       'weekday',
       'startSection',
-      'endSection'];
+      'endSection',
+      'courseId'];
 
     _sql = 'CREATE TABLE IF NOT EXISTS $_tableName ('
     '${_columuName[0]} INTEGER PRIMARY KEY AUTOINCREMENT,'
@@ -53,7 +54,8 @@ class CourseTimeInfoDB {
     '${_columuName[6]} TEXT NOT NULL,'
     '${_columuName[7]} INTEGER NOT NULL,'
     '${_columuName[8]} INTEGER NOT NULL,'
-    '${_columuName[9]} INTEGER NOT NULL)';
+    '${_columuName[9]} INTEGER NOT NULL,'
+    '${_columuName[10]} INTEGER)';
 
     try {
       // 数据库文件路径
@@ -73,8 +75,8 @@ class CourseTimeInfoDB {
     }
   }
 
-  // 添加一条数据
-  Future<int> addCourseTimeInfo(CourseTimeInfo timeInfo) async {
+  // 给课程添加一条时间信息
+  Future<int> addCourseTimeInfo(CourseTimeInfo timeInfo, int courseId) async {
     _database = await openDatabase(
       join(await getDatabasesPath(), _databaseName),
     );
@@ -88,7 +90,8 @@ class CourseTimeInfoDB {
       _columuName[6]: timeInfo.getWeekListStr(),
       _columuName[7]: timeInfo.getWeekday,
       _columuName[8]: timeInfo.getStartSection,
-      _columuName[9]: timeInfo.getEndSection
+      _columuName[9]: timeInfo.getEndSection,
+      _columuName[10]: courseId
     };
     int index = await _database.insert(_tableName, timeInfoMap);
     if (showLog) logger.i('$logTag添加TimeInfo: id = $index');
@@ -121,6 +124,7 @@ class CourseTimeInfoDB {
         weekday: item[_columuName[7]],
         startSection: item[_columuName[8]],
         endSection: item[_columuName[9]]);
+      courseTimeInfo.courseId = item[_columuName[10]];
       result.add(courseTimeInfo);
     }
     if (showLog) logger.i('$logTag获取全部TimeInfo共${result.length}条');
@@ -149,6 +153,7 @@ class CourseTimeInfoDB {
         weekday: item[_columuName[7]],
         startSection: item[_columuName[8]],
         endSection: item[_columuName[9]]);
+      courseTimeInfo.courseId = item[_columuName[10]];
       result.add(courseTimeInfo);
     }
     await _database.close();
@@ -160,6 +165,37 @@ class CourseTimeInfoDB {
       if (showLog) logger.i('$logTag获取CourseTimeInfo: id = $id');
       return result[0];
     }
+  }
+
+  // 根据课程Id获取所有时间信息
+  Future<List<CourseTimeInfo>> getCourseTimeInfosByCourseId(int courseId) async {
+    _database = await openDatabase(
+      join(await getDatabasesPath(), _databaseName),
+    );
+
+    List<Map<String, dynamic>> resultMap = await _database.query(
+      _tableName,
+      where: 'courseId = ?',
+      whereArgs: [courseId]);
+    List<CourseTimeInfo> result = [];
+    for (var item in resultMap) {
+      CourseTimeInfo courseTimeInfo = CourseTimeInfo(
+        item[_columuName[1]],
+        item[_columuName[2]],
+        item[_columuName[3]],
+        item[_columuName[4]],
+        endWeek: item[_columuName[5]],
+        weeks: readWeekListStr(item[_columuName[6]]),
+        weekday: item[_columuName[7]],
+        startSection: item[_columuName[8]],
+        endSection: item[_columuName[9]]);
+      courseTimeInfo.courseId = item[_columuName[10]];
+      result.add(courseTimeInfo);
+    }
+    if (showLog) logger.i('$logTag获取TimeInfo共${result.length}条');
+
+    await _database.close();
+    return result;
   }
 
   // 根据id删除一条数据
@@ -186,6 +222,29 @@ class CourseTimeInfoDB {
     
     if (index == 0) return index;
     return id;
+  }
+
+  // 根据课程id删除所有时间信息
+  Future<void> deleteCourseTimeInfosByCourseId(int courseId) async {
+    _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
+
+    int index = await _database.delete(
+      _tableName,
+      where: 'courseId = ?',
+      whereArgs: [courseId]);
+
+    await _database.close();
+
+    if (index == 0) {
+      if (showLog) logger.w('${logTag}CourseTimeInfo: courseId = $courseId不存在，无法删除');
+    }
+    else {
+      if (showLog) logger.i('$logTag删除CourseTimeInfos: courseId = $courseId');
+    }
+
+    if (printDB) {
+      await printDatabase();
+    }
   }
 
   // 清空数据库
