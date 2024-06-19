@@ -74,7 +74,7 @@ class ActivityDB {
       join(await getDatabasesPath(), _databaseName),
     );
 
-    Map<String, Object?> timeInfoMap = {
+    Map<String, Object?> map = {
       _columuName[1]: activity.getName,
       _columuName[2]: activity.getStartTime.toIso8601String(),
       _columuName[3]: activity.getEndTime.toIso8601String(),
@@ -82,7 +82,7 @@ class ActivityDB {
       _columuName[5]: activity.getDescription,
       _columuName[6]: activity.getActivityType.index
     };
-    int index = await _database.insert(_tableName, timeInfoMap);
+    int index = await _database.insert(_tableName, map);
     if (showLog) logger.i('$logTag添加Activity: id = $index');
 
     await _database.close();

@@ -63,7 +63,6 @@ class TimeRange {
 /// 类：时间信息
 /// 用法：包含一个周期性事件的时间信息
 class TimeInfo {
-  late int id;
   // 开始时间
   int _startHour = 0;
   int _startMinute = 0;

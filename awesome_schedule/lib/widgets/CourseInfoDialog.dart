@@ -1,3 +1,4 @@
+import 'package:awesome_schedule/utils/common.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -337,6 +338,17 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
         )
       ),
       actions: <Widget>[
+        if (!_isEditing)
+          // 编辑笔记按钮
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/noteList', arguments: NoteListArguments(widget.course));
+            },
+            style: ButtonStyle(
+              foregroundColor: MaterialStateProperty.all(Colors.blue),
+            ),
+            child: const Text('课程笔记')
+          ),
         if (_isEditing)
         /// 取消按钮
           TextButton(
@@ -407,7 +419,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                 setState(() {
                   _isEditing = false;
                 });
-                widget.courseNotifier.refresh(oldName, widget.course);
+                widget.courseNotifier.refresh(widget.course);
               }
             },
           )

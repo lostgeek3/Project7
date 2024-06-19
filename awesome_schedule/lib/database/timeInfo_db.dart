@@ -94,6 +94,8 @@ class CourseTimeInfoDB {
       _columuName[10]: courseId
     };
     int index = await _database.insert(_tableName, timeInfoMap);
+    timeInfo.id = index;
+    timeInfo.courseId = courseId;
     if (showLog) logger.i('$logTag添加TimeInfo: id = $index');
 
     await _database.close();
@@ -124,6 +126,7 @@ class CourseTimeInfoDB {
         weekday: item[_columuName[7]],
         startSection: item[_columuName[8]],
         endSection: item[_columuName[9]]);
+      courseTimeInfo.id = item[_columuName[0]];
       courseTimeInfo.courseId = item[_columuName[10]];
       result.add(courseTimeInfo);
     }
@@ -153,6 +156,7 @@ class CourseTimeInfoDB {
         weekday: item[_columuName[7]],
         startSection: item[_columuName[8]],
         endSection: item[_columuName[9]]);
+      courseTimeInfo.id = item[_columuName[0]];
       courseTimeInfo.courseId = item[_columuName[10]];
       result.add(courseTimeInfo);
     }
@@ -189,10 +193,42 @@ class CourseTimeInfoDB {
         weekday: item[_columuName[7]],
         startSection: item[_columuName[8]],
         endSection: item[_columuName[9]]);
+      courseTimeInfo.id = item[_columuName[0]];
       courseTimeInfo.courseId = item[_columuName[10]];
       result.add(courseTimeInfo);
     }
     if (showLog) logger.i('$logTag获取TimeInfo共${result.length}条');
+
+    await _database.close();
+    return result;
+  }
+
+  // 根据id更新数据
+  Future<int> updateCourseTimeInfo(CourseTimeInfo timeInfo) async {
+    _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
+
+    Map<String, Object?> timeInfoMap = {
+      _columuName[1]: timeInfo.getStartHour,
+      _columuName[2]: timeInfo.getStartMinute,
+      _columuName[3]: timeInfo.getEndHour,
+      _columuName[4]: timeInfo.getEndMinute,
+      _columuName[5]: timeInfo.getEndWeek,
+      _columuName[6]: timeInfo.getWeekListStr(),
+      _columuName[7]: timeInfo.getWeekday,
+      _columuName[8]: timeInfo.getStartSection,
+      _columuName[9]: timeInfo.getEndSection,
+      _columuName[10]: timeInfo.courseId
+    };
+
+    int result = await _database.update(
+      _tableName,
+      timeInfoMap,
+      where: 'id = ?',
+      whereArgs: [timeInfo.id],
+    );
+    if (printDB) {
+      await printDatabase();
+    }
 
     await _database.close();
     return result;

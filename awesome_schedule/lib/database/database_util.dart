@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:awesome_schedule/database/activity_db.dart';
 import 'package:awesome_schedule/database/courseList_db.dart';
+import 'package:awesome_schedule/database/noteImage_db.dart';
+import 'package:awesome_schedule/database/note_db.dart';
 import 'package:awesome_schedule/database/task_db.dart';
 import 'package:awesome_schedule/database/timeInfo_db.dart';
 import 'package:awesome_schedule/models/courseList.dart';
@@ -9,6 +11,7 @@ import 'package:awesome_schedule/models/timeInfo.dart';
 import 'package:awesome_schedule/utils/common.dart';
 import '../models/course.dart';
 export './database_util.dart';
+import 'package:awesome_schedule/models/note.dart';
 
 // 初始化全局数据库
 Future<void> initDatabase() async {
@@ -22,6 +25,10 @@ Future<void> initDatabase() async {
   await taskDB.initDatabase();
   ActivityDB activityDB = ActivityDB();
   await activityDB.initDatabase();
+  NoteImageDB noteImageDB = NoteImageDB();
+  await noteImageDB.initDatabase();
+  NoteDB noteDB = NoteDB();
+  await noteDB.initDatabase();
 }
 
 // 清空数据库
@@ -37,6 +44,10 @@ Future<void> clearDatabase() async {
   await taskDB.clear();
   ActivityDB activityDB = ActivityDB();
   await activityDB.clear();
+  NoteImageDB noteImageDB = NoteImageDB();
+  await noteImageDB.clear();
+  NoteDB noteDB = NoteDB();
+  await noteDB.clear();
 }
 
 // 若课表数据库为空，则给予一些初始值
@@ -78,4 +89,9 @@ Future<void> setSomeDataToDatabase() async {
   for (var course in courseSet) {
     await courseListDB.addCourseToCourseListByID(index, course);
   }
+
+  Note note = Note('课堂笔记1', DateTime.now());
+  note.courseId = 1;
+  NoteDB noteDB = NoteDB();
+  noteDB.addNote(note);
 }

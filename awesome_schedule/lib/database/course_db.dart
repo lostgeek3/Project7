@@ -80,7 +80,8 @@ class CourseDB {
     };
 
     int index = await _database.insert(_tableName, courseMap);
-
+    course.courseListId = courseListId;
+    course.id = index;
     // 储存时间信息
     CourseTimeInfoDB timeInfoDB = CourseTimeInfoDB();
     List<CourseTimeInfo> courseTimeInfo = course.getTimeInfo;
@@ -220,7 +221,6 @@ class CourseDB {
   Future<void> deleteCoursesByCourseListId(int courseListId) async {
     // 先获取相关课程
     List<Course> courses = await getCoursesByCourseListId(courseListId);
-    TaskDB taskDB = TaskDB();
     for (var item in courses) {
       deleteCourseByID(item.id);
     }
@@ -257,6 +257,39 @@ class CourseDB {
     }
 
     return id;
+  }
+
+  // 根据新课程更新课程信息
+  Future<int> updateCourse(Course course) async {
+    _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
+
+    Map<String, Object?> courseMap = {
+      _columuName[1]: course.getCourseID,
+      _columuName[2]: course.getName,
+      _columuName[3]: course.getLocation,
+      _columuName[4]: course.getDescription,
+      _columuName[5]: course.getTeacher,
+      _columuName[6]: course.courseListId
+    };
+
+    // 更新时间信息
+    CourseTimeInfoDB courseTimeInfoDB = CourseTimeInfoDB();
+    for (var timeInfo in course.getTimeInfo) {
+      courseTimeInfoDB.updateCourseTimeInfo(timeInfo);
+    }
+
+    int result = await _database.update(
+      _tableName,
+      courseMap,
+      where: 'id = ?',
+      whereArgs: [course.id],
+    );
+    if (printDB) {
+      await printDatabase();
+    }
+
+    await _database.close();
+    return result;
   }
 
   // 根据课程名和课程表id获取id

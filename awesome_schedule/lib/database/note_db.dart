@@ -1,48 +1,54 @@
-export './task_db.dart';
+export './note_db.dart';
 import 'dart:async';
-import 'package:flutter/widgets.dart';
+import 'package:awesome_schedule/database/noteImage_db.dart';
+import 'package:awesome_schedule/models/activity.dart';
+import 'package:awesome_schedule/models/note.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import '../models/course.dart';
-import '../models/task.dart';
+import 'package:awesome_schedule/models/timeInfo.dart';
 
 // 日志信息
 var logger = Logger(
   printer: PrettyPrinter(
-    methodCount: 0
-  )
+    methodCount: 0,
+  ),
 );
-const String logTag = '[Database]TaskDB: ';
+const String logTag = '[Database]NoteDB: ';
 // 是否显示日志
 bool showLog = false;
 // 是否打印数据库
 bool printDB = true;
 
-class TaskDB {
+class NoteDB {
   // 数据库实例
   late Database _database;
   // 数据库文件名
-  final String _databaseName = 'task.db';
+  final String _databaseName = 'note.db';
   // 数据库表名
-  final String _tableName = 'tasks';
+  final String _tableName = 'notes';
   // 列名称
   late List<String> _columuName;
   // SQL
   late String _sql;
 
+  // 初始化
   Future<void> initDatabase() async {
-    _columuName = ['id', 'name', 'deadline', 'location', 'description', 'taskType', 'finished', 'courseId'];
+    _columuName = [
+      'id',
+      'title',
+      'content',
+      'noteType',
+      'updateTime',
+      'courseId'];
 
     _sql = 'CREATE TABLE IF NOT EXISTS $_tableName ('
     '${_columuName[0]} INTEGER PRIMARY KEY AUTOINCREMENT,'
     '${_columuName[1]} TEXT NOT NULL,'
     '${_columuName[2]} TEXT NOT NULL,'
-    '${_columuName[3]} TEXT NOT NULL,'
+    '${_columuName[3]} INTEGER NOT NULL,'
     '${_columuName[4]} TEXT NOT NULL,'
-    '${_columuName[5]} INTEGER NOT NULL,'
-    '${_columuName[6]} BIT,'
-    '${_columuName[7]} INTEGER)';
+    '${_columuName[5]} INTEGER NOT NULL)';
 
     try {
       // 数据库文件路径
@@ -62,27 +68,21 @@ class TaskDB {
     }
   }
 
-  // 给课程添加一个任务
-  Future<int> addTask(Task task, int courseId) async {
+  // 添加笔记
+  Future<int> addNote(Note note) async {
     _database = await openDatabase(
       join(await getDatabasesPath(), _databaseName),
     );
 
-    Map<String, Object?> courseMap = {
-      _columuName[1]: task.getName,
-      _columuName[2]: task.getDeadline.toIso8601String(),
-      _columuName[3]: task.getLocation,
-      _columuName[4]: task.getDescription,
-      _columuName[5]: task.getTaskType.index,
-      _columuName[6]: task.getFinished,
-      _columuName[7]: courseId
+    Map<String, Object?> map = {
+      _columuName[1]: note.getTitle,
+      _columuName[2]: note.getContent,
+      _columuName[3]: note.getNoteType.index,
+      _columuName[4]: note.getUpdateTime.toIso8601String(),
+      _columuName[5]: note.courseId
     };
-
-    int index = await _database.insert(_tableName, courseMap);
-    task.courseId = courseId;
-    task.id = index;
-
-    if (showLog) logger.i('$logTag添加Task: id = $index');
+    int index = await _database.insert(_tableName, map);
+    if (showLog) logger.i('$logTag添加Activity: id = $index');
 
     await _database.close();
 
@@ -94,122 +94,101 @@ class TaskDB {
   }
 
   // 获取全部数据
-  Future<List<Task>> getAllTask() async {
+  Future<List<Note>> getAllNote() async {
     _database = await openDatabase(
       join(await getDatabasesPath(), _databaseName),
     );
+    NoteImageDB noteImageDB = NoteImageDB();
 
     List<Map<String, dynamic>> resultMap = await _database.query(_tableName);
-    List<Task> result = [];
+    List<Note> result = [];
     for (var item in resultMap) {
-      Task task = Task(
-        item[_columuName[1]],
-        DateTime.parse(item[_columuName[2]]),
-        location: item[_columuName[3]],
-        description: item[_columuName[4]],
-        taskType: TaskType.values[item[_columuName[5]]]
-      );
-      task.id = item[_columuName[0]];
-      if (item[_columuName[6]]) task.setFinished();
-      task.courseId = item[_columuName[7]];
-      result.add(task);
+      Note note = Note(item[_columuName[1]], DateTime.parse(item[_columuName[4]]));
+      note.setContent = item[_columuName[2]];
+      note.setNoteType = NoteType.values[item[_columuName[3]]];
+      note.id = item[_columuName[0]];
+      note.courseId = item[_columuName[5]];
+      // 获取图片数据
+      note.noteImages = await noteImageDB.getNoteImagesByNoteId(note.id);
+      result.add(note);
     }
-    if (showLog) logger.i('$logTag获取全部Task共${result.length}条');
+    if (showLog) logger.i('$logTag获取全部Note共${result.length}条');
 
     await _database.close();
     return result;
   }
 
-  // 根据课程id获取数据
-  Future<List<Task>> getTasksByCourseId(int courseId) async {
+  // 根据课程Id获取数据
+  Future<List<Note>> getNotesByCourseId(int courseId) async {
     _database = await openDatabase(
       join(await getDatabasesPath(), _databaseName),
     );
+    NoteImageDB noteImageDB = NoteImageDB();
 
     List<Map<String, dynamic>> resultMap = await _database.query(
       _tableName,
       where: 'courseId = ?',
       whereArgs: [courseId]);
-    List<Task> result = [];
+    List<Note> result = [];
     for (var item in resultMap) {
-      Task task = Task(
-        item[_columuName[1]],
-        DateTime.parse(item[_columuName[2]]),
-        location: item[_columuName[3]],
-        description: item[_columuName[4]],
-        taskType: TaskType.values[item[_columuName[5]]]
-      );
-      task.id = item[_columuName[0]];
-      if (item[_columuName[6]]) task.setFinished();
-      task.courseId = item[_columuName[7]];
-      result.add(task);
+      Note note = Note(item[_columuName[1]], DateTime.parse(item[_columuName[4]]));
+      note.setContent = item[_columuName[2]];
+      note.setNoteType = NoteType.values[item[_columuName[3]]];
+      note.courseId = item[_columuName[5]];
+      note.id = item[_columuName[0]];
+      // 获取图片数据
+      note.noteImages = await noteImageDB.getNoteImagesByNoteId(note.id);
+      result.add(note);
     }
-    if (showLog) logger.i('$logTag获取Tasks共${result.length}条');
+    if (showLog) logger.i('$logTag获取Note共${result.length}条');
 
     await _database.close();
     return result;
   }
 
   // 根据id获取一条数据
-  Future<Task?> getTaskByID(int id) async {
+  Future<Note?> getNoteByID(int id) async {
     _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
+    NoteImageDB noteImageDB = NoteImageDB();
 
     List<Map<String, dynamic>> resultMap = await _database.query(
       _tableName,
       where: 'id = ?',
-      whereArgs: [id]);
-    List<Task> result = [];
-
+      whereArgs: [id]
+    );
+    List<Note> result = [];
     for (var item in resultMap) {
-      Task task = Task(
-        item[_columuName[1]],
-        DateTime.parse(item[_columuName[2]]),
-        location: item[_columuName[3]],
-        description: item[_columuName[4]],
-        taskType: TaskType.values[item[_columuName[5]]]
-      );
-      task.id = item[_columuName[0]];
-      if (item[_columuName[6]]) task.setFinished();
-      task.courseId = item[_columuName[7]];
-      result.add(task);
+      Note note = Note(item[_columuName[1]], DateTime.parse(item[_columuName[4]]));
+      note.setContent = item[_columuName[2]];
+      note.setNoteType = NoteType.values[item[_columuName[3]]];
+      note.courseId = item[_columuName[5]];
+      note.id = item[_columuName[0]];
+      // 获取图片数据
+      note.noteImages = await noteImageDB.getNoteImagesByNoteId(note.id);
+      result.add(note);
     }
-    
+
     await _database.close();
     if (result.isEmpty) {
-      if (showLog) logger.w('${logTag}Task: id = $id不存在，无法获取');
+      if (showLog) logger.w('${logTag}Note: id = $id不存在，无法获取');
       return null;
     }
     else {
-      if (showLog) logger.i('$logTag获取Task: id = $id');
+      if (showLog) logger.i('$logTag获取Note: id = $id');
       return result[0];
     }
   }
 
   // 根据课程id删除
-  Future<void> deleteTasksByCourseId(int courseId) async {
-    _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
-
-    int index = await _database.delete(
-      _tableName,
-      where: 'courseId = ?',
-      whereArgs: [courseId]);
-
-    await _database.close();
-
-    if (index == 0) {
-      if (showLog) logger.w('${logTag}Task: courseId = $courseId不存在，无法删除');
-    }
-    else {
-      if (showLog) logger.i('$logTag删除Tasks: courseId = $courseId');
-    }
-
-    if (printDB) {
-      await printDatabase();
+  Future<void> deleteNotesByCourseId(int courseId) async {
+    List<Note> notes = await getNotesByCourseId(courseId);
+    for (var item in notes) {
+      deleteNoteByID(item.id);
     }
   }
 
   // 根据id删除一条数据
-  Future<int> deleteCourseByID(int id) async {
+  Future<int> deleteNoteByID(int id) async {
     _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
 
     int index = await _database.delete(
@@ -220,17 +199,21 @@ class TaskDB {
     await _database.close();
 
     if (index == 0) {
-      if (showLog) logger.w('${logTag}Task: id = $id不存在，无法删除');
-      return 0;
+      if (showLog) logger.w('${logTag}Note: id = $id不存在，无法删除');
     }
     else {
-      if (showLog) logger.i('$logTag删除Task: id = $id');
+      if (showLog) logger.i('$logTag删除Note: id = $id');
     }
+
+    // 删除图片数据
+    NoteImageDB noteImageDB = NoteImageDB();
+    noteImageDB.deleteNoteImagesByNoteId(id);
 
     if (printDB) {
       await printDatabase();
     }
-
+    
+    if (index == 0) return index;
     return id;
   }
 
@@ -249,7 +232,7 @@ class TaskDB {
 
   // 数据库是否为空
   Future<bool> isEmpty() async {
-    List<Task> result = await getAllTask();
+    List<Note> result = await getAllNote();
     if (result.isEmpty) {
       return true;
     }
@@ -283,12 +266,11 @@ class TaskDB {
     await _database.close();
   }
 
-  // 单例模式，确保全局只有一个数据库管理实例
-  static final TaskDB _instance = TaskDB._internal();
+  static final NoteDB _instance = NoteDB._internal();
 
-  TaskDB._internal();
+  NoteDB._internal();
 
-  factory TaskDB() {
+  factory NoteDB() {
     return _instance;
   }
 }

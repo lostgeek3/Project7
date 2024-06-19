@@ -382,6 +382,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                     location: _locationController.text,
                     teacher: _teacherController.text,
                     description: _noteController.text);
+                newCourse.courseListId = currentCourseListID;
                 if (!isTimeConflict(newCourse)) {
                   courseNotifier.addCourse(newCourse);
                   Navigator.of(context).pop();
