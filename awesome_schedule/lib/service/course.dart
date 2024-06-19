@@ -105,23 +105,7 @@ Future<CourseList?> getCourses(BuildContext context, String access_token) async 
 
     CourseList courseList = parseCourseList(response.data); // 返回CourseList信息
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('提示'),
-          content: Text('成功导入课表。'),
-          actions: <Widget>[
-            TextButton(
-              child: Text('确定'),
-              onPressed: () {
-                Navigator.of(context).pop();  // 关闭对话框
-              },
-            ),
-          ],
-        );
-      },
-    );
+    
 
     return courseList;
 
