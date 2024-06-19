@@ -18,6 +18,8 @@ class Task implements Event{
   late int id;
   // 课程id
   late int courseId;
+  // 课程名称
+  late String courseName;
   // 任务名称
   String _name = '';
   // 截止时间

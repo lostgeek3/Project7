@@ -7,6 +7,7 @@ import 'package:awesome_schedule/database/note_db.dart';
 import 'package:awesome_schedule/database/task_db.dart';
 import 'package:awesome_schedule/database/timeInfo_db.dart';
 import 'package:awesome_schedule/models/courseList.dart';
+import 'package:awesome_schedule/models/task.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
 import 'package:awesome_schedule/utils/common.dart';
 import '../models/course.dart';
@@ -85,6 +86,12 @@ Future<void> setSomeDataToDatabase() async {
         teacher: '李四',
         description: '这是一门代数课'),
   ];
+
+  courseSet[0].addTask(Task('作业1', DateTime(2024, 6, 20, 23, 59), location: '宿舍', description: '高数作业1', taskType: TaskType.homework));
+  courseSet[0].addTask(Task('作业2', DateTime(2024, 6, 21, 23, 59), location: '宿舍', description: '高数作业2', taskType: TaskType.homework));
+  courseSet[1].addTask(Task('Lab1', DateTime(2024, 6, 22, 23, 59), location: '图书馆', description: 'Lab1', taskType: TaskType.lab));
+  courseSet[1].addTask(Task('作业1', DateTime(2024, 6, 23, 23, 59), location: '自习室', description: '线代作业1', taskType: TaskType.homework));
+  courseSet[1].addTask(Task('作业2', DateTime(2024, 6, 24, 23, 59), location: '教室', description: '线代作业1', taskType: TaskType.homework));
 
   for (var course in courseSet) {
     await courseListDB.addCourseToCourseListByID(index, course);

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:awesome_schedule/database/courseList_db.dart';
 import 'package:awesome_schedule/models/courseList.dart';
+import 'package:awesome_schedule/models/task.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
 import 'package:flutter/foundation.dart';
 import 'package:awesome_schedule/models/course.dart';
@@ -26,7 +27,6 @@ class CourseNotifier with ChangeNotifier {
 
   void refresh(Course newCourse) async {
     CourseDB courseDB = CourseDB();
-    CourseListDB courseListDB = CourseListDB();
     await courseDB.updateCourse(newCourse);
     notifyListeners();
   }
@@ -52,6 +52,18 @@ class CourseNotifier with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  List<Task> getAllTasks() {
+    List<Task> tasks = <Task>[];
+    for (var course in courses) {
+      for (var task in course.tasks) {
+        task.courseName = course.getName;
+        tasks.add(task);
+      }
+    }
+    return tasks;
+  }
+
   void clear() {
     _courses = [];
   }

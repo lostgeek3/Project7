@@ -110,7 +110,7 @@ class TaskDB {
         taskType: TaskType.values[item[_columuName[5]]]
       );
       task.id = item[_columuName[0]];
-      if (item[_columuName[6]]) task.setFinished();
+      if (item[_columuName[6]] > 0) task.setFinished();
       task.courseId = item[_columuName[7]];
       result.add(task);
     }
@@ -140,7 +140,7 @@ class TaskDB {
         taskType: TaskType.values[item[_columuName[5]]]
       );
       task.id = item[_columuName[0]];
-      if (item[_columuName[6]]) task.setFinished();
+      if (item[_columuName[6]] > 0) task.setFinished();
       task.courseId = item[_columuName[7]];
       result.add(task);
     }
@@ -182,6 +182,29 @@ class TaskDB {
     else {
       if (showLog) logger.i('$logTag获取Task: id = $id');
       return result[0];
+    }
+  }
+
+  // 设置完成情况
+  Future<void> updateFinished(Task task) async {
+    _database = await openDatabase(
+      join(await getDatabasesPath(), _databaseName),
+    );
+
+    Map<String, Object?> courseMap = {
+      _columuName[6]: task.getFinished,
+    };
+
+    int index = await _database.update(
+      _tableName, 
+      courseMap, 
+      where: 'id = ?',
+      whereArgs: [task.id]);
+
+    await _database.close();
+
+    if (printDB) {
+      await printDatabase();
     }
   }
 
