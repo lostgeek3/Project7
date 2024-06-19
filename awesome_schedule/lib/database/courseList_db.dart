@@ -73,9 +73,16 @@ class CourseListDB {
     };
 
     int index = await _database.insert(_tableName, courseListMap);
+    courseList.id = index;
     if (showLog) logger.i('$logTag添加CourseList: id = $index');
 
     await _database.close();
+
+    // 添加课程
+    CourseDB courseDB = CourseDB();
+    for (var course in courseList.getAllCourse()) {
+      await courseDB.addCourse(course, index);
+    }
 
     if (printDB) {
       await printDatabase();

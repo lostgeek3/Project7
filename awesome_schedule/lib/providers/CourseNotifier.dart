@@ -52,6 +52,9 @@ class CourseNotifier with ChangeNotifier {
       notifyListeners();
     }
   }
+  void clear() {
+    _courses = [];
+  }
 }
 
 // 快捷选择周数

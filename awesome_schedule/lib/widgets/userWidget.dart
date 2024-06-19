@@ -1,10 +1,15 @@
+import 'package:awesome_schedule/database/courseList_db.dart';
+import 'package:awesome_schedule/database/database_util.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
+import 'package:awesome_schedule/providers/CourseNotifier.dart';
+import 'package:awesome_schedule/utils/common.dart';
 import 'package:flutter/material.dart';
 import '../models/course.dart';
 import '../models/courseList.dart';
 import '../service/course.dart';
 import '../service/user.dart';
 import '../pages/logInPage.dart';
+import 'package:provider/provider.dart';
 
 class UserWidget extends StatefulWidget {
   const UserWidget({super.key});
@@ -18,8 +23,12 @@ class _UserWidgetState extends State<UserWidget> {
   String mail = userStudent.getMail;
   String avatar = userStudent.getAvatar;
 
+  late CourseNotifier courseNotifier;
+
   @override
   Widget build(BuildContext context) {
+    courseNotifier = context.watch<CourseNotifier>();
+
     return Center(
       child: GestureDetector(
         onTap: () {
@@ -80,6 +89,17 @@ class _UserWidgetState extends State<UserWidget> {
               ElevatedButton(
                 onPressed: () async {
                   CourseList? courseList = await loginAndFetchCourses(context);  // 获取到的CourseList
+                  // 更新当前课表并转存数据库
+                  if (courseList != null) {
+                    courseList.weekNum = defalutWeekNum;
+                    await clearDatabase();
+                    await initDatabase();
+                    CourseListDB courseListDB = CourseListDB();
+                    int id = await courseListDB.addCourseList(courseList);
+                    currentCourseList = courseList;
+                    currentCourseListID = id;
+                    courseNotifier.clear();
+                  }
 
                   // 以下是debug输出所有课程的具体内容
                   List<Course>? courses = courseList?.getAllCourse();
@@ -88,7 +108,7 @@ class _UserWidgetState extends State<UserWidget> {
                     print("课程：${course.getName}");
                     print("地点：${course.getLocation}");
                     print("教师：${course.getTeacher}");
-                    List<CourseTimeInfo> timeInfoList = course.getCourseTimeInfo;
+                    List<CourseTimeInfo> timeInfoList = course.getTimeInfo;
                     for (CourseTimeInfo t in timeInfoList) {
                       print("上课时间：");
                       print("星期${t.weekday}");
