@@ -1,4 +1,8 @@
+import 'package:awesome_schedule/models/timeInfo.dart';
 import 'package:flutter/material.dart';
+import '../models/course.dart';
+import '../models/courseList.dart';
+import '../service/course.dart';
 import '../service/user.dart';
 import '../pages/logInPage.dart';
 
@@ -71,10 +75,39 @@ class _UserWidgetState extends State<UserWidget> {
                   color: Colors.grey[600],
                 ),
               ),
+              const SizedBox(height: 16.0), // 添加一些垂直间距
+
+              ElevatedButton(
+                onPressed: () async {
+                  CourseList? courseList = await loginAndFetchCourses(context);  // 获取到的CourseList
+
+                  // 以下是debug输出所有课程的具体内容
+                  List<Course>? courses = courseList?.getAllCourse();
+                  print("以下是课程列表信息:");
+                  for (Course course in courses!) {
+                    print("课程：${course.getName}");
+                    print("地点：${course.getLocation}");
+                    print("教师：${course.getTeacher}");
+                    List<CourseTimeInfo> timeInfoList = course.getCourseTimeInfo;
+                    for (CourseTimeInfo t in timeInfoList) {
+                      print("上课时间：");
+                      print("星期${t.weekday}");
+                      print("第${t.startSection}节课开始");
+                      print("第${t.endSection}节课结束");
+                      print("周数：${t.getWeekListStr()}");
+                    }
+                  }
+                },
+                child: const Text('登录jAccount'),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
+
+
+
 }
