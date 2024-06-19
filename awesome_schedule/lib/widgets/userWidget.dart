@@ -89,34 +89,60 @@ class _UserWidgetState extends State<UserWidget> {
               ElevatedButton(
                 onPressed: () async {
                   CourseList? courseList = await loginAndFetchCourses(context);  // 获取到的CourseList
+                  // 以下是debug输出所有课程的具体内容
+                  List<Course>? courses = courseList?.getAllCourse();
                   // 更新当前课表并转存数据库
                   if (courseList != null) {
+                    // 设置最大周数
+                    defalutWeekNum = 16;
                     courseList.weekNum = defalutWeekNum;
                     await clearDatabase();
                     await initDatabase();
                     CourseListDB courseListDB = CourseListDB();
                     int id = await courseListDB.addCourseList(courseList);
+
+                    for (int i = 0; i < courses!.length; i++) {
+                      await courseListDB.addCourseToCourseListByID(id, courses![i]);
+                    }
+                    
                     currentCourseList = courseList;
                     currentCourseListID = id;
                     courseNotifier.clear();
-                  }
 
-                  // 以下是debug输出所有课程的具体内容
-                  List<Course>? courses = courseList?.getAllCourse();
-                  print("以下是课程列表信息:");
-                  for (Course course in courses!) {
-                    print("课程：${course.getName}");
-                    print("地点：${course.getLocation}");
-                    print("教师：${course.getTeacher}");
-                    List<CourseTimeInfo> timeInfoList = course.getTimeInfo;
-                    for (CourseTimeInfo t in timeInfoList) {
-                      print("上课时间：");
-                      print("星期${t.weekday}");
-                      print("第${t.startSection}节课开始");
-                      print("第${t.endSection}节课结束");
-                      print("周数：${t.getWeekListStr()}");
-                    }
+                    // print("以下是课程列表信息:");
+                    // for (Course course in courses!) {
+                    //   print("课程：${course.getName}");
+                    //   print("地点：${course.getLocation}");
+                    //   print("教师：${course.getTeacher}");
+                    //   List<CourseTimeInfo> timeInfoList = course.getTimeInfo;
+                    //   for (CourseTimeInfo t in timeInfoList) {
+                    //     print("上课时间：");
+                    //     print("星期${t.weekday}");
+                    //     print("第${t.startSection}节课开始");
+                    //     print("第${t.endSection}节课结束");
+                    //     print("周数：${t.getWeekListStr()}");
+                    //   }
+                    // }
+
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('提示'),
+                          content: Text('成功导入课表。'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('确定'),
+                              onPressed: () {
+                                Navigator.of(context).pop();  // 关闭对话框
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   }
+                  
                 },
                 child: const Text('登录jAccount'),
               ),
