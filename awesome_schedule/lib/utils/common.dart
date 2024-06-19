@@ -17,6 +17,6 @@ class NoteListArguments {
 // 笔记页传递参数
 class NoteArguments {
   late Note note;
-
-  NoteArguments(this.note);
+  late bool isNewNote;
+  NoteArguments(this.note, this.isNewNote);
 }

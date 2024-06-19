@@ -1,3 +1,4 @@
+import 'package:awesome_schedule/database/note_db.dart';
 import 'package:awesome_schedule/models/note.dart';
 import 'package:awesome_schedule/utils/common.dart';
 import 'package:flutter/material.dart';
@@ -16,65 +17,27 @@ class NotePage extends StatefulWidget {
 
 class _NotePageState extends State<NotePage> {
   late Note _note;
-  final TextEditingController _markdownController = TextEditingController();
-  final SignatureController _signatureController = SignatureController();
-  bool _isHandwritten = false;
+  late bool _isNewNote;
+  final TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _titleEditingController = TextEditingController();
   bool _isEdited = false;
+  bool _isEditingTitle = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_note.getNoteType == NoteType.Unedited) {
-        _showEditModeDialog();
-      }
-      else {
-        _isHandwritten = _note.getNoteType == NoteType.handwritten ? true : false;
-      }
-    });
-  }
 
-  void _showEditModeDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('选择编辑模式'),
-          content: const Text('请选择笔记模式：'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _note.setNoteType = NoteType.markdown;
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Markdown'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _note.setNoteType = NoteType.handwritten;
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('手写'),
-            ),
-          ],
-        );
-      },
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _textEditingController.text = _note.getContent;
+      _titleEditingController.text = _note.getTitle;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments as NoteArguments;
     _note = args.note;
-
-    if (_note.getNoteType == NoteType.markdown) {
-      _markdownController.text = _note.getContent;
-    }
+    _isNewNote = args.isNewNote;
 
     return WillPopScope(
       onWillPop: () async {
@@ -82,7 +45,7 @@ class _NotePageState extends State<NotePage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_note.getTitle),
+          title: _isEditingTitle ? _buildTitleEditor() : _buildTitleDisplay(),
           actions: [
             IconButton(
               icon: const Icon(Icons.save),
@@ -92,50 +55,53 @@ class _NotePageState extends State<NotePage> {
             ),
           ],
         ),
-        body: _isHandwritten ? Text('1') : Text('2'),
+        body: _buildTextEditor(),
       ),
     );
   }
 
-  Widget _buildMarkdownEditor() {
-    return Column(
-      children: [
-        Expanded(
-          child: Markdown(data: _markdownController.text),
-        ),
-        TextField(
-          controller: _markdownController,
-          maxLines: null,
-          onChanged: (text) {
-            _isEdited = true;
-          },
-        ),
-      ],
+  Widget _buildTitleEditor() {
+    return TextField(
+      controller: _titleEditingController,
+      decoration: const InputDecoration(
+        border: InputBorder.none,
+      ),
+      autofocus: true,
+      onSubmitted: (newTitle) {
+        setState(() {
+          _note.setTitle = newTitle;
+          _isEditingTitle = false;
+          _isEdited = true;
+        });
+      },
     );
   }
 
-  Widget _buildHandwrittenEditor() {
-    return Column(
-      children: [
-        Expanded(
-          child: Signature(
-            controller: _signatureController,
-            backgroundColor: Colors.white,
+  Widget _buildTitleDisplay() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _isEditingTitle = true;
+        });
+      },
+      child: Text(_note.getTitle),
+    );
+  }
+
+  Widget _buildTextEditor() {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          TextField(
+            controller: _textEditingController,
+            maxLines: null,
+            onChanged: (text) {
+              _isEdited = true;
+            },
           ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                _signatureController.clear();
-                _isEdited = true;
-              },
-              child: const Text('清除'),
-            ),
-          ],
-        ),
-      ],
+        ],
+      )
     );
   }
 
@@ -169,14 +135,18 @@ class _NotePageState extends State<NotePage> {
     return true;
   }
 
-  void _saveNote() {
-    if (_isHandwritten) {
-      // 手写模式下保存逻辑
-      // 这里你可以添加保存手写笔记的逻辑
-    } else {
-      _note.setContent = _markdownController.text;
-      // Markdown模式下保存逻辑
-      // 这里你可以添加保存Markdown笔记的逻辑
+  void _saveNote() async {
+    _note.setContent = _textEditingController.text;
+    _note.setTitle = _titleEditingController.text;
+    NoteDB noteDB = NoteDB();
+    _note.setUpdateTime = DateTime.now();
+    if (_isNewNote) {
+      // 保存新笔记
+      await noteDB.addNote(_note);
+    }
+    else {
+      // 更新内容
+      await noteDB.updateNote(_note);
     }
     _isEdited = false;
   }

@@ -18,7 +18,7 @@ const String logTag = '[Database]NoteDB: ';
 // 是否显示日志
 bool showLog = false;
 // 是否打印数据库
-bool printDB = false;
+bool printDB = true;
 
 class NoteDB {
   // 数据库实例
@@ -82,7 +82,8 @@ class NoteDB {
       _columuName[5]: note.courseId
     };
     int index = await _database.insert(_tableName, map);
-    if (showLog) logger.i('$logTag添加Activity: id = $index');
+    note.id = index;
+    if (showLog) logger.i('$logTag添加Note: id = $index');
 
     await _database.close();
 
@@ -137,7 +138,7 @@ class NoteDB {
       note.courseId = item[_columuName[5]];
       note.id = item[_columuName[0]];
       // 获取图片数据
-      note.noteImages = await noteImageDB.getNoteImagesByNoteId(note.id);
+      //note.noteImages = await noteImageDB.getNoteImagesByNoteId(note.id);
       result.add(note);
     }
     if (showLog) logger.i('$logTag获取Note共${result.length}条');
@@ -177,6 +178,28 @@ class NoteDB {
       if (showLog) logger.i('$logTag获取Note: id = $id');
       return result[0];
     }
+  }
+
+  // 更新一个笔记的内容
+  Future<int> updateNote(Note note) async {
+    _database = await openDatabase(
+      join(await getDatabasesPath(), _databaseName),
+    );
+
+    Map<String, Object?> map = {
+      _columuName[1]: note.getTitle,
+      _columuName[2]: note.getContent,
+      _columuName[4]: note.getUpdateTime.toIso8601String(),
+    };
+    int index = await _database.update(_tableName, map, where: 'id = ?', whereArgs: [note.id]);
+
+    await _database.close();
+
+    if (printDB) {
+      await printDatabase();
+    }
+
+    return index;
   }
 
   // 根据课程id删除

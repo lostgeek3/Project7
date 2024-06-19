@@ -13,6 +13,12 @@ class NoteListPage extends StatefulWidget {
 
 class _NoteListPageState extends State<NoteListPage> {
   late Future<List<Note>> _notesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -25,12 +31,12 @@ class _NoteListPageState extends State<NoteListPage> {
         title: Text("${args.course.getName}的课程笔记"),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               // 进入笔记页，创建新笔记
               Note newNote = Note('新笔记', DateTime.now());
               newNote.courseId = args.course.id;
-              Navigator.pushNamed(context, '/note', arguments: NoteArguments(newNote));
+              Navigator.pushNamed(context, '/note', arguments: NoteArguments(newNote, true));
             },
           ),
         ],
@@ -39,11 +45,11 @@ class _NoteListPageState extends State<NoteListPage> {
         future: _notesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('没有笔记'));
+            return const Center(child: Text('没有笔记，请点击右上角创建'));
           } else {
             return ListView.builder(
               itemCount: snapshot.data!.length,
@@ -54,7 +60,7 @@ class _NoteListPageState extends State<NoteListPage> {
                   subtitle: Text(note.getUpdateTime.toString()),
                   onTap: () {
                     // 进入编辑对应笔记页
-                    Navigator.pushNamed(context, '/note', arguments: NoteArguments(note));
+                    Navigator.pushNamed(context, '/note', arguments: NoteArguments(note, false));
                   },
                 );
               },
