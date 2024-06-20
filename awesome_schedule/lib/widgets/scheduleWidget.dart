@@ -513,8 +513,14 @@ class ScheduleState extends State<Schedule> {
                             double textHeight = fontSize! * 1.2;
 
                             /// 一个课程块信息最多显示的行数
-                            var maxNameLines = (constraints.maxHeight / textHeight / 2).floor();
-                            var maxLocationLines = (constraints.maxHeight / textHeight / 2).floor();
+                            var maxNameLines = ((constraints.maxHeight/ 2).floor() / textHeight).floor();
+                            var maxLocationLines = ((constraints.maxHeight / 2).floor() / textHeight).floor();
+                            var maxLines = 2 * maxNameLines;
+                            while (maxLines * textHeight > constraints.maxHeight - 12) {
+                              textHeight -= 1;
+                            }
+
+                            fontSize = textHeight / 1.2;
 
 
                             return Column(

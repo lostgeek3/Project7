@@ -27,17 +27,27 @@ class jAccountPage extends StatelessWidget {
       body: FutureBuilder<String?>(
         future: getLoginURL(),
         builder: (context, snapshot) {
+          print("snapshot: ${snapshot.data}");
           if (snapshot.hasData) {
             // 如果数据已经加载完成，显示WebView
             return WebView(
               initialUrl: snapshot.data!,
               javascriptMode: JavascriptMode.unrestricted, // 启用 JavaScript
               navigationDelegate: (NavigationRequest request) {
+                if (request.url.startsWith('https://jaccount.sjtu.edu.cn/oauth2/a?code=')) {
+                  // 如果跳转的url包含code参数，说明登录成功
+                  print('Navigate to: ${request.url}');
+                  int code = request.url.indexOf('code=');
+                  String newCode = request.url.substring(code + 5);
+                  Navigator.pop(context, newCode);
+                }
                 return NavigationDecision.navigate;
               },
               onPageStarted: (String url) {
                 // 当页面开始加载时调用
+                print('url: $url');
                 int codeIndex = url.indexOf('code=');
+                print('condeIndex: $codeIndex');
                 if (codeIndex != -1) {
                   String newCode = url.substring(codeIndex + 5);
                   Navigator.pop(context, newCode);

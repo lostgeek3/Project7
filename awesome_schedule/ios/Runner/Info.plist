@@ -50,5 +50,10 @@
 	<string>We need access to the photo library to select pictures.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to the camera to take pictures.</string>
+	<key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 </dict>
 </plist>
