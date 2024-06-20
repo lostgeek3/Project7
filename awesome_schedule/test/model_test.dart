@@ -1,9 +1,12 @@
 // model测试文件
 
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:awesome_schedule/models/activity.dart';
 import 'package:awesome_schedule/models/courseList.dart';
+import 'package:awesome_schedule/models/note.dart';
+import 'package:awesome_schedule/models/noteImage.dart';
 import 'package:awesome_schedule/utils/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -137,10 +140,53 @@ void main() {
     courseList.semester = semester;
 
     expect(courseList.getCurrentWeek, currentWeek);
-    
+    expect(courseList.getWeekNum, weekNum);
+    expect(courseList.getSemester, semester);
+
+    courseList.getCourseByName('1');
+    courseList.updateCourse(courseSet[0]);
+    courseList.removeCourseByName('1');
+    courseList.addCourse(courseSet[0]);
+    courseList.getCourseByName('高等数学');
+    courseList.updateCourse(courseSet[0]);
+    courseList.addCourse(courseSet[1]);
+    courseList.removeCourseByName('高等数学');
+    courseList.getAllCourse();
   });
 
-  test('正确性测试', () {
+  test('note test', () {
+    Note note = Note('1', DateTime.now());
+    int id = 1;
+    int courseId = 1;
+    NoteType noteType = NoteType.handwritten;
+    String title = 'note';
+    String content = '114514';
+    DateTime updateTime = DateTime.now();
+
+    note.setContent = content;
+    note.setNoteType = noteType;
+    note.setTitle = title;
+    note.setUpdateTime = updateTime;
+
+    expect(note.noteImages.isEmpty, true);
+    expect(note.getContent, content);
+    expect(note.getTitle, title);
+    expect(note.getNoteType, noteType);
+    expect(note.getUpdateTime, updateTime);
+  });
+
+  test('noteImage test', () {
+    String name = '1';
+    Uint8List image = Uint8List(10);
+    NoteImage noteImage = NoteImage('1', image);
+    noteImage.setName = name;
+    noteImage.setImage = image;
+
+    expect(noteImage.getName, name);
+    expect(noteImage.getImage, image);
+  });
+
+  test('timeInfo test', () {
     final random = Random();
     // 测试CourseTimeInfo的构造正确性
     for (int i = 0; i < 100; i++) {

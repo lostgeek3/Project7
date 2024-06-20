@@ -1,7 +1,6 @@
 import 'package:awesome_schedule/database/note_db.dart';
 import 'package:awesome_schedule/database/task_db.dart';
 import 'package:awesome_schedule/models/note.dart';
-import 'package:awesome_schedule/utils/common.dart';
 import 'package:awesome_schedule/utils/sharedPreference.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,6 +23,7 @@ void main() {
 
     await clearDatabase();
     await initDatabase();
+
   });
 
   test('timeInfo_db测试', () async {

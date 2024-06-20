@@ -70,12 +70,13 @@ class CourseList {
 
   // 根据名称删除课程
   void removeCourseByName(String name) {
-    for (var it in _courseSet) {
-      if (it.getName == name) {
-        _courseSet.remove(it);
-      }
+    int initialLength = _courseSet.length;
+
+    _courseSet.retainWhere((element) => element.getName != name);
+
+    if (initialLength == _courseSet.length) {
+      logger.w('$logTag课程 $name 不存在，无法删除');
     }
-    logger.w('$logTag课程 $name 不存在，无法删除');
   }
 
   // set函数
