@@ -105,7 +105,10 @@ class _UserWidgetState extends State<UserWidget> {
                   );
 
                   CourseList? courseList = await loginAndFetchCourses(context);  // 获取到的CourseList
-                  Navigator.of(context).pop();  // 关闭对话框
+<<<<<<< Updated upstream
+=======
+                  Navigator.of(context).pop();
+>>>>>>> Stashed changes
 
                   List<Course>? courses = courseList?.getAllCourse();
                   // 更新当前课表并转存数据库
@@ -126,16 +129,19 @@ class _UserWidgetState extends State<UserWidget> {
                     currentCourseListID = id;
                     courseNotifier.clear();
 
-
+<<<<<<< Updated upstream
+                  }
+                  Navigator.of(context).pop();  // 关闭对话框
+=======
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('提示'),
-                          content: Text('成功导入课表。'),
+                          title: const Text('提示'),
+                          content: const Text('成功导入课表。'),
                           actions: <Widget>[
                             TextButton(
-                              child: Text('确定'),
+                              child: const Text('确定'),
                               onPressed: () {
                                 Navigator.of(context).pop();  // 关闭对话框
                               },
@@ -145,7 +151,7 @@ class _UserWidgetState extends State<UserWidget> {
                       },
                     );
                   }
-                  
+>>>>>>> Stashed changes
                 },
                 child: const Text('登录jAccount'),
               ),

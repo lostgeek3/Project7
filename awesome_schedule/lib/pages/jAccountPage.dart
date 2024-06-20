@@ -34,13 +34,13 @@ class jAccountPage extends StatelessWidget {
               initialUrl: snapshot.data!,
               javascriptMode: JavascriptMode.unrestricted, // 启用 JavaScript
               navigationDelegate: (NavigationRequest request) {
-                if (request.url.startsWith('https://jaccount.sjtu.edu.cn/oauth2/a?code=')) {
-                  // 如果跳转的url包含code参数，说明登录成功
-                  print('Navigate to: ${request.url}');
-                  int code = request.url.indexOf('code=');
-                  String newCode = request.url.substring(code + 5);
-                  Navigator.pop(context, newCode);
-                }
+                // if (request.url.startsWith('https://jaccount.sjtu.edu.cn/oauth2/a?code=')) {
+                //   // 如果跳转的url包含code参数，说明登录成功
+                //   print('Navigate to: ${request.url}');
+                //   int code = request.url.indexOf('code=');
+                //   String newCode = request.url.substring(code + 5);
+                //   Navigator.pop(context, newCode);
+                // }
                 return NavigationDecision.navigate;
               },
               onPageStarted: (String url) {
