@@ -88,8 +88,25 @@ class _UserWidgetState extends State<UserWidget> {
 
               ElevatedButton(
                 onPressed: () async {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false, // 用户必须点击按钮才能关闭对话框
+                    builder: (BuildContext context) {
+                      return const AlertDialog(
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            CircularProgressIndicator(),
+                            Text("Loading..."),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+
                   CourseList? courseList = await loginAndFetchCourses(context);  // 获取到的CourseList
-                  // 以下是debug输出所有课程的具体内容
+                  Navigator.of(context).pop();  // 关闭对话框
+
                   List<Course>? courses = courseList?.getAllCourse();
                   // 更新当前课表并转存数据库
                   if (courseList != null) {
@@ -109,20 +126,6 @@ class _UserWidgetState extends State<UserWidget> {
                     currentCourseListID = id;
                     courseNotifier.clear();
 
-                    // print("以下是课程列表信息:");
-                    // for (Course course in courses!) {
-                    //   print("课程：${course.getName}");
-                    //   print("地点：${course.getLocation}");
-                    //   print("教师：${course.getTeacher}");
-                    //   List<CourseTimeInfo> timeInfoList = course.getTimeInfo;
-                    //   for (CourseTimeInfo t in timeInfoList) {
-                    //     print("上课时间：");
-                    //     print("星期${t.weekday}");
-                    //     print("第${t.startSection}节课开始");
-                    //     print("第${t.endSection}节课结束");
-                    //     print("周数：${t.getWeekListStr()}");
-                    //   }
-                    // }
 
                     showDialog(
                       context: context,
