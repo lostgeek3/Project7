@@ -311,6 +311,21 @@ void main() {
     expect(timeInfo.getStartMinute, 10);
     expect(timeInfo.getEndMinute, 20);
 
-    
+    CourseTimeInfo courseTimeInfo = CourseTimeInfo(0, 0, 1, 1, endWeek: 20, weekday: 1, startSection: 1, endSection: 2, weeks: [1, 2, 19, 20, 21]);
+    courseTimeInfo.setWeekday = 0;
+    courseTimeInfo.setWeekday = 8;
+    courseTimeInfo.setWeekday = 2;
+    courseTimeInfo.setStartSection = 2;
+    courseTimeInfo.setEndSection = 3;
+    courseTimeInfo.setWeekList = [1, 2, 3, 4, 19, 20, 21];
+    courseTimeInfo.id = 1;
+
+    expect(courseTimeInfo.id, 1);
+    expect(courseTimeInfo.getWeekday, 2);
+    expect(courseTimeInfo.getStartSection, 2);
+    expect(courseTimeInfo.getEndSection, 3);
+    courseTimeInfo.getWeekList;
+    expect(courseTimeInfo.getEndWeek, 20);
+    courseTimeInfo.getWeekListStrFormat;
   });
 }
