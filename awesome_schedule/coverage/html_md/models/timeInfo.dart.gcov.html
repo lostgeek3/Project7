@@ -31,13 +31,13 @@
             <td class="headerValue">lcov_md.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntryLo">11.5&nbsp;%</td>
+            <td class="headerCovTableEntryLo">48.2&nbsp;%</td>
             <td class="headerCovTableEntry">139</td>
-            <td class="headerCovTableEntry">16</td>
+            <td class="headerCovTableEntry">67</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2024-06-20 20:53:54</td>
+            <td class="headerValue">2024-06-20 21:05:12</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -66,8 +66,8 @@
 <span id="L4"><span class="lineNum">       4</span>              : import 'package:logger/logger.dart';</span>
 <span id="L5"><span class="lineNum">       5</span>              : </span>
 <span id="L6"><span class="lineNum">       6</span>              : // 日志信息</span>
-<span id="L7"><span class="lineNum">       7</span> <span class="tlaUNC tlaBgUNC">           0 : var logger = Logger(</span></span>
-<span id="L8"><span class="lineNum">       8</span> <span class="tlaUNC">           0 :   printer: PrettyPrinter(</span></span>
+<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC tlaBgGNC">           3 : var logger = Logger(</span></span>
+<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">           1 :   printer: PrettyPrinter(</span></span>
 <span id="L9"><span class="lineNum">       9</span>              :     methodCount: 0,</span>
 <span id="L10"><span class="lineNum">      10</span>              :   ),</span>
 <span id="L11"><span class="lineNum">      11</span>              : );</span>
@@ -79,46 +79,46 @@
 <span id="L17"><span class="lineNum">      17</span>              :   int endHour;</span>
 <span id="L18"><span class="lineNum">      18</span>              :   int endMinute;</span>
 <span id="L19"><span class="lineNum">      19</span>              : </span>
-<span id="L20"><span class="lineNum">      20</span> <span class="tlaUNC">           0 :   TimeRange(this.startHour, this.startMinute, this.endHour, this.endMinute);</span></span>
-<span id="L21"><span class="lineNum">      21</span> <span class="tlaUNC">           0 :   set setStartHour(int startHour) {</span></span>
-<span id="L22"><span class="lineNum">      22</span> <span class="tlaUNC">           0 :     if (startHour &lt; 0 || startHour &gt; 23) {</span></span>
-<span id="L23"><span class="lineNum">      23</span> <span class="tlaUNC">           0 :       logger.e('$logTag开始小时数不合法');</span></span>
+<span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC">           1 :   TimeRange(this.startHour, this.startMinute, this.endHour, this.endMinute);</span></span>
+<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">           1 :   set setStartHour(int startHour) {</span></span>
+<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">           2 :     if (startHour &lt; 0 || startHour &gt; 23) {</span></span>
+<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">           2 :       logger.e('$logTag开始小时数不合法');</span></span>
 <span id="L24"><span class="lineNum">      24</span>              :       return;</span>
 <span id="L25"><span class="lineNum">      25</span>              :     }</span>
-<span id="L26"><span class="lineNum">      26</span> <span class="tlaUNC">           0 :     this.startHour = startHour;</span></span>
+<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">           1 :     this.startHour = startHour;</span></span>
 <span id="L27"><span class="lineNum">      27</span>              :   }</span>
-<span id="L28"><span class="lineNum">      28</span> <span class="tlaUNC">           0 :   set setStartMinute(int startMinute) {</span></span>
-<span id="L29"><span class="lineNum">      29</span> <span class="tlaUNC">           0 :     if (startMinute &lt; 0 || startMinute &gt; 59) {</span></span>
-<span id="L30"><span class="lineNum">      30</span> <span class="tlaUNC">           0 :       logger.e('$logTag开始分钟数不合法');</span></span>
+<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">           1 :   set setStartMinute(int startMinute) {</span></span>
+<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC">           2 :     if (startMinute &lt; 0 || startMinute &gt; 59) {</span></span>
+<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">           2 :       logger.e('$logTag开始分钟数不合法');</span></span>
 <span id="L31"><span class="lineNum">      31</span>              :       return;</span>
 <span id="L32"><span class="lineNum">      32</span>              :     }</span>
-<span id="L33"><span class="lineNum">      33</span> <span class="tlaUNC">           0 :     this.startMinute = startMinute;</span></span>
+<span id="L33"><span class="lineNum">      33</span> <span class="tlaGNC">           1 :     this.startMinute = startMinute;</span></span>
 <span id="L34"><span class="lineNum">      34</span>              :   }</span>
-<span id="L35"><span class="lineNum">      35</span> <span class="tlaUNC">           0 :   set setEndHour(int endHour) {</span></span>
-<span id="L36"><span class="lineNum">      36</span> <span class="tlaUNC">           0 :     if (endHour &lt; 0 || endHour &gt; 23) {</span></span>
-<span id="L37"><span class="lineNum">      37</span> <span class="tlaUNC">           0 :       logger.e('$logTag结束小时数不合法');</span></span>
+<span id="L35"><span class="lineNum">      35</span> <span class="tlaGNC">           1 :   set setEndHour(int endHour) {</span></span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaGNC">           2 :     if (endHour &lt; 0 || endHour &gt; 23) {</span></span>
+<span id="L37"><span class="lineNum">      37</span> <span class="tlaGNC">           2 :       logger.e('$logTag结束小时数不合法');</span></span>
 <span id="L38"><span class="lineNum">      38</span>              :       return;</span>
 <span id="L39"><span class="lineNum">      39</span>              :     }</span>
-<span id="L40"><span class="lineNum">      40</span> <span class="tlaUNC">           0 :     this.endHour = endHour;</span></span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaGNC">           1 :     this.endHour = endHour;</span></span>
 <span id="L41"><span class="lineNum">      41</span>              :   }</span>
-<span id="L42"><span class="lineNum">      42</span> <span class="tlaUNC">           0 :   set setEndMinute(int endMinute) {</span></span>
-<span id="L43"><span class="lineNum">      43</span> <span class="tlaUNC">           0 :     if (endMinute &lt; 0 || endMinute &gt; 59) {</span></span>
-<span id="L44"><span class="lineNum">      44</span> <span class="tlaUNC">           0 :       logger.e('$logTag结束分钟数不合法');</span></span>
+<span id="L42"><span class="lineNum">      42</span> <span class="tlaGNC">           1 :   set setEndMinute(int endMinute) {</span></span>
+<span id="L43"><span class="lineNum">      43</span> <span class="tlaGNC">           2 :     if (endMinute &lt; 0 || endMinute &gt; 59) {</span></span>
+<span id="L44"><span class="lineNum">      44</span> <span class="tlaGNC">           2 :       logger.e('$logTag结束分钟数不合法');</span></span>
 <span id="L45"><span class="lineNum">      45</span>              :       return;</span>
 <span id="L46"><span class="lineNum">      46</span>              :     }</span>
-<span id="L47"><span class="lineNum">      47</span> <span class="tlaUNC">           0 :     this.endMinute = endMinute;</span></span>
+<span id="L47"><span class="lineNum">      47</span> <span class="tlaGNC">           1 :     this.endMinute = endMinute;</span></span>
 <span id="L48"><span class="lineNum">      48</span>              :   }</span>
-<span id="L49"><span class="lineNum">      49</span> <span class="tlaUNC">           0 :   int get getStartHour {</span></span>
-<span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 :     return startHour;</span></span>
+<span id="L49"><span class="lineNum">      49</span> <span class="tlaGNC">           1 :   int get getStartHour {</span></span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaGNC">           1 :     return startHour;</span></span>
 <span id="L51"><span class="lineNum">      51</span>              :   }</span>
-<span id="L52"><span class="lineNum">      52</span> <span class="tlaUNC">           0 :   int get getStartMinute {</span></span>
-<span id="L53"><span class="lineNum">      53</span> <span class="tlaUNC">           0 :     return startMinute;</span></span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaGNC">           1 :   int get getStartMinute {</span></span>
+<span id="L53"><span class="lineNum">      53</span> <span class="tlaGNC">           1 :     return startMinute;</span></span>
 <span id="L54"><span class="lineNum">      54</span>              :   }</span>
-<span id="L55"><span class="lineNum">      55</span> <span class="tlaUNC">           0 :   int get getEndHour {</span></span>
-<span id="L56"><span class="lineNum">      56</span> <span class="tlaUNC">           0 :     return endHour;</span></span>
+<span id="L55"><span class="lineNum">      55</span> <span class="tlaGNC">           1 :   int get getEndHour {</span></span>
+<span id="L56"><span class="lineNum">      56</span> <span class="tlaGNC">           1 :     return endHour;</span></span>
 <span id="L57"><span class="lineNum">      57</span>              :   }</span>
-<span id="L58"><span class="lineNum">      58</span> <span class="tlaUNC">           0 :   int get getEndMinute {</span></span>
-<span id="L59"><span class="lineNum">      59</span> <span class="tlaUNC">           0 :     return endMinute;</span></span>
+<span id="L58"><span class="lineNum">      58</span> <span class="tlaGNC">           1 :   int get getEndMinute {</span></span>
+<span id="L59"><span class="lineNum">      59</span> <span class="tlaGNC">           1 :     return endMinute;</span></span>
 <span id="L60"><span class="lineNum">      60</span>              :   }</span>
 <span id="L61"><span class="lineNum">      61</span>              : }</span>
 <span id="L62"><span class="lineNum">      62</span>              : </span>
@@ -132,7 +132,7 @@
 <span id="L70"><span class="lineNum">      70</span>              :   int _endHour = 0;</span>
 <span id="L71"><span class="lineNum">      71</span>              :   int _endMinute = 0;</span>
 <span id="L72"><span class="lineNum">      72</span>              : </span>
-<span id="L73"><span class="lineNum">      73</span> <span class="tlaGNC tlaBgGNC">           1 :   TimeInfo(this._startHour, this._startMinute, this._endHour, this._endMinute) {</span></span>
+<span id="L73"><span class="lineNum">      73</span> <span class="tlaGNC">           1 :   TimeInfo(this._startHour, this._startMinute, this._endHour, this._endMinute) {</span></span>
 <span id="L74"><span class="lineNum">      74</span>              : </span>
 <span id="L75"><span class="lineNum">      75</span>              :   }</span>
 <span id="L76"><span class="lineNum">      76</span>              : </span>
@@ -143,47 +143,47 @@
 <span id="L81"><span class="lineNum">      81</span>              :   }</span>
 <span id="L82"><span class="lineNum">      82</span>              : </span>
 <span id="L83"><span class="lineNum">      83</span>              :   // set函数</span>
-<span id="L84"><span class="lineNum">      84</span> <span class="tlaUNC">           0 :   set startHour(int startHour) {</span></span>
-<span id="L85"><span class="lineNum">      85</span> <span class="tlaUNC">           0 :     if (startHour &lt; 0 || startHour &gt; 23) {</span></span>
-<span id="L86"><span class="lineNum">      86</span> <span class="tlaUNC">           0 :       logger.e('$logTag开始小时数不合法');</span></span>
+<span id="L84"><span class="lineNum">      84</span> <span class="tlaGNC tlaBgGNC">           1 :   set startHour(int startHour) {</span></span>
+<span id="L85"><span class="lineNum">      85</span> <span class="tlaGNC">           2 :     if (startHour &lt; 0 || startHour &gt; 23) {</span></span>
+<span id="L86"><span class="lineNum">      86</span> <span class="tlaGNC">           2 :       logger.e('$logTag开始小时数不合法');</span></span>
 <span id="L87"><span class="lineNum">      87</span>              :       return;</span>
 <span id="L88"><span class="lineNum">      88</span>              :     }</span>
-<span id="L89"><span class="lineNum">      89</span> <span class="tlaUNC">           0 :     _startHour = startHour;</span></span>
+<span id="L89"><span class="lineNum">      89</span> <span class="tlaGNC">           1 :     _startHour = startHour;</span></span>
 <span id="L90"><span class="lineNum">      90</span>              :   }</span>
-<span id="L91"><span class="lineNum">      91</span> <span class="tlaUNC">           0 :   set startMinute(int startMinute) {</span></span>
-<span id="L92"><span class="lineNum">      92</span> <span class="tlaUNC">           0 :     if (startMinute &lt; 0 || startMinute &gt; 59) {</span></span>
-<span id="L93"><span class="lineNum">      93</span> <span class="tlaUNC">           0 :       logger.e('$logTag开始分钟数不合法');</span></span>
+<span id="L91"><span class="lineNum">      91</span> <span class="tlaGNC">           1 :   set startMinute(int startMinute) {</span></span>
+<span id="L92"><span class="lineNum">      92</span> <span class="tlaGNC">           2 :     if (startMinute &lt; 0 || startMinute &gt; 59) {</span></span>
+<span id="L93"><span class="lineNum">      93</span> <span class="tlaGNC">           2 :       logger.e('$logTag开始分钟数不合法');</span></span>
 <span id="L94"><span class="lineNum">      94</span>              :       return;</span>
 <span id="L95"><span class="lineNum">      95</span>              :     }</span>
-<span id="L96"><span class="lineNum">      96</span> <span class="tlaUNC">           0 :     _startMinute = startMinute;</span></span>
+<span id="L96"><span class="lineNum">      96</span> <span class="tlaGNC">           1 :     _startMinute = startMinute;</span></span>
 <span id="L97"><span class="lineNum">      97</span>              :   }</span>
-<span id="L98"><span class="lineNum">      98</span> <span class="tlaUNC">           0 :   set endHour(int endHour) {</span></span>
-<span id="L99"><span class="lineNum">      99</span> <span class="tlaUNC">           0 :     if (endHour &lt; 0 || endHour &gt; 23) {</span></span>
-<span id="L100"><span class="lineNum">     100</span> <span class="tlaUNC">           0 :       logger.e('$logTag结束小时数不合法');</span></span>
+<span id="L98"><span class="lineNum">      98</span> <span class="tlaGNC">           1 :   set endHour(int endHour) {</span></span>
+<span id="L99"><span class="lineNum">      99</span> <span class="tlaGNC">           2 :     if (endHour &lt; 0 || endHour &gt; 23) {</span></span>
+<span id="L100"><span class="lineNum">     100</span> <span class="tlaGNC">           2 :       logger.e('$logTag结束小时数不合法');</span></span>
 <span id="L101"><span class="lineNum">     101</span>              :       return;</span>
 <span id="L102"><span class="lineNum">     102</span>              :     }</span>
-<span id="L103"><span class="lineNum">     103</span> <span class="tlaUNC">           0 :     _endHour = endHour;</span></span>
+<span id="L103"><span class="lineNum">     103</span> <span class="tlaGNC">           1 :     _endHour = endHour;</span></span>
 <span id="L104"><span class="lineNum">     104</span>              :   }</span>
-<span id="L105"><span class="lineNum">     105</span> <span class="tlaUNC">           0 :   set endMinute(int endMinute) {</span></span>
-<span id="L106"><span class="lineNum">     106</span> <span class="tlaUNC">           0 :     if (endMinute &lt; 0 || endMinute &gt; 59) {</span></span>
-<span id="L107"><span class="lineNum">     107</span> <span class="tlaUNC">           0 :       logger.e('$logTag结束分钟数不合法');</span></span>
+<span id="L105"><span class="lineNum">     105</span> <span class="tlaGNC">           1 :   set endMinute(int endMinute) {</span></span>
+<span id="L106"><span class="lineNum">     106</span> <span class="tlaGNC">           2 :     if (endMinute &lt; 0 || endMinute &gt; 59) {</span></span>
+<span id="L107"><span class="lineNum">     107</span> <span class="tlaGNC">           2 :       logger.e('$logTag结束分钟数不合法');</span></span>
 <span id="L108"><span class="lineNum">     108</span>              :       return;</span>
 <span id="L109"><span class="lineNum">     109</span>              :     }</span>
-<span id="L110"><span class="lineNum">     110</span> <span class="tlaUNC">           0 :     _endMinute = endMinute;</span></span>
+<span id="L110"><span class="lineNum">     110</span> <span class="tlaGNC">           1 :     _endMinute = endMinute;</span></span>
 <span id="L111"><span class="lineNum">     111</span>              :   }</span>
 <span id="L112"><span class="lineNum">     112</span>              : </span>
 <span id="L113"><span class="lineNum">     113</span>              :   // get函数</span>
-<span id="L114"><span class="lineNum">     114</span> <span class="tlaUNC">           0 :   int get getStartHour {</span></span>
-<span id="L115"><span class="lineNum">     115</span> <span class="tlaUNC">           0 :     return _startHour;</span></span>
+<span id="L114"><span class="lineNum">     114</span> <span class="tlaGNC">           1 :   int get getStartHour {</span></span>
+<span id="L115"><span class="lineNum">     115</span> <span class="tlaGNC">           1 :     return _startHour;</span></span>
 <span id="L116"><span class="lineNum">     116</span>              :   }</span>
-<span id="L117"><span class="lineNum">     117</span> <span class="tlaUNC">           0 :   int get getStartMinute {</span></span>
-<span id="L118"><span class="lineNum">     118</span> <span class="tlaUNC">           0 :     return _startMinute;</span></span>
+<span id="L117"><span class="lineNum">     117</span> <span class="tlaGNC">           1 :   int get getStartMinute {</span></span>
+<span id="L118"><span class="lineNum">     118</span> <span class="tlaGNC">           1 :     return _startMinute;</span></span>
 <span id="L119"><span class="lineNum">     119</span>              :   }</span>
-<span id="L120"><span class="lineNum">     120</span> <span class="tlaUNC">           0 :   int get getEndHour {</span></span>
-<span id="L121"><span class="lineNum">     121</span> <span class="tlaUNC">           0 :     return _endHour;</span></span>
+<span id="L120"><span class="lineNum">     120</span> <span class="tlaGNC">           1 :   int get getEndHour {</span></span>
+<span id="L121"><span class="lineNum">     121</span> <span class="tlaGNC">           1 :     return _endHour;</span></span>
 <span id="L122"><span class="lineNum">     122</span>              :   }</span>
-<span id="L123"><span class="lineNum">     123</span> <span class="tlaUNC">           0 :   int get getEndMinute {</span></span>
-<span id="L124"><span class="lineNum">     124</span> <span class="tlaUNC">           0 :     return _endMinute;</span></span>
+<span id="L123"><span class="lineNum">     123</span> <span class="tlaGNC">           1 :   int get getEndMinute {</span></span>
+<span id="L124"><span class="lineNum">     124</span> <span class="tlaGNC">           1 :     return _endMinute;</span></span>
 <span id="L125"><span class="lineNum">     125</span>              :   }</span>
 <span id="L126"><span class="lineNum">     126</span>              : }</span>
 <span id="L127"><span class="lineNum">     127</span>              : </span>
@@ -210,7 +210,7 @@
 <span id="L148"><span class="lineNum">     148</span>              :   // 结束节数</span>
 <span id="L149"><span class="lineNum">     149</span>              :   int endSection = 12;</span>
 <span id="L150"><span class="lineNum">     150</span>              : </span>
-<span id="L151"><span class="lineNum">     151</span> <span class="tlaGNC tlaBgGNC">           1 :   CourseTimeInfo(</span></span>
+<span id="L151"><span class="lineNum">     151</span> <span class="tlaGNC">           1 :   CourseTimeInfo(</span></span>
 <span id="L152"><span class="lineNum">     152</span>              :     super._startHour,</span>
 <span id="L153"><span class="lineNum">     153</span>              :     super._startMinute,</span>
 <span id="L154"><span class="lineNum">     154</span>              :     super._endHour,</span>
