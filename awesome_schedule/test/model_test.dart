@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:awesome_schedule/models/activity.dart';
+import 'package:awesome_schedule/models/courseList.dart';
 import 'package:awesome_schedule/utils/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -99,6 +100,44 @@ void main() {
     course.updateTask(task2);
     course.addTask(task2);
     course.removeTaskByName(task1Name);
+  });
+
+  test('courseList test', () {
+    CourseList courseList = CourseList();
+    int id = 1;
+    var courseSet = [
+      Course('高等数学',
+          [CourseTimeInfo(8, 0, 9, 40,
+              endWeek: defalutWeekNum,
+              weekday: 1,
+              startSection: 1,
+              endSection: 2,
+              weeks: [1, 2, 3, 4])],
+          courseID: 'MATH001',
+          location: '教1-101',
+          teacher: '张三',
+          description: '这是一门数学课'),
+      Course('线性代数',
+          [CourseTimeInfo(14, 0, 15, 40,
+              endWeek: defalutWeekNum,
+              weekday: 3,
+              startSection: 7,
+              endSection: 8,
+              weeks: [1, 2, 3, 4])],
+          location: '教1-102',
+          teacher: '李四',
+          description: '这是一门代数课'),
+    ];
+    int currentWeek = 1;
+    int weekNum = 20;
+    String semester = '2024-1';
+    courseList.currentWeek = 100;
+    courseList.currentWeek = currentWeek;
+    courseList.weekNum = weekNum;
+    courseList.semester = semester;
+
+    expect(courseList.getCurrentWeek, currentWeek);
+    
   });
 
   test('正确性测试', () {
