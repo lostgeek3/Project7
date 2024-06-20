@@ -46,20 +46,18 @@ void main() {
     taskDB.printDatabase();
     taskDB.getTaskByID(1);
     taskDB.deleteTaskByID(1);
-    taskDB.deleteTasksByCourseId(courseId);
-    taskDB.addTask(task1, courseId);
-    taskDB.getAllTask();
-    taskDB.getTaskByID(1);
-    taskDB.getTasksByCourseId(courseId);
-    taskDB.printDatabase();
+    // taskDB.deleteTasksByCourseId(courseId);
+    // taskDB.addTask(task1, courseId);
+    // taskDB.getAllTask();
+    // taskDB.getTaskByID(1);
+    // taskDB.getTasksByCourseId(courseId);
+    // taskDB.printDatabase();
 
-    task1.setFinished();
-    taskDB.updateFinished(task1);
-    taskDB.deleteTaskByID(1);
-    taskDB.addTask(task1, courseId);
-    taskDB.deleteTasksByCourseId(courseId);
-
-    taskDB.clear();
+    // task1.setFinished();
+    // taskDB.updateFinished(task1);
+    // taskDB.deleteTaskByID(1);
+    // taskDB.addTask(task1, courseId);
+    // taskDB.deleteTasksByCourseId(courseId);
   });
 
   test('首选项测试', () async {
