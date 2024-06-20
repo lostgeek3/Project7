@@ -232,7 +232,7 @@ class TaskDB {
   }
 
   // 根据id删除一条数据
-  Future<int> deleteCourseByID(int id) async {
+  Future<int> deleteTaskByID(int id) async {
     _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
 
     int index = await _database.delete(

@@ -38,6 +38,7 @@ class jAccountPage extends StatelessWidget {
               onPageStarted: (String url) {
                 // 当页面开始加载时调用
                 int codeIndex = url.indexOf('code=');
+                print(url);
                 if (codeIndex != -1) {
                   String newCode = url.substring(codeIndex + 5);
                   Navigator.pop(context, newCode);

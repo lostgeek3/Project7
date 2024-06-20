@@ -97,12 +97,13 @@ class Course implements Event{
 
   // 根据名称删除任务
   void removeTaskByName(String name) {
-    for (var it in tasks) {
-      if (it.getName == name) {
-        tasks.remove(it);
-      }
+    int initialLength = tasks.length;
+  
+    tasks.retainWhere((task) => task.getName != name);
+    
+    if (initialLength == tasks.length) {
+      logger.w('$logTag任务 $name 不存在，无法删除');
     }
-    logger.w('$logTag任务 $name 不存在，无法删除');
   }
 
   // set函数

@@ -59,7 +59,6 @@ class CourseListDB {
       if (showLog) logger.e('$logTag数据库初始化失败。$error');
     }
   }
-
   // 添加一个课程表
   Future<int> addCourseList(CourseList courseList) async {
     _database = await openDatabase(
@@ -90,7 +89,6 @@ class CourseListDB {
 
     return index;
   }
-
   // 获取一个课程表的id
   Future<int> getCourseListID(CourseList courseList) async {
     _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
@@ -115,7 +113,6 @@ class CourseListDB {
       return id;
     }
   }
-
   // 给一个课程表添加课程
   Future<int> addCourseToCourseListByID(int id, Course course) async {
     _database = await openDatabase(
@@ -136,7 +133,6 @@ class CourseListDB {
     await _database.close();
     return index;
   }
-
   // 获取全部数据
   Future<List<CourseList>> getAllCourseList() async {
     _database = await openDatabase(
@@ -166,7 +162,6 @@ class CourseListDB {
     await _database.close();
     return result;
   }
-
   // 根据id获取一条数据
   Future<CourseList?> getCourseListByID(int id) async {
     _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
@@ -199,13 +194,11 @@ class CourseListDB {
 
     return result[0];
   }
-
   // 根据课程表id和课程名删除课程，返回值为课程id
   Future<int> deleteCourseByNameAndCourseListId(String name, int courseListId) async {
     CourseDB courseDB = CourseDB();
     return await courseDB.deleteCourseByNameAndCourseListId(name, courseListId);
   }
-
   // 根据id删除一条数据
   Future<void> deleteCourseListByID(int id) async {
     _database = await openDatabase(join(await getDatabasesPath(), _databaseName));
@@ -234,7 +227,6 @@ class CourseListDB {
       await printDatabase();
     }
   }
-
   // 清空数据库
   Future<void> clear() async {
     _database = await openDatabase(
@@ -247,7 +239,6 @@ class CourseListDB {
 
     await _database.close();
   }
-
   // 数据库是否为空
   Future<bool> isEmpty() async {
     List<CourseList> result = await getAllCourseList();
@@ -258,7 +249,6 @@ class CourseListDB {
       return false;
     }
   }
-
   // 打印数据库
   Future<void> printDatabase() async {
     if (await isEmpty()) {
@@ -286,9 +276,7 @@ class CourseListDB {
 
   // 单例模式，确保全局只有一个数据库管理实例
   static final CourseListDB _instance = CourseListDB._internal();
-
   CourseListDB._internal();
-
   factory CourseListDB() {
     return _instance;
   }

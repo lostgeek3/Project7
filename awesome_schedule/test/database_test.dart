@@ -1,4 +1,5 @@
 import 'package:awesome_schedule/database/note_db.dart';
+import 'package:awesome_schedule/database/task_db.dart';
 import 'package:awesome_schedule/models/note.dart';
 import 'package:awesome_schedule/utils/common.dart';
 import 'package:awesome_schedule/utils/sharedPreference.dart';
@@ -32,6 +33,33 @@ void main() {
 
     CourseTimeInfoDB courseTimeInfoDB = CourseTimeInfoDB();
     
+  });
+
+  test('task_db测试', () async {
+    WidgetsFlutterBinding.ensureInitialized();
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+
+    TaskDB taskDB = TaskDB();
+    int courseId = 1;
+    Task task1 = Task('1', DateTime.now());
+    taskDB.printDatabase();
+    taskDB.getTaskByID(1);
+    taskDB.deleteTaskByID(1);
+    taskDB.deleteTasksByCourseId(courseId);
+    taskDB.addTask(task1, courseId);
+    taskDB.getAllTask();
+    taskDB.getTaskByID(1);
+    taskDB.getTasksByCourseId(courseId);
+    taskDB.printDatabase();
+
+    task1.setFinished();
+    taskDB.updateFinished(task1);
+    taskDB.deleteTaskByID(1);
+    taskDB.addTask(task1, courseId);
+    taskDB.deleteTasksByCourseId(courseId);
+
+    taskDB.clear();
   });
 
   test('首选项测试', () async {
