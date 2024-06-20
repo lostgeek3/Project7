@@ -7,6 +7,7 @@ import 'package:awesome_schedule/models/activity.dart';
 import 'package:awesome_schedule/models/courseList.dart';
 import 'package:awesome_schedule/models/note.dart';
 import 'package:awesome_schedule/models/noteImage.dart';
+import 'package:awesome_schedule/models/student.dart';
 import 'package:awesome_schedule/utils/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -167,23 +168,82 @@ void main() {
     note.setNoteType = noteType;
     note.setTitle = title;
     note.setUpdateTime = updateTime;
+    note.id = id;
+    note.courseId = courseId;
 
     expect(note.noteImages.isEmpty, true);
     expect(note.getContent, content);
     expect(note.getTitle, title);
     expect(note.getNoteType, noteType);
     expect(note.getUpdateTime, updateTime);
+    expect(note.id, id);
+    expect(note.courseId, courseId);
   });
 
   test('noteImage test', () {
+    int id = 1;
     String name = '1';
     Uint8List image = Uint8List(10);
     NoteImage noteImage = NoteImage('1', image);
     noteImage.setName = name;
     noteImage.setImage = image;
+    noteImage.id = id;
 
     expect(noteImage.getName, name);
     expect(noteImage.getImage, image);
+    expect(noteImage.id, id);
+  });
+
+  test('student test', () {
+    Student student = Student(name: '12', studentID: '28282', mail: '29929', avatar: '3939');
+    int id = 1;
+    String name = '88998';
+    String studentId = '111';
+    String mail = '2133';
+    String avatar = '28781782';
+    student.id = id;
+    student.name = name;
+    student.avatar = avatar;
+    student.mail = mail;
+    student.studentID = studentId;
+
+    expect(student.getAvatar, avatar);
+    expect(student.getName, name);
+    expect(student.getStudentID, studentId);
+    expect(student.getMail, mail);
+    expect(student.id, id);
+  });
+
+  test('task test', () {
+    Task task = Task('1', DateTime.now());
+    int id = 1;
+    int courseId = 1;
+    String name = '1';
+    String courseName = '11';
+    DateTime deadline = DateTime(2024);
+    String location = '1';
+    String description = '2';
+    TaskType taskType = TaskType.homework;
+    bool finished = true;
+
+    task.setUnfinished();
+    task.setFinished();
+    task.name = name;
+    task.deadline = deadline;
+    task.location = location;
+    task.description = description;
+    task.taskType = taskType;
+    task.id = id;
+    task.courseId = courseId;
+
+    expect(task.id, id);
+    expect(task.courseId, courseId);
+    expect(task.getName, name);
+    expect(task.getDeadline, deadline);
+    expect(task.getLocation, location);
+    expect(task.getDescription, description);
+    expect(task.getTaskType, taskType);
+    expect(task.getFinished, finished);
   });
 
   test('timeInfo test', () {
@@ -212,5 +272,45 @@ void main() {
       expect(courseTimeInfo.getWeekListStr(), str);
       expect(readWeekListStr(str), weeks);
     }
+
+    TimeRange timeRange = TimeRange(0, 0, 1, 1);
+    timeRange.setStartHour = -1;
+    timeRange.setStartHour = 24;
+    timeRange.setStartHour = 12;
+    timeRange.setEndHour = -1;
+    timeRange.setEndHour = 24;
+    timeRange.setEndHour = 13;
+    timeRange.setStartMinute = -1;
+    timeRange.setStartMinute = 60;
+    timeRange.setStartMinute = 10;
+    timeRange.setEndMinute = -1;
+    timeRange.setEndMinute = 60;
+    timeRange.setEndMinute = 20;
+
+    expect(timeRange.getStartHour, 12);
+    expect(timeRange.getEndHour, 13);
+    expect(timeRange.getStartMinute, 10);
+    expect(timeRange.getEndMinute, 20);
+
+    TimeInfo timeInfo = TimeInfo(0, 0, 1, 1);
+    timeInfo.startHour = -1;
+    timeInfo.startHour = 24;
+    timeInfo.startHour = 12;
+    timeInfo.endHour = -1;
+    timeInfo.endHour = 24;
+    timeInfo.endHour = 13;
+    timeInfo.startMinute = -1;
+    timeInfo.startMinute = 60;
+    timeInfo.startMinute = 10;
+    timeInfo.endMinute = -1;
+    timeInfo.endMinute = 60;
+    timeInfo.endMinute = 20;
+
+    expect(timeInfo.getStartHour, 12);
+    expect(timeInfo.getEndHour, 13);
+    expect(timeInfo.getStartMinute, 10);
+    expect(timeInfo.getEndMinute, 20);
+
+    
   });
 }
