@@ -31,13 +31,13 @@
             <td class="headerValue">lcov_md.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntryLo">48.2&nbsp;%</td>
+            <td class="headerCovTableEntryMed">86.3&nbsp;%</td>
             <td class="headerCovTableEntry">139</td>
-            <td class="headerCovTableEntry">67</td>
+            <td class="headerCovTableEntry">120</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2024-06-20 21:05:12</td>
+            <td class="headerValue">2024-06-20 21:18:39</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">-</td>
@@ -223,9 +223,9 @@
 <span id="L161"><span class="lineNum">     161</span> <span class="tlaGNC">           4 :     weekList = List.filled(endWeek + 1, false);</span></span>
 <span id="L162"><span class="lineNum">     162</span> <span class="tlaGNC">           2 :     for (var week in weeks) {</span></span>
 <span id="L163"><span class="lineNum">     163</span> <span class="tlaGNC">           3 :       if (week &lt; 1 || week &gt; endWeek) {</span></span>
-<span id="L164"><span class="lineNum">     164</span> <span class="tlaUNC tlaBgUNC">           0 :         logger.e('$logTag周数不合法');</span></span>
+<span id="L164"><span class="lineNum">     164</span> <span class="tlaGNC">           2 :         logger.e('$logTag周数不合法');</span></span>
 <span id="L165"><span class="lineNum">     165</span>              :       } else {</span>
-<span id="L166"><span class="lineNum">     166</span> <span class="tlaGNC tlaBgGNC">           2 :         weekList[week] = true;</span></span>
+<span id="L166"><span class="lineNum">     166</span> <span class="tlaGNC">           2 :         weekList[week] = true;</span></span>
 <span id="L167"><span class="lineNum">     167</span>              :       }</span>
 <span id="L168"><span class="lineNum">     168</span>              :     }</span>
 <span id="L169"><span class="lineNum">     169</span>              :   }</span>
@@ -239,110 +239,110 @@
 <span id="L177"><span class="lineNum">     177</span>              :     return result;</span>
 <span id="L178"><span class="lineNum">     178</span>              :   }</span>
 <span id="L179"><span class="lineNum">     179</span>              : </span>
-<span id="L180"><span class="lineNum">     180</span> <span class="tlaUNC tlaBgUNC">           0 :   set setWeekday(int weekday) {</span></span>
-<span id="L181"><span class="lineNum">     181</span> <span class="tlaUNC">           0 :     if (weekday &lt; 1 || weekday &gt; 7) {</span></span>
-<span id="L182"><span class="lineNum">     182</span> <span class="tlaUNC">           0 :       logger.e('$logTag星期数不合法');</span></span>
+<span id="L180"><span class="lineNum">     180</span> <span class="tlaGNC">           1 :   set setWeekday(int weekday) {</span></span>
+<span id="L181"><span class="lineNum">     181</span> <span class="tlaGNC">           2 :     if (weekday &lt; 1 || weekday &gt; 7) {</span></span>
+<span id="L182"><span class="lineNum">     182</span> <span class="tlaGNC">           2 :       logger.e('$logTag星期数不合法');</span></span>
 <span id="L183"><span class="lineNum">     183</span>              :       return;</span>
 <span id="L184"><span class="lineNum">     184</span>              :     }</span>
-<span id="L185"><span class="lineNum">     185</span> <span class="tlaUNC">           0 :     this.weekday = weekday;</span></span>
+<span id="L185"><span class="lineNum">     185</span> <span class="tlaGNC">           1 :     this.weekday = weekday;</span></span>
 <span id="L186"><span class="lineNum">     186</span>              :   }</span>
 <span id="L187"><span class="lineNum">     187</span>              : </span>
-<span id="L188"><span class="lineNum">     188</span> <span class="tlaUNC">           0 :   set setStartSection(int startSection) {</span></span>
-<span id="L189"><span class="lineNum">     189</span> <span class="tlaUNC">           0 :     this.startSection = startSection;</span></span>
+<span id="L188"><span class="lineNum">     188</span> <span class="tlaGNC">           1 :   set setStartSection(int startSection) {</span></span>
+<span id="L189"><span class="lineNum">     189</span> <span class="tlaGNC">           1 :     this.startSection = startSection;</span></span>
 <span id="L190"><span class="lineNum">     190</span>              :   }</span>
 <span id="L191"><span class="lineNum">     191</span>              : </span>
-<span id="L192"><span class="lineNum">     192</span> <span class="tlaUNC">           0 :   set setEndSection(int endSection) {</span></span>
-<span id="L193"><span class="lineNum">     193</span> <span class="tlaUNC">           0 :     this.endSection = endSection;</span></span>
+<span id="L192"><span class="lineNum">     192</span> <span class="tlaGNC">           1 :   set setEndSection(int endSection) {</span></span>
+<span id="L193"><span class="lineNum">     193</span> <span class="tlaGNC">           1 :     this.endSection = endSection;</span></span>
 <span id="L194"><span class="lineNum">     194</span>              :   }</span>
 <span id="L195"><span class="lineNum">     195</span>              : </span>
-<span id="L196"><span class="lineNum">     196</span> <span class="tlaUNC">           0 :   set setWeekList(List&lt;int&gt; weeks) {</span></span>
-<span id="L197"><span class="lineNum">     197</span> <span class="tlaUNC">           0 :     for (var week in weeks) {</span></span>
-<span id="L198"><span class="lineNum">     198</span> <span class="tlaUNC">           0 :       if (week &lt; 1 || week &gt; endWeek) {</span></span>
-<span id="L199"><span class="lineNum">     199</span> <span class="tlaUNC">           0 :         logger.e('$logTag周数不合法');</span></span>
+<span id="L196"><span class="lineNum">     196</span> <span class="tlaGNC">           1 :   set setWeekList(List&lt;int&gt; weeks) {</span></span>
+<span id="L197"><span class="lineNum">     197</span> <span class="tlaGNC">           2 :     for (var week in weeks) {</span></span>
+<span id="L198"><span class="lineNum">     198</span> <span class="tlaGNC">           3 :       if (week &lt; 1 || week &gt; endWeek) {</span></span>
+<span id="L199"><span class="lineNum">     199</span> <span class="tlaGNC">           2 :         logger.e('$logTag周数不合法');</span></span>
 <span id="L200"><span class="lineNum">     200</span>              :       } else {</span>
-<span id="L201"><span class="lineNum">     201</span> <span class="tlaUNC">           0 :         weekList[week] = true;</span></span>
+<span id="L201"><span class="lineNum">     201</span> <span class="tlaGNC">           2 :         weekList[week] = true;</span></span>
 <span id="L202"><span class="lineNum">     202</span>              :       }</span>
 <span id="L203"><span class="lineNum">     203</span>              :     }</span>
 <span id="L204"><span class="lineNum">     204</span>              :   }</span>
 <span id="L205"><span class="lineNum">     205</span>              : </span>
-<span id="L206"><span class="lineNum">     206</span> <span class="tlaUNC">           0 :   int get getWeekday {</span></span>
-<span id="L207"><span class="lineNum">     207</span> <span class="tlaUNC">           0 :     return weekday;</span></span>
+<span id="L206"><span class="lineNum">     206</span> <span class="tlaGNC">           1 :   int get getWeekday {</span></span>
+<span id="L207"><span class="lineNum">     207</span> <span class="tlaGNC">           1 :     return weekday;</span></span>
 <span id="L208"><span class="lineNum">     208</span>              :   }</span>
 <span id="L209"><span class="lineNum">     209</span>              : </span>
-<span id="L210"><span class="lineNum">     210</span> <span class="tlaUNC">           0 :   int get getStartSection {</span></span>
-<span id="L211"><span class="lineNum">     211</span> <span class="tlaUNC">           0 :     return startSection;</span></span>
+<span id="L210"><span class="lineNum">     210</span> <span class="tlaGNC">           1 :   int get getStartSection {</span></span>
+<span id="L211"><span class="lineNum">     211</span> <span class="tlaGNC">           1 :     return startSection;</span></span>
 <span id="L212"><span class="lineNum">     212</span>              :   }</span>
 <span id="L213"><span class="lineNum">     213</span>              : </span>
-<span id="L214"><span class="lineNum">     214</span> <span class="tlaUNC">           0 :   int get getEndSection {</span></span>
-<span id="L215"><span class="lineNum">     215</span> <span class="tlaUNC">           0 :     return endSection;</span></span>
+<span id="L214"><span class="lineNum">     214</span> <span class="tlaGNC">           1 :   int get getEndSection {</span></span>
+<span id="L215"><span class="lineNum">     215</span> <span class="tlaGNC">           1 :     return endSection;</span></span>
 <span id="L216"><span class="lineNum">     216</span>              :   }</span>
 <span id="L217"><span class="lineNum">     217</span>              : </span>
-<span id="L218"><span class="lineNum">     218</span> <span class="tlaUNC">           0 :   List&lt;bool&gt; get getWeekList {</span></span>
-<span id="L219"><span class="lineNum">     219</span> <span class="tlaUNC">           0 :     return weekList;</span></span>
+<span id="L218"><span class="lineNum">     218</span> <span class="tlaGNC">           1 :   List&lt;bool&gt; get getWeekList {</span></span>
+<span id="L219"><span class="lineNum">     219</span> <span class="tlaGNC">           1 :     return weekList;</span></span>
 <span id="L220"><span class="lineNum">     220</span>              :   }</span>
 <span id="L221"><span class="lineNum">     221</span>              : </span>
-<span id="L222"><span class="lineNum">     222</span> <span class="tlaUNC">           0 :   int get getEndWeek {</span></span>
-<span id="L223"><span class="lineNum">     223</span> <span class="tlaUNC">           0 :     return endWeek;</span></span>
+<span id="L222"><span class="lineNum">     222</span> <span class="tlaGNC">           1 :   int get getEndWeek {</span></span>
+<span id="L223"><span class="lineNum">     223</span> <span class="tlaGNC">           1 :     return endWeek;</span></span>
 <span id="L224"><span class="lineNum">     224</span>              :   }</span>
 <span id="L225"><span class="lineNum">     225</span>              : </span>
 <span id="L226"><span class="lineNum">     226</span>              :   /// 格式化输出周数</span>
-<span id="L227"><span class="lineNum">     227</span> <span class="tlaUNC">           0 :   String get getWeekListStrFormat {</span></span>
-<span id="L228"><span class="lineNum">     228</span> <span class="tlaUNC">           0 :     List&lt;int&gt; selectedWeeks = [];</span></span>
-<span id="L229"><span class="lineNum">     229</span> <span class="tlaUNC">           0 :     for (int i = 1; i &lt; weekList.length; i++) {</span></span>
-<span id="L230"><span class="lineNum">     230</span> <span class="tlaUNC">           0 :       if (weekList[i]) {</span></span>
-<span id="L231"><span class="lineNum">     231</span> <span class="tlaUNC">           0 :         selectedWeeks.add(i);</span></span>
+<span id="L227"><span class="lineNum">     227</span> <span class="tlaGNC">           1 :   String get getWeekListStrFormat {</span></span>
+<span id="L228"><span class="lineNum">     228</span> <span class="tlaGNC">           1 :     List&lt;int&gt; selectedWeeks = [];</span></span>
+<span id="L229"><span class="lineNum">     229</span> <span class="tlaGNC">           4 :     for (int i = 1; i &lt; weekList.length; i++) {</span></span>
+<span id="L230"><span class="lineNum">     230</span> <span class="tlaGNC">           2 :       if (weekList[i]) {</span></span>
+<span id="L231"><span class="lineNum">     231</span> <span class="tlaGNC">           1 :         selectedWeeks.add(i);</span></span>
 <span id="L232"><span class="lineNum">     232</span>              :       }</span>
 <span id="L233"><span class="lineNum">     233</span>              :     }</span>
 <span id="L234"><span class="lineNum">     234</span>              : </span>
 <span id="L235"><span class="lineNum">     235</span>              :     String output = '';</span>
 <span id="L236"><span class="lineNum">     236</span>              : </span>
-<span id="L237"><span class="lineNum">     237</span> <span class="tlaUNC">           0 :     List&lt;int&gt; tmp = [];</span></span>
+<span id="L237"><span class="lineNum">     237</span> <span class="tlaGNC">           1 :     List&lt;int&gt; tmp = [];</span></span>
 <span id="L238"><span class="lineNum">     238</span>              :     int start = 0;</span>
-<span id="L239"><span class="lineNum">     239</span> <span class="tlaUNC">           0 :     int end = -1;</span></span>
+<span id="L239"><span class="lineNum">     239</span> <span class="tlaGNC">           1 :     int end = -1;</span></span>
 <span id="L240"><span class="lineNum">     240</span>              :     int diff = 0;</span>
-<span id="L241"><span class="lineNum">     241</span> <span class="tlaUNC">           0 :     for (int i = 0; i &lt; selectedWeeks.length; i++) {</span></span>
-<span id="L242"><span class="lineNum">     242</span> <span class="tlaUNC">           0 :       if (start &gt; end) {</span></span>
-<span id="L243"><span class="lineNum">     243</span> <span class="tlaUNC">           0 :         tmp.add(selectedWeeks[i]);</span></span>
-<span id="L244"><span class="lineNum">     244</span> <span class="tlaUNC">           0 :         start = selectedWeeks[i];</span></span>
-<span id="L245"><span class="lineNum">     245</span> <span class="tlaUNC">           0 :         end = selectedWeeks[i];</span></span>
-<span id="L246"><span class="lineNum">     246</span> <span class="tlaUNC">           0 :       } else if (start == end) {</span></span>
-<span id="L247"><span class="lineNum">     247</span> <span class="tlaUNC">           0 :         if (selectedWeeks[i] - end &lt;= 2) {</span></span>
-<span id="L248"><span class="lineNum">     248</span> <span class="tlaUNC">           0 :           diff = selectedWeeks[i] - end;</span></span>
-<span id="L249"><span class="lineNum">     249</span> <span class="tlaUNC">           0 :           tmp.add(selectedWeeks[i]);</span></span>
-<span id="L250"><span class="lineNum">     250</span> <span class="tlaUNC">           0 :           end = selectedWeeks[i];</span></span>
+<span id="L241"><span class="lineNum">     241</span> <span class="tlaGNC">           3 :     for (int i = 0; i &lt; selectedWeeks.length; i++) {</span></span>
+<span id="L242"><span class="lineNum">     242</span> <span class="tlaGNC">           1 :       if (start &gt; end) {</span></span>
+<span id="L243"><span class="lineNum">     243</span> <span class="tlaGNC">           2 :         tmp.add(selectedWeeks[i]);</span></span>
+<span id="L244"><span class="lineNum">     244</span> <span class="tlaGNC">           1 :         start = selectedWeeks[i];</span></span>
+<span id="L245"><span class="lineNum">     245</span> <span class="tlaGNC">           1 :         end = selectedWeeks[i];</span></span>
+<span id="L246"><span class="lineNum">     246</span> <span class="tlaGNC">           1 :       } else if (start == end) {</span></span>
+<span id="L247"><span class="lineNum">     247</span> <span class="tlaGNC">           3 :         if (selectedWeeks[i] - end &lt;= 2) {</span></span>
+<span id="L248"><span class="lineNum">     248</span> <span class="tlaGNC">           2 :           diff = selectedWeeks[i] - end;</span></span>
+<span id="L249"><span class="lineNum">     249</span> <span class="tlaGNC">           2 :           tmp.add(selectedWeeks[i]);</span></span>
+<span id="L250"><span class="lineNum">     250</span> <span class="tlaGNC">           1 :           end = selectedWeeks[i];</span></span>
 <span id="L251"><span class="lineNum">     251</span>              :         } else {</span>
-<span id="L252"><span class="lineNum">     252</span> <span class="tlaUNC">           0 :           output += '第${tmp[0]}周, ';</span></span>
+<span id="L252"><span class="lineNum">     252</span> <span class="tlaUNC tlaBgUNC">           0 :           output += '第${tmp[0]}周, ';</span></span>
 <span id="L253"><span class="lineNum">     253</span> <span class="tlaUNC">           0 :           end = selectedWeeks[i];</span></span>
 <span id="L254"><span class="lineNum">     254</span> <span class="tlaUNC">           0 :           start = selectedWeeks[i];</span></span>
 <span id="L255"><span class="lineNum">     255</span> <span class="tlaUNC">           0 :           tmp.clear();</span></span>
 <span id="L256"><span class="lineNum">     256</span> <span class="tlaUNC">           0 :           tmp.add(selectedWeeks[i]);</span></span>
 <span id="L257"><span class="lineNum">     257</span>              :         }</span>
 <span id="L258"><span class="lineNum">     258</span>              :       } else {</span>
-<span id="L259"><span class="lineNum">     259</span> <span class="tlaUNC">           0 :         if (selectedWeeks[i] - end == diff) {</span></span>
-<span id="L260"><span class="lineNum">     260</span> <span class="tlaUNC">           0 :           tmp.add(selectedWeeks[i]);</span></span>
-<span id="L261"><span class="lineNum">     261</span> <span class="tlaUNC">           0 :           end = selectedWeeks[i];</span></span>
+<span id="L259"><span class="lineNum">     259</span> <span class="tlaGNC tlaBgGNC">           3 :         if (selectedWeeks[i] - end == diff) {</span></span>
+<span id="L260"><span class="lineNum">     260</span> <span class="tlaGNC">           2 :           tmp.add(selectedWeeks[i]);</span></span>
+<span id="L261"><span class="lineNum">     261</span> <span class="tlaGNC">           1 :           end = selectedWeeks[i];</span></span>
 <span id="L262"><span class="lineNum">     262</span>              :         } else {</span>
-<span id="L263"><span class="lineNum">     263</span> <span class="tlaUNC">           0 :           if (diff == 1) {</span></span>
-<span id="L264"><span class="lineNum">     264</span> <span class="tlaUNC">           0 :             output += '第${start} - ${end}周, ';</span></span>
-<span id="L265"><span class="lineNum">     265</span> <span class="tlaUNC">           0 :           } else if (diff == 2) {</span></span>
+<span id="L263"><span class="lineNum">     263</span> <span class="tlaGNC">           1 :           if (diff == 1) {</span></span>
+<span id="L264"><span class="lineNum">     264</span> <span class="tlaGNC">           2 :             output += '第${start} - ${end}周, ';</span></span>
+<span id="L265"><span class="lineNum">     265</span> <span class="tlaUNC tlaBgUNC">           0 :           } else if (diff == 2) {</span></span>
 <span id="L266"><span class="lineNum">     266</span> <span class="tlaUNC">           0 :             if (end % 2 == 0) {</span></span>
 <span id="L267"><span class="lineNum">     267</span> <span class="tlaUNC">           0 :               output += '第${start} - ${end} 双周, ';</span></span>
 <span id="L268"><span class="lineNum">     268</span>              :             } else {</span>
 <span id="L269"><span class="lineNum">     269</span> <span class="tlaUNC">           0 :               output += '第${start} - ${end} 单周, ';</span></span>
 <span id="L270"><span class="lineNum">     270</span>              :             }</span>
 <span id="L271"><span class="lineNum">     271</span>              :           }</span>
-<span id="L272"><span class="lineNum">     272</span> <span class="tlaUNC">           0 :           tmp.clear();</span></span>
-<span id="L273"><span class="lineNum">     273</span> <span class="tlaUNC">           0 :           tmp.add(selectedWeeks[i]);</span></span>
-<span id="L274"><span class="lineNum">     274</span> <span class="tlaUNC">           0 :           start = selectedWeeks[i];</span></span>
-<span id="L275"><span class="lineNum">     275</span> <span class="tlaUNC">           0 :           end = selectedWeeks[i];</span></span>
+<span id="L272"><span class="lineNum">     272</span> <span class="tlaGNC tlaBgGNC">           1 :           tmp.clear();</span></span>
+<span id="L273"><span class="lineNum">     273</span> <span class="tlaGNC">           2 :           tmp.add(selectedWeeks[i]);</span></span>
+<span id="L274"><span class="lineNum">     274</span> <span class="tlaGNC">           1 :           start = selectedWeeks[i];</span></span>
+<span id="L275"><span class="lineNum">     275</span> <span class="tlaGNC">           1 :           end = selectedWeeks[i];</span></span>
 <span id="L276"><span class="lineNum">     276</span>              :         }</span>
 <span id="L277"><span class="lineNum">     277</span>              :       }</span>
 <span id="L278"><span class="lineNum">     278</span>              :     }</span>
 <span id="L279"><span class="lineNum">     279</span>              : </span>
-<span id="L280"><span class="lineNum">     280</span> <span class="tlaUNC">           0 :     if (!tmp.isEmpty) {</span></span>
-<span id="L281"><span class="lineNum">     281</span> <span class="tlaUNC">           0 :       if (diff == 1) {</span></span>
-<span id="L282"><span class="lineNum">     282</span> <span class="tlaUNC">           0 :         output += '第${start} - ${end}周';</span></span>
-<span id="L283"><span class="lineNum">     283</span> <span class="tlaUNC">           0 :       } else if (diff == 2) {</span></span>
+<span id="L280"><span class="lineNum">     280</span> <span class="tlaGNC">           1 :     if (!tmp.isEmpty) {</span></span>
+<span id="L281"><span class="lineNum">     281</span> <span class="tlaGNC">           1 :       if (diff == 1) {</span></span>
+<span id="L282"><span class="lineNum">     282</span> <span class="tlaGNC">           2 :         output += '第${start} - ${end}周';</span></span>
+<span id="L283"><span class="lineNum">     283</span> <span class="tlaUNC tlaBgUNC">           0 :       } else if (diff == 2) {</span></span>
 <span id="L284"><span class="lineNum">     284</span> <span class="tlaUNC">           0 :         if (end % 2 == 0) {</span></span>
 <span id="L285"><span class="lineNum">     285</span> <span class="tlaUNC">           0 :           output += '第${start} - ${end}周 双周';</span></span>
 <span id="L286"><span class="lineNum">     286</span>              :         } else {</span>
