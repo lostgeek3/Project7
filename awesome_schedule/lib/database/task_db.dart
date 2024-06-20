@@ -74,7 +74,7 @@ class TaskDB {
       _columuName[3]: task.getLocation,
       _columuName[4]: task.getDescription,
       _columuName[5]: task.getTaskType.index,
-      _columuName[6]: task.getFinished,
+      _columuName[6]: task.getFinished ? 1 : 0,
       _columuName[7]: courseId
     };
 
@@ -169,7 +169,7 @@ class TaskDB {
         taskType: TaskType.values[item[_columuName[5]]]
       );
       task.id = item[_columuName[0]];
-      if (item[_columuName[6]]) task.setFinished();
+      if (item[_columuName[6]] > 0) task.setFinished();
       task.courseId = item[_columuName[7]];
       result.add(task);
     }
@@ -192,7 +192,7 @@ class TaskDB {
     );
 
     Map<String, Object?> courseMap = {
-      _columuName[6]: task.getFinished,
+      _columuName[6]: task.getFinished ? 1 : 0,
     };
 
     int index = await _database.update(

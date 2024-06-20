@@ -43,21 +43,21 @@ void main() {
     TaskDB taskDB = TaskDB();
     int courseId = 1;
     Task task1 = Task('1', DateTime.now());
-    taskDB.printDatabase();
-    taskDB.getTaskByID(1);
-    taskDB.deleteTaskByID(1);
-    // taskDB.deleteTasksByCourseId(courseId);
-    // taskDB.addTask(task1, courseId);
-    // taskDB.getAllTask();
-    // taskDB.getTaskByID(1);
-    // taskDB.getTasksByCourseId(courseId);
-    // taskDB.printDatabase();
+    await taskDB.printDatabase();
+    await taskDB.getTaskByID(1);
+    await taskDB.deleteTaskByID(1);
+    await taskDB.deleteTasksByCourseId(courseId);
+    await taskDB.addTask(task1, courseId);
+    await taskDB.getAllTask();
+    await taskDB.getTaskByID(1);
+    await taskDB.getTasksByCourseId(courseId);
+    await taskDB.printDatabase();
 
-    // task1.setFinished();
-    // taskDB.updateFinished(task1);
-    // taskDB.deleteTaskByID(1);
-    // taskDB.addTask(task1, courseId);
-    // taskDB.deleteTasksByCourseId(courseId);
+    task1.setFinished();
+    await taskDB.updateFinished(task1);
+    await taskDB.deleteTaskByID(1);
+    await taskDB.addTask(task1, courseId);
+    await taskDB.deleteTasksByCourseId(courseId);
   });
 
   test('首选项测试', () async {
