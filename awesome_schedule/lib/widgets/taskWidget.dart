@@ -30,12 +30,12 @@ class _TaskWidgetState extends State<TaskWidget> {
       children: [
         // 圆形进度条
         Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(28.0),
           child: Center(
             child: Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: CircularProgressIndicator(
                     value: totalTasks == 0 ? 0 : completedTasks / totalTasks,
                     strokeWidth: 6.0,
@@ -67,10 +67,13 @@ class _TaskWidgetState extends State<TaskWidget> {
                 child: ListTile(
                   title: Row(
                     children: [
-                      Icon(
-                        _getTaskIcon(task.getTaskType),
-                        color: task.getFinished ? Colors.grey : Color(0xffF2CDD2),
-                        size: 50.0,
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Icon(
+                          _getTaskIcon(task.getTaskType),
+                          color: task.getFinished ? Colors.grey : Color(0xffF2CDD2),
+                          size: 50.0,
+                        ),
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,7 +99,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('截止日期: ${task.getDeadline.toString()}'),
+                      Text('截止时间: ${task.getDeadline.toString()}'),
                       Text('地点: ${task.getLocation}'),
                       Text('简介: ${task.getDescription}'),
                     ],
