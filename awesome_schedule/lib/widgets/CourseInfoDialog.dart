@@ -1,3 +1,4 @@
+import 'package:awesome_schedule/utils/common.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -337,6 +338,17 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
         )
       ),
       actions: <Widget>[
+        if (!_isEditing)
+          // 编辑笔记按钮
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/noteList', arguments: NoteListArguments(widget.course));
+            },
+            style: ButtonStyle(
+              foregroundColor: MaterialStateProperty.all(Colors.blue),
+            ),
+            child: const Text('课程笔记')
+          ),
         if (_isEditing)
         /// 取消按钮
           TextButton(
@@ -348,7 +360,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
               courseFormProvider.initFromCourseTimeInfo(widget.timeInfo);
             },
             style: ButtonStyle(
-              foregroundColor: WidgetStateProperty.all(Colors.grey),
+              foregroundColor: MaterialStateProperty.all(Colors.grey),
             ),
             child: const Text('取消')
           )
@@ -371,7 +383,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                       ),
                       TextButton(
                         style: ButtonStyle(
-                          foregroundColor: WidgetStateProperty.all(Colors.red),
+                          foregroundColor: MaterialStateProperty.all(Colors.red),
                         ),
                         onPressed: () {
                           widget.courseNotifier.removeCourse(widget.course);
@@ -386,7 +398,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
               );
             },
             style: ButtonStyle(
-              foregroundColor: WidgetStateProperty.all(Colors.red),
+              foregroundColor: MaterialStateProperty.all(Colors.red),
             ),
             child: const Text('删除'),
           ),
@@ -396,6 +408,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
             child: const Text('保存'),
             onPressed: () {
               if (_formKey.currentState!.validate()) {
+                String oldName = widget.course.getName;
                 widget.course.setName = _nameController.text;
                 widget.course.setTeacher = _teacherController.text;
                 widget.course.setLocation = _locationController.text;
@@ -406,8 +419,7 @@ class _CourseInfoDialogState extends State<CourseInfoDialog> {
                 setState(() {
                   _isEditing = false;
                 });
-                widget.courseNotifier.refresh();
-
+                widget.courseNotifier.refresh(widget.course);
               }
             },
           )

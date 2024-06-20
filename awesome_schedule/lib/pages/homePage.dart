@@ -1,4 +1,5 @@
 export './homePage.dart';
+import 'package:awesome_schedule/widgets/taskWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_schedule/widgets/scheduleWidget.dart';
 import 'package:awesome_schedule/widgets/userWidget.dart';
@@ -15,10 +16,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
 
   static  final List<Widget> _widgetOptions = <Widget>[
-    const Text(
-      '任务',
-      style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
-    ),
+    const TaskWidget(),
     const Schedule(),
     const UserWidget()
   ];

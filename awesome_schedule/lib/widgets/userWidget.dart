@@ -1,10 +1,15 @@
+import 'package:awesome_schedule/database/courseList_db.dart';
+import 'package:awesome_schedule/database/database_util.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
+import 'package:awesome_schedule/providers/CourseNotifier.dart';
+import 'package:awesome_schedule/utils/common.dart';
 import 'package:flutter/material.dart';
 import '../models/course.dart';
 import '../models/courseList.dart';
 import '../service/course.dart';
 import '../service/user.dart';
 import '../pages/logInPage.dart';
+import 'package:provider/provider.dart';
 
 class UserWidget extends StatefulWidget {
   const UserWidget({super.key});
@@ -18,8 +23,12 @@ class _UserWidgetState extends State<UserWidget> {
   String mail = userStudent.getMail;
   String avatar = userStudent.getAvatar;
 
+  late CourseNotifier courseNotifier;
+
   @override
   Widget build(BuildContext context) {
+    courseNotifier = context.watch<CourseNotifier>();
+
     return Center(
       child: GestureDetector(
         onTap: () {
@@ -79,24 +88,64 @@ class _UserWidgetState extends State<UserWidget> {
 
               ElevatedButton(
                 onPressed: () async {
-                  CourseList? courseList = await loginAndFetchCourses(context);  // 获取到的CourseList
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false, // 用户必须点击按钮才能关闭对话框
+                    builder: (BuildContext context) {
+                      return const AlertDialog(
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            CircularProgressIndicator(),
+                            Text("Loading..."),
+                          ],
+                        ),
+                      );
+                    },
+                  );
 
-                  // 以下是debug输出所有课程的具体内容
+                  CourseList? courseList = await loginAndFetchCourses(context);  // 获取到的CourseList
+                  Navigator.of(context).pop();  // 关闭对话框
+
                   List<Course>? courses = courseList?.getAllCourse();
-                  print("以下是课程列表信息:");
-                  for (Course course in courses!) {
-                    print("课程：${course.getName}");
-                    print("地点：${course.getLocation}");
-                    print("教师：${course.getTeacher}");
-                    List<CourseTimeInfo> timeInfoList = course.getCourseTimeInfo;
-                    for (CourseTimeInfo t in timeInfoList) {
-                      print("上课时间：");
-                      print("星期${t.weekday}");
-                      print("第${t.startSection}节课开始");
-                      print("第${t.endSection}节课结束");
-                      print("周数：${t.getWeekListStr()}");
+                  // 更新当前课表并转存数据库
+                  if (courseList != null) {
+                    // 设置最大周数
+                    defalutWeekNum = 16;
+                    courseList.weekNum = defalutWeekNum;
+                    await clearDatabase();
+                    await initDatabase();
+                    CourseListDB courseListDB = CourseListDB();
+                    int id = await courseListDB.addCourseList(courseList);
+
+                    for (int i = 0; i < courses!.length; i++) {
+                      await courseListDB.addCourseToCourseListByID(id, courses![i]);
                     }
+                    
+                    currentCourseList = courseList;
+                    currentCourseListID = id;
+                    courseNotifier.clear();
+
+
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('提示'),
+                          content: Text('成功导入课表。'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('确定'),
+                              onPressed: () {
+                                Navigator.of(context).pop();  // 关闭对话框
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   }
+                  
                 },
                 child: const Text('登录jAccount'),
               ),

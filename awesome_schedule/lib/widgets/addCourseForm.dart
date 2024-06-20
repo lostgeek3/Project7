@@ -240,8 +240,8 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
 
     bool isTimeConflict(Course newCourse) {
       for (var course in courseSet) {
-        for (var existingTimeInfo in course.getCourseTimeInfo) {
-          for (var newTimeInfo in newCourse.getCourseTimeInfo) {
+        for (var existingTimeInfo in course.getTimeInfo) {
+          for (var newTimeInfo in newCourse.getTimeInfo) {
             if (newTimeInfo.getWeekList.asMap().entries.any((entry) => entry.value && existingTimeInfo.getWeekList[entry.key]) &&
                 newTimeInfo.weekday == existingTimeInfo.weekday &&
                 ((newTimeInfo.startSection >= existingTimeInfo.startSection && newTimeInfo.startSection <= existingTimeInfo.endSection) ||
@@ -353,7 +353,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
       actions: <Widget>[
         TextButton(
           style: ButtonStyle(
-            foregroundColor: WidgetStateProperty.all(Colors.red),
+            foregroundColor: MaterialStateProperty.all(Colors.red),
           ),
           onPressed: () {
             _courseNameController.clear();
@@ -371,30 +371,39 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
               if (_formKey.currentState!.validate()) {
                 /// 创建新课程
                 var courseFormProvider = context.read<CourseFormProvider>();
-                List<bool> _selectedWeeks = courseFormProvider.selectedWeeks;
-                int _selectedDay = courseFormProvider.selectedDay;
-                int _selectedStartPeriod = courseFormProvider.selectedStartPeriod;
-                int _selectedEndPeriod = courseFormProvider.selectedEndPeriod;
-                print(courseFormProvider.timeSelections[0].getWeekListStrFormat);
-                var newCourse = Course(
-                    _courseNameController.text,
-                    courseFormProvider.timeSelections,
-                    location: _locationController.text,
-                    teacher: _teacherController.text,
-                    description: _noteController.text);
-                if (!isTimeConflict(newCourse)) {
-                  courseNotifier.addCourse(newCourse);
-                  CourseListDB courseListDB = CourseListDB();
-                  courseListDB.addCourseToCourseListByID(currentCourseListID, newCourse);
-                  Navigator.of(context).pop();
+                if (courseFormProvider.timeSelections.isEmpty) {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return createAlertDialog(context, "请选择时间段");
+                      },
+                    );
                 }
                 else {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return createAlertDialog(context, "课程时间冲突");
-                    },
-                  );
+                  List<bool> _selectedWeeks = courseFormProvider.selectedWeeks;
+                  int _selectedDay = courseFormProvider.selectedDay;
+                  int _selectedStartPeriod = courseFormProvider.selectedStartPeriod;
+                  int _selectedEndPeriod = courseFormProvider.selectedEndPeriod;
+                  print(courseFormProvider.timeSelections[0].getWeekListStrFormat);
+                  var newCourse = Course(
+                      _courseNameController.text,
+                      courseFormProvider.timeSelections,
+                      location: _locationController.text,
+                      teacher: _teacherController.text,
+                      description: _noteController.text);
+                  newCourse.courseListId = currentCourseListID;
+                  if (!isTimeConflict(newCourse)) {
+                    courseNotifier.addCourse(newCourse);
+                    Navigator.of(context).pop();
+                  }
+                  else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return createAlertDialog(context, "课程时间冲突");
+                      },
+                    );
+                  }
                 }
               }
             }

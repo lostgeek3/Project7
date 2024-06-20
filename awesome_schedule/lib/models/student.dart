@@ -12,6 +12,7 @@ const String logTag = '[class]Student: ';
 /// 类：学生
 /// 用法：描述一个学生用户
 class Student {
+  late int id;
   // 名称
   String _name = '';
   // 学生ID

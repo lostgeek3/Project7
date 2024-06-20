@@ -129,6 +129,9 @@ class TimeInfo {
 /// 类：课程表的时间信息
 /// 用法：包含课程表的时间信息
 class CourseTimeInfo extends TimeInfo {
+  late int id;
+  // 课程Id
+  late int courseId;
   // 结束周
   final int endWeek;
 
@@ -306,7 +309,7 @@ List<int> readWeekListStr(String str) {
     }
   }
   return weeks;
-}  
+}
 
 /// 枚举：时间周期
 /// 用法：表示事件（课程、任务等）的周期类型

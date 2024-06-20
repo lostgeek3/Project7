@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:awesome_schedule/database/courseList_db.dart';
 import 'package:awesome_schedule/models/courseList.dart';
+import 'package:awesome_schedule/models/task.dart';
 import 'package:awesome_schedule/models/timeInfo.dart';
 import 'package:flutter/foundation.dart';
 import 'package:awesome_schedule/models/course.dart';
@@ -24,17 +25,24 @@ class CourseNotifier with ChangeNotifier {
 
   List<Course> get courses => _courses;
 
-  void refresh() {
+  void refresh(Course newCourse) async {
+    CourseDB courseDB = CourseDB();
+    await courseDB.updateCourse(newCourse);
     notifyListeners();
   }
 
-  void addCourse(Course course) {
+  void addCourse(Course course) async {
+    CourseListDB courseListDB = CourseListDB();
+    int id = await courseListDB.addCourseToCourseListByID(currentCourseListID, course);
+    course.id = id;
     _courses.add(course);
     notifyListeners();
   }
 
-  void removeCourse(Course course) {
+  void removeCourse(Course course) async {
     _courses.remove(course);
+    CourseListDB courseListDB = CourseListDB();
+    await courseListDB.deleteCourseByNameAndCourseListId(course.getName, currentCourseListID);
     notifyListeners();
   }
 
@@ -43,6 +51,21 @@ class CourseNotifier with ChangeNotifier {
       _courses = currentCourseList!.getAllCourse();
       notifyListeners();
     }
+  }
+
+  List<Task> getAllTasks() {
+    List<Task> tasks = <Task>[];
+    for (var course in courses) {
+      for (var task in course.tasks) {
+        task.courseName = course.getName;
+        tasks.add(task);
+      }
+    }
+    return tasks;
+  }
+
+  void clear() {
+    _courses = [];
   }
 }
 

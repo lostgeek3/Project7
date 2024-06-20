@@ -14,10 +14,16 @@ const String logTag = '[class]Task: ';
 /// 类：任务（实现自事件类）
 /// 用法：任务事件的对象
 class Task implements Event{
+  @override
+  late int id;
+  // 课程id
+  late int courseId;
+  // 课程名称
+  late String courseName;
   // 任务名称
   String _name = '';
-  // 任务时间信息
-  TimeInfo _timeInfo;
+  // 截止时间
+  DateTime _deadline;
   // 任务地点
   String _location = '';
   // 任务简介
@@ -25,41 +31,30 @@ class Task implements Event{
   // 任务种类
   TaskType _taskType = TaskType.defaultType;
   // 是否完成
-  bool _ifFinished = false;
+  bool _finished = false;
 
-  Task(this._name, this._timeInfo, {String location = '', String description = '', TaskType taskType = TaskType.defaultType}) {
+  Task(this._name, this._deadline, {String location = '', String description = '', TaskType taskType = TaskType.defaultType}) {
     _location = location;
     _description = description;
     _taskType = taskType;
   }
 
-  // 给出下一周期任务
-  // @override
-  // Task? getNext() {
-  //   TimeInfo? nextTimeInfo = _timeInfo.getNext();
-  //   if (nextTimeInfo == null) {
-  //     logger.w('$logTag当前周期数为最大值，停止生成下一周期');
-  //     return null;
-  //   }
-  //   return Task(_name, nextTimeInfo, location: _location, description: _description, taskType: _taskType);
-  // }
-
   // 设置完成
   void setFinished() {
-    _ifFinished = true;
+    _finished = true;
   }
 
   // 设置未完成
   void setUnfinished() {
-    _ifFinished = false;
+    _finished = false;
   }
 
   // set函数
   set name(String name) {
     _name = name;
   }
-  set timeInfo(TimeInfo timeInfo) {
-    _timeInfo = timeInfo;
+  set deadline(DateTime deadline) {
+    _deadline = deadline;
   }
   set location(String location) {
     _location = location;
@@ -75,8 +70,8 @@ class Task implements Event{
   String get getName {
     return _name;
   }
-  TimeInfo get getTimeInfo {
-    return _timeInfo;
+  DateTime get getDeadline {
+    return _deadline;
   }
   String get getLocation {
     return _location;
@@ -87,8 +82,8 @@ class Task implements Event{
   TaskType get getTaskType {
     return _taskType;
   }
-  bool get getIfFinished {
-    return _ifFinished;
+  bool get getFinished {
+    return _finished;
   }
 }
 

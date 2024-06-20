@@ -1,5 +1,8 @@
 import 'package:awesome_schedule/database/courseList_db.dart';
 import 'package:awesome_schedule/models/courseList.dart';
+import 'package:awesome_schedule/pages/noteListPage.dart';
+import 'package:awesome_schedule/pages/notePage.dart';
+import 'package:awesome_schedule/utils/sharedPreference.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
@@ -15,11 +18,14 @@ void main() async {
   // 初始化数据库
   WidgetsFlutterBinding.ensureInitialized();
   await initDatabase();
+  // 清空数据库，注释下面这行就可以持久化
   await clearDatabase();
   await setSomeDataToDatabase();
   CourseListDB courseListDB = CourseListDB();
   currentCourseList = await courseListDB.getCourseListByID(1);
   currentCourseListID = 1;
+  // 初始化首选项
+  await MySharedPreferences.init();
 
   runApp(
     MultiProvider(
@@ -40,7 +46,9 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const HomePage(),
-        '/logIn': (context) => const LogInPage()
+        '/logIn': (context) => const LogInPage(),
+        '/noteList': (context) => const NoteListPage(),
+        '/note': (context) => const NotePage()
       }
     );
   }

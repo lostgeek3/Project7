@@ -14,6 +14,7 @@ const String logTag = '[class]CourseList: ';
 /// 类：课程表
 /// 用法：储存一个课程表结构
 class CourseList {
+  late int id;
   // 课程集合
   final _courseSet = <Course>[];
   // 当前周数

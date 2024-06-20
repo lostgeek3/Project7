@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import 'models/courseList.dart';
-import 'models/course.dart';
-import 'models/timeInfo.dart';
+import 'package:awesome_schedule/models/courseList.dart';
+import 'package:awesome_schedule/models/course.dart';
+import 'package:awesome_schedule/models/timeInfo.dart';
 
 void main() {
   runApp(MyApp());

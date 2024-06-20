@@ -16,6 +16,10 @@ const String logTag = '[class]Course: ';
 /// 类：课程（实现自事件类）
 /// 用法：课程事件的对象
 class Course implements Event{
+  @override
+  late int id;
+  // 课程表ID
+  late int courseListId;
   // 课程ID
   String _courseID = '';
   // 课程名称
@@ -38,7 +42,7 @@ class Course implements Event{
   // 课程任务
   List<Task> tasks = <Task>[];
   // 课程笔记
-  Note note = Note();
+  List<Note> notes = <Note>[];
 
   Course(this._name, this._timeInfo, {String courseID = '', String location = '', String teacher = '', String description = ''}) {
     _courseID = courseID;
@@ -93,12 +97,13 @@ class Course implements Event{
 
   // 根据名称删除任务
   void removeTaskByName(String name) {
-    for (var it in tasks) {
-      if (it.getName == name) {
-        tasks.remove(it);
-      }
+    int initialLength = tasks.length;
+  
+    tasks.retainWhere((task) => task.getName != name);
+    
+    if (initialLength == tasks.length) {
+      logger.w('$logTag任务 $name 不存在，无法删除');
     }
-    logger.w('$logTag任务 $name 不存在，无法删除');
   }
 
   // set函数
@@ -128,7 +133,7 @@ class Course implements Event{
   String get getCourseID {
     return _courseID;
   }
-  List<CourseTimeInfo> get getCourseTimeInfo {
+  List<CourseTimeInfo> get getTimeInfo {
     return _timeInfo;
   }
   String get getLocation {
