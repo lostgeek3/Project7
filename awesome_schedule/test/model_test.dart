@@ -310,6 +310,7 @@ void main() {
     expect(timeInfo.getEndHour, 13);
     expect(timeInfo.getStartMinute, 10);
     expect(timeInfo.getEndMinute, 20);
+    timeInfo.printTimeInfo();
 
     CourseTimeInfo courseTimeInfo = CourseTimeInfo(0, 0, 1, 1, endWeek: 20, weekday: 1, startSection: 1, endSection: 2, weeks: [1, 2, 19, 20, 21]);
     courseTimeInfo.setWeekday = 0;
@@ -326,6 +327,12 @@ void main() {
     expect(courseTimeInfo.getEndSection, 3);
     courseTimeInfo.getWeekList;
     expect(courseTimeInfo.getEndWeek, 20);
+    courseTimeInfo.getWeekListStrFormat;
+    courseTimeInfo.setWeekList = [1, 3, 5, 7, 9, 11];
+    courseTimeInfo.getWeekListStrFormat;
+    courseTimeInfo.setWeekList = [2, 4, 6, 8, 10, 12];
+    courseTimeInfo.getWeekListStrFormat;
+    courseTimeInfo.setWeekList = [1, 4, 9, 14, 16];
     courseTimeInfo.getWeekListStrFormat;
   });
 }
